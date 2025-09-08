@@ -41,9 +41,9 @@
                                 <form class="form-horizontal" wire:submit="login">
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Username</label>
+                                        <label for="username" class="form-label">Username atau Email</label>
                                         <input type="text" class="form-control" id="username"
-                                            placeholder="Enter username" wire:model="username" autocomplete="username">
+                                            placeholder="Masukkan username atau email" wire:model="username" autocomplete="username">
                                     </div>
 
                                     <div class="mb-3">

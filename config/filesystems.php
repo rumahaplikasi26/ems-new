@@ -58,27 +58,27 @@ return [
 
         'gcs' => [
             'driver' => 'gcs',
-            'key_file_path' => env('GOOGLE_CLOUD_KEY_FILE', null), // optional: /path/to/service-account.json
+            // 'key_file_path' => env('GOOGLE_CLOUD_KEY_FILE', null), // optional: /path/to/service-account.json
             'key_file' => [
                 "type" => "service_account",
                 "project_id" => env('GOOGLE_CLOUD_PROJECT_ID'),
                 "private_key_id" => env('GOOGLE_CLOUD_PRIVATE_KEY_ID'),
-                "private_key" => env('GOOGLE_CLOUD_PRIVATE_KEY'),
+                "private_key" => str_replace("\\n", "\n", env('GOOGLE_CLOUD_PRIVATE_KEY') ?? ''), // ← penting
                 "client_email" => env('GOOGLE_CLOUD_CLIENT_EMAIL'),
                 "client_id" => env('GOOGLE_CLOUD_CLIENT_ID'),
                 "auth_uri" => "https://accounts.google.com/o/oauth2/auth",
                 "token_uri" => "https://oauth2.googleapis.com/token",
                 "auth_provider_x509_cert_url" => "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url" => "https://www.googleapis.com/robot/v1/metadata/x509/mms-974%40high-producer-401206.iam.gserviceaccount.com",
+                "client_x509_cert_url" => env('GOOGLE_CLOUD_CLIENT_X509_CERT_URL'),
                 "universe_domain" => "googleapis.com"
-            ], // optional: Array of data that substitutes the .json file (see below)
+            ],
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID', 'high-producer-401206'), // optional: is included in key file
-            'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'ems.tpm-facility.com'),
+            'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'aice.tpm-facility.com'),
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', ''), // optional: /default/path/to/apply/in/bucket
             'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null), // see: Public URLs below
             'api_endpoint' => env('GOOGLE_CLOUD_STORAGE_API_ENDPOINT', null), // set storageClient apiEndpoint
             'visibility' => 'public', // optional: public|private
-            'visibility_handler' => null, // optional: set to \League\Flysystem\GoogleCloudStorage\UniformBucketLevelAccessVisibility::class to enable uniform bucket level access
+            'visibility_handler' => \League\Flysystem\GoogleCloudStorage\UniformBucketLevelAccessVisibility::class,
             'metadata' => ['cacheControl' => 'public,max-age=86400'], // optional: default metadata
         ],
     ],

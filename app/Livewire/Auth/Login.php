@@ -41,7 +41,7 @@ class Login extends Component
                 return redirect()->route('dashboard.index');
             }
 
-            $this->alert('error', 'Email atau password yang anda gunakan salah, silahkan periksa kembali!');
+            $this->alert('error', 'Username/Email atau password yang anda gunakan salah, silahkan periksa kembali!');
             return back();
         } catch (\Throwable $th) {
             $this->alert('error', $th->getMessage());
