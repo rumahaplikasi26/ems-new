@@ -131,6 +131,7 @@ class ProfileForm extends BaseComponent
                 // URL untuk thumbnail
                 $thumbnailUrl = $disk->url($thumbnailPath);
 
+                // dd($thumbnailUrl);
                 if ($this->avatar_path) {
                     $disk->delete($this->avatar_path);
                 }
