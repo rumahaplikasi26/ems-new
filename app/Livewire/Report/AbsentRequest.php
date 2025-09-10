@@ -6,6 +6,8 @@ use App\Models\Employee;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Exports\AbsentRequestReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AbsentRequest extends Component
 {
@@ -39,6 +41,31 @@ class AbsentRequest extends Component
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
         }
+    }
+
+    public function exportExcel()
+    {
+        try {
+            $this->validate([
+                'startDate' => 'required',
+                'endDate' => 'required',
+                'selectedEmployees' => 'required|array|min:1'
+            ]);
+
+            // Get the reports data by dispatching to preview component
+            $this->dispatch('export-absent-request-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+            
+        } catch (\Exception $e) {
+            $this->alert('error', $e->getMessage());
+        }
+    }
+
+    public function resetFilter()
+    {
+        $this->selectedEmployees = [];
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->dispatch('reset-absent-request-preview');
     }
 
     public function render()

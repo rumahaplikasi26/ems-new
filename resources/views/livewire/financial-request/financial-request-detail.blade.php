@@ -1,62 +1,185 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Absent Request', 'url' => route('absent-request.index')], ['name' => 'Detail Absent Request ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Financial Request', 'url' => route('financial-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
 
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Title</h4>
-                    <h4 class="fw-bold">{{ $title }}</h4>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-grow-1">
+                            <h4 class="card-title mb-0">Financial Request Detail</h4>
+                        </div>
+                        <div class="flex-shrink-0">
+                            @if($financial_request->is_approved)
+                                <span class="badge badge-soft-success font-size-12">Approved</span>
+                            @elseif($financial_request->isRejectedByRecipients())
+                                <span class="badge badge-soft-danger font-size-12">Rejected</span>
+                            @else
+                                <span class="badge badge-soft-warning font-size-12">Pending</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Employee:</label>
+                                <p class="text-muted">{{ $financial_request->employee->user->name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Employee ID:</label>
+                                <p class="text-muted">{{ $financial_request->employee_id }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Title:</label>
+                                <p class="text-muted">{{ $financial_request->title }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Type:</label>
+                                <p class="text-muted">
+                                    <span class="badge badge-soft-info">{{ $financial_request->financialType->name ?? 'N/A' }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Amount:</label>
+                                <p class="text-muted">
+                                    <span class="h5 text-primary">Rp {{ number_format($financial_request->amount, 0, ',', '.') }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Date:</label>
+                                <p class="text-muted">{{ $financial_request->date->format('d F Y') }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Request Date:</label>
+                                <p class="text-muted">{{ $financial_request->created_at->format('d F Y, H:i') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Notes:</label>
+                        <div class="border rounded p-3 bg-light">
+                            <div>{!! $financial_request->notes ?? 'No notes provided.' !!}</div>
+                        </div>
+                    </div>
+
+                    @if($financial_request->file_path)
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Attachment:</label>
+                            <div class="border rounded p-3 bg-light">
+                                <a href="{{ $financial_request->file_url }}" target="_blank" class="btn btn-soft-primary btn-sm">
+                                    <i class="mdi mdi-file-download"></i> Download Attachment
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
+
+            <!-- Validation History -->
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title d-flex mb-3">
-                        <span class="flex-grow-1">Recipients</span>
-                        @if($isApproved)
-                            <span class="badge bg-success text-white text-end">Approved</span>
-                        @else
-                            <span class="badge bg-danger text-white text-end">Pending</span>
-                        @endif
-                    </h4>
-                    @foreach ($recipientsWithStatus as $item)
-                        <div class="d-flex {{ $item['bgClass'] }} text-white p-2 mb-2 rounded rounded-3 flex-wrap">
-                            <div class="flex-grow-1">
-                                {{ $item['recipient']->employee->user->name }}
+                    <h5 class="card-title">Validation History</h5>
+                    @forelse($financial_request->validates as $validation)
+                        <div class="border rounded p-3 mb-3 {{ $validation->status == 'approved' ? 'border-success bg-light-success' : 'border-danger bg-light-danger' }}">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">{{ $validation->employee->user->name }}</h6>
+                                    <small class="text-muted">{{ $validation->created_at->format('d F Y, H:i') }}</small>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    @if($validation->status == 'approved')
+                                        <span class="badge badge-soft-success">Approved</span>
+                                    @else
+                                        <span class="badge badge-soft-danger">Rejected</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="flex-grow-0 text-end">
-                                {{ ucfirst($item['status']) }} at
-                                {{ $item['created_at'] ?? '-' }}
+                            @if($validation->notes)
+                                <p class="mb-0"><strong>Notes:</strong> {{ $validation->notes }}</p>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="text-muted">No validation history yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Recipients -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recipients</h5>
+                    @foreach($financial_request->recipients as $recipient)
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">{{ $recipient->employee->user->name }}</h6>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @if($financial_request->reads()->where('employee_id', $recipient->employee_id)->exists())
+                                    <i class="mdi mdi-check-circle text-success" title="Read"></i>
+                                @else
+                                    <i class="mdi mdi-clock text-warning" title="Unread"></i>
+                                @endif
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-3">Amount</h4>
-                    <h3 class="fw-bold">Rp {{ number_format($amount) }} / {{ $financialType->name }}</h3>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-3">Notes</h4>
-                    <p>{!! $notes !!}</p>
-                </div>
-            </div>
-        </div>
+            <!-- Action Panel -->
+            @if(!$financial_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$financial_request->is_approved)
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Action Required</h5>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes (Optional for approval, Required for rejection)</label>
+                            <textarea class="form-control @error('notes') is-invalid @enderror" 
+                                      id="notes" wire:model="notes" rows="3" 
+                                      placeholder="Add your notes here..."></textarea>
+                            @error('notes')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-3">Detail</h4>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-success" wire:click="approve" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="approve">
+                                    <i class="mdi mdi-check me-1"></i> Approve
+                                </span>
+                                <span wire:loading wire:target="approve">Processing...</span>
+                            </button>
+                            <button type="button" class="btn btn-danger" wire:click="reject" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="reject">
+                                    <i class="mdi mdi-close me-1"></i> Reject
+                                </span>
+                                <span wire:loading wire:target="reject">Processing...</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
-
     </div>
-
 </div>

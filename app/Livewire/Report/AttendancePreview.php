@@ -13,6 +13,8 @@ use Illuminate\Support\Carbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Exports\AttendanceReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendancePreview extends Component
 {
@@ -61,7 +63,7 @@ class AttendancePreview extends Component
                 ->get();
 
             // Fetch absent requests
-            $absentRequests = AbsentRequest::select('employee_id', 'start_date', 'end_date')
+            $absentRequests = AbsentRequest::select('employee_id', 'start_date', 'end_date', 'type_absent')
                 ->whereIn('employee_id', $this->selectedEmployees)
                 ->where('is_approved', true)
                 ->where(function ($query){
@@ -94,12 +96,13 @@ class AttendancePreview extends Component
                     }
                 }
 
-                // Buat array untuk menyimpan periode izin
+                // Buat array untuk menyimpan periode absent dengan type
                 $absentDates = [];
                 foreach ($absentRequests->where('employee_id', $employee->id) as $absent) {
                     $period = CarbonPeriod::create($absent->start_date, $absent->end_date);
+                    $absentType = $this->getAbsentTypeCode($absent->type_absent);
                     foreach ($period as $date) {
-                        $absentDates[$date->format('Y-m-d')] = 'A';
+                        $absentDates[$date->format('Y-m-d')] = $absentType;
                     }
                 }
 
@@ -113,7 +116,7 @@ class AttendancePreview extends Component
                     if (isset($leaveDates[$dateStr])) {
                         $timeRange = 'L';
                     } elseif (isset($absentDates[$dateStr])) {
-                        $timeRange = 'A';
+                        $timeRange = $absentDates[$dateStr];
                     } elseif ($dayAttendances->isNotEmpty()) {
                         $firstAttendance = $dayAttendances->first();
                         $lastAttendance = $dayAttendances->last();
@@ -137,6 +140,71 @@ class AttendancePreview extends Component
 
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
+        }
+    }
+
+    #[On('reset-attendance-preview')]
+    public function resetPreview()
+    {
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->selectedEmployees = [];
+        $this->countDays = 0;
+        $this->reports = collect();
+    }
+
+    #[On('export-attendance-data')]
+    public function exportAttendanceData($employees, $startDate, $endDate)
+    {
+        try {
+            // Generate the report data first
+            $this->preview($employees, $startDate, $endDate);
+            
+            if ($this->reports && $this->reports->isNotEmpty()) {
+                $fileName = 'attendance_report_' . Carbon::parse($startDate)->format('Y-m-d') . '_to_' . Carbon::parse($endDate)->format('Y-m-d') . '.xlsx';
+                
+                return Excel::download(
+                    new AttendanceReportExport($startDate, $endDate, $employees, $this->reports->toArray()),
+                    $fileName
+                );
+            } else {
+                $this->alert('warning', 'No data available for export.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('error', 'Export failed: ' . $e->getMessage());
+        }
+    }
+
+    public function exportExcel()
+    {
+        try {
+            if ($this->reports && $this->reports->isNotEmpty()) {
+                $fileName = 'attendance_report_' . Carbon::parse($this->startDate)->format('Y-m-d') . '_to_' . Carbon::parse($this->endDate)->format('Y-m-d') . '.xlsx';
+                
+                return Excel::download(
+                    new AttendanceReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray()),
+                    $fileName
+                );
+            } else {
+                $this->alert('warning', 'No data available for export. Please generate the report first.');
+            }
+        } catch (\Exception $e) {
+            $this->alert('error', 'Export failed: ' . $e->getMessage());
+        }
+    }
+
+    private function getAbsentTypeCode($typeAbsent)
+    {
+        // Konversi type_absent ke kode yang sesuai
+        switch (strtolower($typeAbsent)) {
+            case 'sakit':
+            case 'sick':
+                return 'S';
+            case 'izin':
+            case 'permit':
+                return 'I';
+            default:
+                return 'A'; // Default absent
         }
     }
 

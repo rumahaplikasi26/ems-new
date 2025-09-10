@@ -4,10 +4,16 @@ namespace App\Livewire\AbsentRequest;
 
 use App\Livewire\BaseComponent;
 use App\Models\AbsentRequest;
-use Livewire\Component;
+use App\Models\RequestValidate;
+use Livewire\Component; 
+use Livewire\Attributes\On;
+use App\Jobs\SendEmailJob;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class AbsentRequestDetail extends BaseComponent
 {
+    use LivewireAlert;
+
     public $absent_request, $notes, $start_date, $end_date, $employee_id, $recipients, $recipientsWithStatus, $isApproved;
 
     public function mount($id)
@@ -40,6 +46,125 @@ class AbsentRequestDetail extends BaseComponent
         });
 
         // dd($this->recipientsWithStatus);
+    }
+
+    public function approveConfirm()
+    {
+        $this->alert('info', 'Are you sure you want to approve this absent request?', [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+
+            'showConfirmButton' => true,
+            'confirmButtonColor' => '#00a8ff',
+            'confirmButtonText' => 'Yes, Approve',
+            'cancelButtonText' => 'Cancel',
+            'onConfirmed' => 'approve-absent-request',
+            'showCancelButton' => true,
+
+            'allowOutsideClick' => false,
+            'allowEnterKey' => true,
+            'allowEscapeKey' => false,
+            'stopKeydownPropagation' => false,
+        ]);
+    }
+
+    public function rejectConfirm()
+    {
+        $this->alert('info', 'Are you sure you want to reject this absent request?', [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+
+            'showConfirmButton' => true,
+            'confirmButtonColor' => '#A90C0C',
+            'confirmButtonText' => 'Yes, Reject',
+            'cancelButtonText' => 'Cancel',
+            'onConfirmed' => 'reject-absent-request',
+            'showCancelButton' => true,
+
+            'allowOutsideClick' => false,
+            'allowEnterKey' => true,
+            'allowEscapeKey' => false,
+            'stopKeydownPropagation' => false,
+        ]);
+    }
+
+    #[On('approve-absent-request')]
+    public function approve()
+    {
+        $employeeId = $this->authUser->employee->id;
+
+        // Tambahkan validasi untuk recipient
+        RequestValidate::updateOrCreate(
+            [
+                'validatable_id' => $this->absent_request->id,
+                'validatable_type' => AbsentRequest::class,
+                'employee_id' => $employeeId,
+            ],
+            ['status' => 'approved']
+        );
+
+        SendEmailJob::dispatch($this->absent_request->employee->user, 'approved-absent-request', ['absent_request' => $this->absent_request], $this->authUser);
+
+        // Periksa dan perbarui status isApproved pada AbsentRequest
+        $this->absent_request->checkAndUpdateApprovalStatus();
+
+        createNotification(
+            $this->absent_request->employee->user->id,
+            'Approved Absent Request',
+            'approved-absent-request',
+            'Absent Request',
+            'Absent Request has been approved',
+            route('absent-request.detail', $this->absent_request->id)
+        );
+
+        activity()
+            ->causedBy($this->authUser) // Pengguna yang melakukan login
+            ->withProperties(['ip' => request()->ip()]) // Menyimpan alamat IP
+            ->event('approve')
+            ->log("{$this->authUser->name} telah approve Absent Request");
+
+        $this->alert('success', 'Absent Request approved successfully');
+        $this->dispatch('refreshIndex');
+    }
+
+    #[On('reject-absent-request')]
+    public function reject()
+    {
+        $employeeId = $this->authUser->employee->id;
+
+        // Tambahkan validasi untuk recipient
+        RequestValidate::updateOrCreate(
+            [
+                'validatable_id' => $this->absent_request->id,
+                'validatable_type' => AbsentRequest::class,
+                'employee_id' => $employeeId,
+            ],
+            ['status' => 'rejected']
+        );
+
+        SendEmailJob::dispatch($this->absent_request->employee->user, 'rejected-absent-request', ['absent_request' => $this->absent_request], $this->authUser);
+
+        // Periksa dan perbarui status isApproved pada AbsentRequest
+        $this->absent_request->checkAndUpdateApprovalStatus();
+        createNotification(
+            $this->absent_request->employee->user->id,
+            'Rejected Absent Request',
+            'rejected-absent-request',
+            'Absent Request',
+            'Absent Request has been rejected',
+            route('absent-request.detail', $this->absent_request->id)
+        );
+
+        activity()
+            ->causedBy($this->authUser) // Pengguna yang melakukan login
+            ->withProperties(['ip' => request()->ip()]) // Menyimpan alamat IP
+            ->event('reject absent request')
+            ->log("{$this->authUser->name} telah reject Absent Request");
+
+        $this->alert('success', 'Absent Request rejected successfully');
+        $this->dispatch('refreshIndex');
     }
 
     public function render()

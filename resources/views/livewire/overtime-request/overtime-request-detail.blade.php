@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Leave Request', 'url' => route('leave-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Overtime Request', 'url' => route('overtime-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-8">
@@ -7,12 +7,12 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-grow-1">
-                            <h4 class="card-title mb-0">Leave Request Detail</h4>
+                            <h4 class="card-title mb-0">Overtime Request Detail</h4>
                         </div>
                         <div class="flex-shrink-0">
-                            @if($leave_request->is_approved)
+                            @if($overtime_request->is_approved)
                                 <span class="badge badge-soft-success font-size-12">Approved</span>
-                            @elseif($leave_request->isRejectedByRecipients())
+                            @elseif($overtime_request->isRejectedByRecipients())
                                 <span class="badge badge-soft-danger font-size-12">Rejected</span>
                             @else
                                 <span class="badge badge-soft-warning font-size-12">Pending</span>
@@ -24,13 +24,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Employee:</label>
-                                <p class="text-muted">{{ $leave_request->employee->user->name }}</p>
+                                <p class="text-muted">{{ $overtime_request->employee->user->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Employee ID:</label>
-                                <p class="text-muted">{{ $leave_request->employee_id }}</p>
+                                <p class="text-muted">{{ $overtime_request->employee_id }}</p>
                             </div>
                         </div>
                     </div>
@@ -38,14 +38,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Start Date:</label>
-                                <p class="text-muted">{{ $leave_request->start_date->format('d F Y') }}</p>
+                                <label class="form-label fw-bold">Start Date & Time:</label>
+                                <p class="text-muted">{{ $overtime_request->start_date->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">End Date:</label>
-                                <p class="text-muted">{{ $leave_request->end_date->format('d F Y') }}</p>
+                                <label class="form-label fw-bold">End Date & Time:</label>
+                                <p class="text-muted">{{ $overtime_request->end_date->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
                     </div>
@@ -54,27 +54,34 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Duration:</label>
-                                <p class="text-muted">{{ $leave_request->total_days }} days</p>
+                                <p class="text-muted">{{ number_format($overtime_request->duration, 1) }} hours ({{ $overtime_request->duration_in_days }} days)</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Leave Remaining:</label>
-                                <p class="text-muted">{{ $leave_request->employee->leave_remaining ?? 0 }} days</p>
+                                <label class="form-label fw-bold">Priority:</label>
+                                <p class="text-muted">
+                                    @if($overtime_request->priority == 'major')
+                                        <span class="badge badge-soft-danger">Major</span>
+                                    @else
+                                        <span class="badge badge-soft-success">Minor</span>
+                                    @endif
+                                </p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Request Date:</label>
-                                <p class="text-muted">{{ $leave_request->created_at->format('d F Y, H:i') }}</p>
+                                <p class="text-muted">{{ $overtime_request->created_at->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
                     </div>
 
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Notes:</label>
+                        <label class="form-label fw-bold">Reason:</label>
                         <div class="border rounded p-3 bg-light">
-                            <p class="mb-0">{{ $leave_request->notes ?? 'No notes provided.' }}</p>
+                            <p class="mb-0">{{ $overtime_request->reason }}</p>
                         </div>
                     </div>
                 </div>
@@ -84,7 +91,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Validation History</h5>
-                    @forelse($leave_request->validates as $validation)
+                    @forelse($overtime_request->validates as $validation)
                         <div class="border rounded p-3 mb-3 {{ $validation->status == 'approved' ? 'border-success bg-light-success' : 'border-danger bg-light-danger' }}">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="flex-grow-1">
@@ -115,13 +122,13 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Recipients</h5>
-                    @foreach($leave_request->recipients as $recipient)
+                    @foreach($overtime_request->recipients as $recipient)
                         <div class="d-flex align-items-center mb-2">
                             <div class="flex-grow-1">
                                 <h6 class="mb-0">{{ $recipient->employee->user->name }}</h6>
                             </div>
                             <div class="flex-shrink-0">
-                                @if($leave_request->reads()->where('employee_id', $recipient->employee_id)->exists())
+                                @if($overtime_request->reads()->where('employee_id', $recipient->employee_id)->exists())
                                     <i class="mdi mdi-check-circle text-success" title="Read"></i>
                                 @else
                                     <i class="mdi mdi-clock text-warning" title="Unread"></i>
@@ -132,16 +139,8 @@
                 </div>
             </div>
 
-            <!-- Calendar -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Calendar</h5>
-                    <div id="calendar"></div>
-                </div>
-            </div>
-
             <!-- Action Panel -->
-            @if(!$leave_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$leave_request->is_approved)
+            @if(!$overtime_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$overtime_request->is_approved)
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Action Required</h5>
@@ -174,55 +173,5 @@
                 </div>
             @endif
         </div>
-
     </div>
-
-    @push('styles')
-        <link href="{{ asset('libs/%40fullcalendar/core/main.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('libs/%40fullcalendar/daygrid/main.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('libs/%40fullcalendar/bootstrap/main.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('libs/%40fullcalendar/timegrid/main.min.css') }}" rel="stylesheet" type="text/css" />
-    @endpush
-
-    @push('js')
-        <script src="{{ asset('libs/jquery-ui-dist/jquery-ui.min.js') }}"></script>
-        <script src="{{ asset('libs/%40fullcalendar/core/main.min.js') }}"></script>
-        <script src="{{ asset('libs/%40fullcalendar/bootstrap/main.min.js') }}"></script>
-        <script src="{{ asset('libs/%40fullcalendar/daygrid/main.min.js') }}"></script>
-        <script src="{{ asset('libs/%40fullcalendar/timegrid/main.min.js') }}"></script>
-        <script src="{{ asset('libs/%40fullcalendar/interaction/main.min.js') }}"></script>
-
-        <script>
-            document.addEventListener('livewire:init', function() {
-                var startDate = @json($start_date); // Format: 'YYYY-MM-DD'
-                var endDate = @json($end_date); // Format: 'YYYY-MM-DD'
-
-                // Fix: Add 1 day to end date for FullCalendar (exclusive end date)
-                var endDatePlusOne = new Date(endDate);
-                endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
-                var endDateFormatted = endDatePlusOne.toISOString().split('T')[0];
-
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    defaultView: 'dayGridMonth',
-                    plugins: ["bootstrap", "interaction", "dayGrid", "timeGrid"],
-                    header: false,
-                    editable: false, // Nonaktifkan interaksi
-                    selectable: false, // Nonaktifkan pemilihan tanggal
-                    selectMirror: false, // Nonaktifkan pemilihan tanggal
-                    displayEventTime: false, // Nonaktifkan menampilkan waktu
-                    displayEventEnd: false, // Nonaktifkan menampilkan Waktu
-                    events: [{
-                        start: startDate,
-                        end: endDateFormatted, // Use the fixed end date
-                        display: 'background', // Tampilkan rentang sebagai latar belakang
-                        backgroundColor: '#28a745', // Green color for leave
-                        borderColor: '#28a745'
-                    }],
-                    themeSystem: 'bootstrap',
-                });
-                calendar.render();
-            });
-        </script>
-    @endpush
 </div>

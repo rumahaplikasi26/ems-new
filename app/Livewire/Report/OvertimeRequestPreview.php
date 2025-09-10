@@ -2,21 +2,17 @@
 
 namespace App\Livewire\Report;
 
-use App\Models\AbsentRequest;
-use App\Models\Attendance;
+use App\Models\OvertimeRequest;
 use App\Models\Employee;
-use App\Models\LeaveRequest;
-use Carbon\CarbonInterval;
-use Carbon\CarbonPeriod;
-use DatePeriod;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use App\Exports\AbsentRequestReportExport;
+use App\Exports\OvertimeRequestReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 
-class AbsentRequestPreview extends Component
+class OvertimeRequestPreview extends Component
 {
     use LivewireAlert;
     public $startDate;
@@ -24,7 +20,7 @@ class AbsentRequestPreview extends Component
     public $selectedEmployees;
     public $reports;
 
-    #[On('absent-request-preview')]
+    #[On('overtime-request-preview')]
     public function preview($employees, $startDate, $endDate)
     {
         $this->selectedEmployees = $employees;
@@ -32,27 +28,31 @@ class AbsentRequestPreview extends Component
         $this->startDate = Carbon::parse($startDate)->startOfDay();
         $this->endDate = Carbon::parse($endDate)->endOfDay();
 
-        // dd($this->startDate, $this->endDate);
-        $this->countDays = daysBetween($this->startDate, $this->endDate) + 1;
-
         try {
-            // Fetch absent requests
-            $absentRequests = AbsentRequest::with('employee.user')->select('employee_id', 'start_date', 'end_date', 'type_absent', 'notes')
+            // Fetch overtime requests
+            $overtimeRequests = OvertimeRequest::with('employee.user')
+                ->select('id', 'employee_id', 'start_date', 'end_date', 'reason', 'priority', 'is_approved')
                 ->whereIn('employee_id', $this->selectedEmployees)
                 ->where('is_approved', true)
-                ->where(function ($query){
+                ->where(function ($query) {
                     $query->whereBetween('start_date', [$this->startDate, $this->endDate])
-                        ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
+                        ->orWhereBetween('end_date', [$this->startDate, $this->endDate])
+                        ->orWhere(function ($q) {
+                            $q->where('start_date', '<=', $this->startDate)
+                              ->where('end_date', '>=', $this->endDate);
+                        });
                 })
+                ->orderBy('start_date')
                 ->get();
 
-            $this->reports = $absentRequests;
+            $this->reports = $overtimeRequests;
+
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
         }
     }
 
-    #[On('reset-absent-request-preview')]
+    #[On('reset-overtime-request-preview')]
     public function resetPreview()
     {
         $this->startDate = null;
@@ -61,18 +61,18 @@ class AbsentRequestPreview extends Component
         $this->reports = collect();
     }
 
-    #[On('export-absent-request-data')]
-    public function exportAbsentRequestData($employees, $startDate, $endDate)
+    #[On('export-overtime-request-data')]
+    public function exportOvertimeRequestData($employees, $startDate, $endDate)
     {
         try {
             // Generate the report data first
             $this->preview($employees, $startDate, $endDate);
             
             if ($this->reports && $this->reports->isNotEmpty()) {
-                $fileName = 'absent_request_report_' . Carbon::parse($startDate)->format('Y-m-d') . '_to_' . Carbon::parse($endDate)->format('Y-m-d') . '.xlsx';
+                $fileName = 'overtime_request_report_' . Carbon::parse($startDate)->format('Y-m-d') . '_to_' . Carbon::parse($endDate)->format('Y-m-d') . '.xlsx';
                 
                 return Excel::download(
-                    new AbsentRequestReportExport($startDate, $endDate, $employees, $this->reports->toArray()),
+                    new OvertimeRequestReportExport($startDate, $endDate, $employees, $this->reports->toArray()),
                     $fileName
                 );
             } else {
@@ -87,10 +87,10 @@ class AbsentRequestPreview extends Component
     {
         try {
             if ($this->reports && $this->reports->isNotEmpty()) {
-                $fileName = 'absent_request_report_' . Carbon::parse($this->startDate)->format('Y-m-d') . '_to_' . Carbon::parse($this->endDate)->format('Y-m-d') . '.xlsx';
+                $fileName = 'overtime_request_report_' . Carbon::parse($this->startDate)->format('Y-m-d') . '_to_' . Carbon::parse($this->endDate)->format('Y-m-d') . '.xlsx';
                 
                 return Excel::download(
-                    new AbsentRequestReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray()),
+                    new OvertimeRequestReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray()),
                     $fileName
                 );
             } else {
@@ -103,6 +103,6 @@ class AbsentRequestPreview extends Component
 
     public function render()
     {
-        return view('livewire.report.absent-request-preview');
+        return view('livewire.report.overtime-request-preview');
     }
 }

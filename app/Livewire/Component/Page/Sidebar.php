@@ -218,6 +218,35 @@ class Sidebar extends BaseComponent
                     ]
                 ],
                 [
+                    'name' => 'Overtime Request',
+                    'url' => '/overtime-request',
+                    'icon' => 'bx bxs-time',
+                    'permission' => 'view:overtime-request',
+                    'subMenus' => [
+                        [
+                            'name' => 'All Overtime Request',
+                            'url' => '/overtime-request-all',
+                            'route' => 'overtime-request.all',
+                            'icon' => 'bx bxs-bank',
+                            'permission' => 'view:overtime-request-all'
+                        ],
+                        [
+                            'name' => 'My Overtime Request',
+                            'url' => '/overtime-request',
+                            'route' => 'overtime-request.index',
+                            'icon' => 'bx bxs-bank',
+                            'permission' => 'view:overtime-request'
+                        ],
+                        [
+                            'name' => 'Team Overtime Request',
+                            'url' => '/overtime-request/team',
+                            'route' => 'team-overtime-request.index',
+                            'icon' => 'bx bxs-bank',
+                            'permission' => 'view:overtime-request'
+                        ],
+                    ]
+                ],
+                [
                     'name' => 'Visit',
                     'url' => '/visit',
                     'route' => 'visit.index',
@@ -301,6 +330,13 @@ class Sidebar extends BaseComponent
                     'route' => 'report.visit',
                     'icon' => 'bx bx-bar-chart-alt-2',
                     'permission' => 'view:report-visit'
+                ],
+                [
+                    'name' => 'Report Overtime',
+                    'url' => '/report/overtime-request',
+                    'route' => 'report.overtime-request',
+                    'icon' => 'bx bx-bar-chart-alt-2',
+                    'permission' => 'view:report-overtime-request'
                 ],
             ]
         ],

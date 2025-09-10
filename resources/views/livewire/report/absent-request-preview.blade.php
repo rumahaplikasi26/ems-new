@@ -1,6 +1,13 @@
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title mb-3">Absent Request Reports</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title mb-0">Absent Request Reports</h4>
+            @if ($reports && $reports->isNotEmpty())
+                <button class="btn btn-success btn-sm" wire:click="exportExcel" wire:loading.attr="disabled">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
+            @endif
+        </div>
         @if ($reports)
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-sm">
@@ -15,12 +22,14 @@
                     </thead>
                     <tbody>
                         @foreach ($reports as $absentRequest)
-                            <th><small>{{ $absentRequest->employee_id }}</small></th>
-                            <th><small>{{ $absentRequest->employee->user->name }}</small></th>
-                            <th class="text-center"><small>{{ $absentRequest->start_date->format('d/m') }} -
-                                    {{ $absentRequest->end_date->format('d/m') }}</small></th>
-                            <th class="text-center"><small>{{ $absentRequest->type_absent }}</small></th>
-                            <th><small>{{ $absentRequest->notes }}</small></th>
+                            <tr class="align-middle">
+                                <td class="text-center"><small>{{ $absentRequest->employee_id }}</small></td>
+                                <td><small>{{ $absentRequest->employee->user->name }}</small></td>
+                                <td class="text-center"><small>{{ $absentRequest->start_date->format('d/m/Y') }} -
+                                        {{ $absentRequest->end_date->format('d/m/Y') }}</small></td>
+                                <td class="text-center"><small>{{ $absentRequest->type_absent ?? 'N/A' }}</small></td>
+                                <td><small>{{ $absentRequest->notes ?? '-' }}</small></td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>

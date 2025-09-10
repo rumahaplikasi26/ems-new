@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Attendance', 'url' => route('attendance.index')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Overtime Request Report', 'url' => route('report.overtime.request')]]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-12">
@@ -31,9 +31,9 @@
                         <div class="card-body">
 
                             <label for="form-label">Date</label>
-                            <div class="input-daterange input-group" id="attendance-inputgroup"
+                            <div class="input-daterange input-group" id="overtime-report-inputgroup"
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
-                                data-date-container='#attendance-inputgroup' data-date-autoclose="true">
+                                data-date-container='#overtime-report-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('startDate') is-invalid @enderror"
                                     wire:model="startDate" placeholder="Start Date" name="start" />
 
@@ -71,7 +71,7 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            @livewire('report.attendance-preview', key('preview'))
+            @livewire('report.overtime-request-preview', key('preview'))
         </div>
     </div>
 
@@ -107,15 +107,15 @@
                 });
 
                 function initDatePicker() {
-                    $('#attendance-inputgroup').datepicker({
+                    $('#overtime-report-inputgroup').datepicker({
                         format: 'yyyy-mm-dd',
                         autoclose: true,
                         todayHighlight: true,
-                        inputs: $('#attendance-inputgroup').find('input')
+                        inputs: $('#overtime-report-inputgroup').find('input')
                     }).on('changeDate', function(e) {
                         // Update the Livewire property when date is selected
-                        let startDate = $('#attendance-inputgroup').find('input[name="start"]').val();
-                        let endDate = $('#attendance-inputgroup').find('input[name="end"]').val();
+                        let startDate = $('#overtime-report-inputgroup').find('input[name="start"]').val();
+                        let endDate = $('#overtime-report-inputgroup').find('input[name="end"]').val();
 
                         @this.set('startDate', startDate);
                         @this.set('endDate', endDate);

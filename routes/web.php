@@ -11,6 +11,7 @@ use App\Livewire\Report\Attendance;
 use App\Livewire\Report\DailyReport;
 use App\Livewire\Report\FinancialRequest;
 use App\Livewire\Report\LeaveRequest;
+use App\Livewire\Report\OvertimeRequest;
 use App\Livewire\Report\Visit;
 use App\Livewire\Role\RoleForm;
 use App\Livewire\Setting\SettingForm;
@@ -48,6 +49,11 @@ use App\Livewire\LeaveRequest\LeaveRequestForm;
 use App\Livewire\LeaveRequest\LeaveRequestTeam;
 use App\Livewire\AbsentRequest\AbsentRequestAll;
 use App\Livewire\LeaveRequest\LeaveRequestIndex;
+use App\Livewire\OvertimeRequest\OvertimeRequestIndex;
+use App\Livewire\OvertimeRequest\OvertimeRequestForm;
+use App\Livewire\OvertimeRequest\OvertimeRequestDetail;
+use App\Livewire\OvertimeRequest\OvertimeRequestAll;
+use App\Livewire\OvertimeRequest\OvertimeRequestTeam;
 use App\Livewire\AbsentRequest\AbsentRequestForm;
 use App\Livewire\AbsentRequest\AbsentRequestTeam;
 use App\Livewire\LeaveRequest\LeaveRequestDetail;
@@ -162,6 +168,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/absent-request-all', AbsentRequestAll::class)->name('absent-request.all')->middleware('can:view:absent-request-all');
     Route::get('/leave-request-all', LeaveRequestAll::class)->name('leave-request.all')->middleware('can:view:leave-request-all');
     Route::get('/financial-request-all', FinancialRequestAll::class)->name('financial-request.all')->middleware('can:view:financial-request-all');
+    Route::get('/overtime-request-all', OvertimeRequestAll::class)->name('overtime-request.all')->middleware('can:view:overtime-request-all');
 
     Route::group(['prefix' => 'daily-report'], function () {
         Route::get('/', DailyReportIndex::class)->name('daily-report.index')->middleware('can:view:daily-report');
@@ -195,6 +202,14 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
         Route::get('detail/{id}', FinancialRequestDetail::class)->name('financial-request.detail')->middleware('can:view:financial-request');
     });
 
+    Route::group(['prefix' => 'overtime-request'], function () {
+        Route::get('/', OvertimeRequestIndex::class)->name('overtime-request.index')->middleware('can:view:overtime-request');
+        Route::get('team', OvertimeRequestTeam::class)->name('team-overtime-request.index')->middleware('can:view:overtime-request');
+        Route::get('create', OvertimeRequestForm::class)->name('overtime-request.create')->middleware('can:create:overtime-request');
+        Route::get('edit/{id}', OvertimeRequestForm::class)->name('overtime-request.edit')->middleware('can:update:overtime-request');
+        Route::get('detail/{id}', OvertimeRequestDetail::class)->name('overtime-request.detail')->middleware('can:view:overtime-request');
+    });
+
     Route::group(['prefix' => 'announcement'], function () {
         Route::get('/', AnnouncementIndex::class)->name('announcement.index')->middleware('can:view:announcement');
         Route::get('create', AnnouncementForm::class)->name('announcement.create')->middleware('can:create:announcement');
@@ -218,6 +233,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
         Route::get('/financial-request', FinancialRequest::class)->name('report.financial.request')->middleware('can:view:report-financial-request');
         Route::get('/absent-request', AbsentRequest::class)->name('report.absent.request')->middleware('can:view:report-absent-request');
         Route::get('/leave-request', LeaveRequest::class)->name('report.leave.request')->middleware('can:view:report-leave-request');
+        Route::get('/overtime-request', OvertimeRequest::class)->name('report.overtime.request')->middleware('can:view:report-overtime-request');
         Route::get('/visit', Visit::class)->name('report.visit')->middleware('can:view:report-visit');
     });
 });

@@ -107,6 +107,11 @@ class Employee extends Model
         return $this->hasMany(AbsentRequest::class);
     }
 
+    public function overtimeRequests(): HasMany
+    {
+        return $this->hasMany(OvertimeRequest::class);
+    }
+
     public function dailyReports(): HasMany
     {
         return $this->hasMany(DailyReport::class);

@@ -60,6 +60,10 @@
                         Filter</button>
                     <button class="btn btn-primary mt-2" wire:click="preview"
                         wire:loading.attr="disabled">Preview</button>
+                    <button class="btn btn-success mt-2" wire:click="exportExcel"
+                        wire:loading.attr="disabled">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
                 </div>
             </div>
 

@@ -159,6 +159,14 @@ class RoleSeeder extends Seeder
             'delete:absent-request' => ['Employee', 'HR', 'Administrator'],
             'approve:absent-request' => ['Employee', 'HR', 'Director', 'Administrator'],
 
+            // Overtime Request
+            'view:overtime-request-all' => ['HR', 'Director', 'Administrator'],
+            'view:overtime-request' => ['Employee'],
+            'create:overtime-request' => ['Employee', 'HR', 'Administrator'],
+            'update:overtime-request' => ['Employee', 'HR', 'Administrator'],
+            'delete:overtime-request' => ['Employee', 'HR', 'Administrator'],
+            'approve:overtime-request' => ['Employee', 'HR', 'Director', 'Administrator'],
+
             // Leave Request
             'view:leave-request-all' => ['HR', 'Director', 'Administrator'],
             'view:leave-request' => ['Employee'],
@@ -174,7 +182,8 @@ class RoleSeeder extends Seeder
             'view:report-absent-request' => ['HR', 'Director', 'Administrator'],
             'view:report-leave-request' => ['HR', 'Director', 'Administrator'],
             'view:report-visit' => ['HR', 'Director', 'Administrator'],
-
+            'view:report-overtime-request' => ['HR', 'Director', 'Administrator'],
+            
             // Project
             'view:project-all' => ['HR', 'Director', 'Administrator'],
             'view:project' => ['Employee'],

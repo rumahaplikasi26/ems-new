@@ -3,17 +3,13 @@
 namespace App\Livewire\Report;
 
 use App\Models\Employee;
-use Carbon\Carbon;
-use Carbon\CarbonInterval;
-use DatePeriod;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use App\Models\Attendance as AttendanceModel;
-use App\Exports\AttendanceReportExport;
+use App\Exports\OvertimeRequestReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 
-class Attendance extends Component
+class OvertimeRequest extends Component
 {
     use LivewireAlert;
 
@@ -41,7 +37,7 @@ class Attendance extends Component
                 'selectedEmployees' => 'required|array|min:1'
             ]);
 
-            $this->dispatch('attendance-preview', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+            $this->dispatch('overtime-request-preview', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
         }
@@ -57,7 +53,7 @@ class Attendance extends Component
             ]);
 
             // Get the reports data by dispatching to preview component
-            $this->dispatch('export-attendance-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+            $this->dispatch('export-overtime-request-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
             
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
@@ -69,11 +65,11 @@ class Attendance extends Component
         $this->selectedEmployees = [];
         $this->startDate = null;
         $this->endDate = null;
-        $this->dispatch('reset-attendance-preview');
+        $this->dispatch('reset-overtime-request-preview');
     }
 
     public function render()
     {
-        return view('livewire.report.attendance')->layout('layouts.app', ['title' => 'Report - Attendance']);
+        return view('livewire.report.overtime-request')->layout('layouts.app', ['title' => 'Report - Overtime Request']);
     }
 }
