@@ -135,7 +135,7 @@
             </div>
 
             <!-- Calendar -->
-            <div class="card" wire:ignore.self>
+            <div class="card" wire:ignore>
                 <div class="card-body">
                     <h5 class="card-title">Calendar</h5>
                     <div id="calendar"></div>
@@ -143,12 +143,12 @@
             </div>
 
             <!-- Action Panel -->
-            @if(!$absent_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$absent_request->is_approved)
+            @if($recipientStatus && !$isApprovedRecipient && !$absent_request->is_approved)
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Action Required</h5>
 
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-2 mt-2">
                             <button type="button" class="btn btn-success" wire:click="approveConfirm" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="approveConfirm">
                                     <i class="mdi mdi-check me-1"></i> Approve

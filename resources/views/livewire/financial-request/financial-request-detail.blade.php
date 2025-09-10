@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Amount:</label>
                                 <p class="text-muted">
@@ -61,13 +61,8 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Date:</label>
-                                <p class="text-muted">{{ $financial_request->date->format('d F Y') }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
+                       
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Request Date:</label>
                                 <p class="text-muted">{{ $financial_request->created_at->format('d F Y, H:i') }}</p>
@@ -148,30 +143,20 @@
             </div>
 
             <!-- Action Panel -->
-            @if(!$financial_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$financial_request->is_approved)
+            @if($recipientStatus && !$isApprovedRecipient && !$financial_request->is_approved)
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Action Required</h5>
                         
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Notes (Optional for approval, Required for rejection)</label>
-                            <textarea class="form-control @error('notes') is-invalid @enderror" 
-                                      id="notes" wire:model="notes" rows="3" 
-                                      placeholder="Add your notes here..."></textarea>
-                            @error('notes')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-success" wire:click="approve" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="approve">
+                        <div class="d-grid gap-2 mt-2">
+                            <button type="button" class="btn btn-success" wire:click="approveConfirm" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="approveConfirm">
                                     <i class="mdi mdi-check me-1"></i> Approve
                                 </span>
                                 <span wire:loading wire:target="approve">Processing...</span>
                             </button>
-                            <button type="button" class="btn btn-danger" wire:click="reject" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="reject">
+                            <button type="button" class="btn btn-danger" wire:click="rejectConfirm" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="rejectConfirm">
                                     <i class="mdi mdi-close me-1"></i> Reject
                                 </span>
                                 <span wire:loading wire:target="reject">Processing...</span>

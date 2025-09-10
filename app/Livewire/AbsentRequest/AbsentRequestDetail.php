@@ -8,13 +8,12 @@ use App\Models\RequestValidate;
 use Livewire\Component; 
 use Livewire\Attributes\On;
 use App\Jobs\SendEmailJob;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class AbsentRequestDetail extends BaseComponent
 {
-    use LivewireAlert;
 
-    public $absent_request, $notes, $start_date, $end_date, $employee_id, $recipients, $recipientsWithStatus, $isApproved;
+    public $absent_request, $notes, $start_date, $end_date, $employee_id, $recipients, $recipientsWithStatus, $isApproved, $recipientStatus, $isApprovedRecipient;
 
     public function mount($id)
     {
@@ -25,6 +24,11 @@ class AbsentRequestDetail extends BaseComponent
         $this->end_date = $this->absent_request->end_date->format('Y-m-d');
         $this->employee_id = $this->absent_request->employee_id;
         $this->recipients = $this->absent_request->recipients;
+
+        // Check if current user is a recipient and their approval status
+        $employeeRecipient = $this->authUser->employee->id ?? null;
+        $this->recipientStatus = $employeeRecipient ? $this->absent_request->hasRecipient($employeeRecipient) : false;
+        $this->isApprovedRecipient = $employeeRecipient ? $this->absent_request->isApprovedByRecipient($employeeRecipient) : false;
 
         $this->recipientsWithStatus = $this->recipients->map(function ($recipient) {
             $data = $this->absent_request->validates()
@@ -50,44 +54,28 @@ class AbsentRequestDetail extends BaseComponent
 
     public function approveConfirm()
     {
-        $this->alert('info', 'Are you sure you want to approve this absent request?', [
-            'position' => 'center',
-            'timer' => null,
-            'toast' => false,
-
-            'showConfirmButton' => true,
-            'confirmButtonColor' => '#00a8ff',
-            'confirmButtonText' => 'Yes, Approve',
-            'cancelButtonText' => 'Cancel',
-            'onConfirmed' => 'approve-absent-request',
-            'showCancelButton' => true,
-
-            'allowOutsideClick' => false,
-            'allowEnterKey' => true,
-            'allowEscapeKey' => false,
-            'stopKeydownPropagation' => false,
-        ]);
+        LivewireAlert::title('Approve Absent Request')
+            ->warning()
+            ->text('Are you sure you want to approve this absent request?')
+            ->withConfirmButton()
+            ->confirmButtonText('Yes, Approve')
+            ->withDenyButton()
+            ->denyButtonText('Cancel')
+            ->onConfirm('approve-absent-request')
+            ->show();
     }
 
     public function rejectConfirm()
     {
-        $this->alert('info', 'Are you sure you want to reject this absent request?', [
-            'position' => 'center',
-            'timer' => null,
-            'toast' => false,
-
-            'showConfirmButton' => true,
-            'confirmButtonColor' => '#A90C0C',
-            'confirmButtonText' => 'Yes, Reject',
-            'cancelButtonText' => 'Cancel',
-            'onConfirmed' => 'reject-absent-request',
-            'showCancelButton' => true,
-
-            'allowOutsideClick' => false,
-            'allowEnterKey' => true,
-            'allowEscapeKey' => false,
-            'stopKeydownPropagation' => false,
-        ]);
+        LivewireAlert::title('Reject Absent Request')
+            ->warning()
+            ->text('Are you sure you want to reject this absent request?')
+            ->withConfirmButton()
+            ->confirmButtonText('Yes, Reject')
+            ->withDenyButton()
+            ->denyButtonText('Cancel')
+            ->onConfirm('reject-absent-request')
+            ->show();
     }
 
     #[On('approve-absent-request')]
@@ -125,7 +113,13 @@ class AbsentRequestDetail extends BaseComponent
             ->event('approve')
             ->log("{$this->authUser->name} telah approve Absent Request");
 
-        $this->alert('success', 'Absent Request approved successfully');
+        // Update recipient status after approval
+        $this->isApprovedRecipient = true;
+        
+        LivewireAlert::title('Success')
+            ->success()
+            ->text('Absent Request approved successfully')
+            ->show();
         $this->dispatch('refreshIndex');
     }
 
@@ -163,7 +157,13 @@ class AbsentRequestDetail extends BaseComponent
             ->event('reject absent request')
             ->log("{$this->authUser->name} telah reject Absent Request");
 
-        $this->alert('success', 'Absent Request rejected successfully');
+        // Update recipient status after rejection  
+        $this->isApprovedRecipient = true; // Set to true to hide action buttons
+        
+        LivewireAlert::title('Success')
+            ->success()
+            ->text('Absent Request rejected successfully')
+            ->show();
         $this->dispatch('refreshIndex');
     }
 

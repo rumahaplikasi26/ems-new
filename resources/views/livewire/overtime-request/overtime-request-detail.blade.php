@@ -140,33 +140,23 @@
             </div>
 
             <!-- Action Panel -->
-            @if(!$overtime_request->validates()->where('employee_id', auth()->user()->employee->id)->exists() && !$overtime_request->is_approved)
+            @if($recipientStatus && !$isApprovedRecipient && !$overtime_request->is_approved)
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Action Required</h5>
                         
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Notes (Optional for approval, Required for rejection)</label>
-                            <textarea class="form-control @error('notes') is-invalid @enderror" 
-                                      id="notes" wire:model="notes" rows="3" 
-                                      placeholder="Add your notes here..."></textarea>
-                            @error('notes')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-success" wire:click="approve" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="approve">
+                        <div class="d-grid gap-2 mt-2">
+                            <button type="button" class="btn btn-success" wire:click="approveConfirm" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="approveConfirm">
                                     <i class="mdi mdi-check me-1"></i> Approve
                                 </span>
-                                <span wire:loading wire:target="approve">Processing...</span>
+                                <span wire:loading wire:target="approveConfirm">Processing...</span>
                             </button>
-                            <button type="button" class="btn btn-danger" wire:click="reject" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="reject">
+                            <button type="button" class="btn btn-danger" wire:click="rejectConfirm" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="rejectConfirm">
                                     <i class="mdi mdi-close me-1"></i> Reject
                                 </span>
-                                <span wire:loading wire:target="reject">Processing...</span>
+                                <span wire:loading wire:target="rejectConfirm">Processing...</span>
                             </button>
                         </div>
                     </div>

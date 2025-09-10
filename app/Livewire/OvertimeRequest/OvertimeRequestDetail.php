@@ -5,7 +5,9 @@ namespace App\Livewire\OvertimeRequest;
 use App\Livewire\BaseComponent;
 use App\Models\OvertimeRequest;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Component;
+use Livewire\Attributes\On;
+use App\Models\RequestValidate;
+use App\Jobs\SendEmailJob;
 
 class OvertimeRequestDetail extends BaseComponent
 {
@@ -14,15 +16,21 @@ class OvertimeRequestDetail extends BaseComponent
     public $overtime_request;
     public $action = '';
     public $notes = '';
+    public $recipientStatus = false;
+    public $isApprovedRecipient = false;
 
     public function mount($id)
     {
         $this->overtime_request = OvertimeRequest::with('employee.user', 'recipients.employee.user', 'validates.employee.user')->findOrFail($id);
-        
-        // Check if user is a recipient
-        if (!$this->overtime_request->hasRecipient($this->authUser->employee->id)) {
-            abort(403, 'Unauthorized access.');
+
+        if (!$this->overtime_request) {
+            return redirect()->route('overtime-request.index');
         }
+
+        // Check if current user is a recipient and their approval status
+        $employeeRecipient = $this->authUser->employee->id ?? null;
+        $this->recipientStatus = $employeeRecipient ? $this->overtime_request->hasRecipient($employeeRecipient) : false;
+        $this->isApprovedRecipient = $employeeRecipient ? $this->overtime_request->isApprovedByRecipient($employeeRecipient) : false;
 
         // Mark as read
         if (!$this->overtime_request->reads()->where('employee_id', $this->authUser->employee->id)->exists()) {
@@ -32,7 +40,7 @@ class OvertimeRequestDetail extends BaseComponent
         }
     }
 
-    public function approve()
+    public function approveConfirm()
     {
         $this->validate([
             'notes' => 'nullable|string|max:500'
@@ -59,6 +67,9 @@ class OvertimeRequestDetail extends BaseComponent
             // Check and update approval status
             $this->overtime_request->checkAndUpdateApprovalStatus();
 
+            // Update recipient status after approval
+            $this->isApprovedRecipient = true;
+            
             $this->alert('success', 'Overtime request approved successfully.');
             $this->overtime_request->refresh();
             $this->notes = '';
@@ -67,7 +78,7 @@ class OvertimeRequestDetail extends BaseComponent
         }
     }
 
-    public function reject()
+    public function rejectConfirm()
     {
         $this->validate([
             'notes' => 'required|string|max:500'
@@ -93,6 +104,9 @@ class OvertimeRequestDetail extends BaseComponent
                 'notes' => $this->notes
             ]);
 
+            // Update recipient status after rejection  
+            $this->isApprovedRecipient = true; // Set to true to hide action buttons
+            
             $this->alert('success', 'Overtime request rejected.');
             $this->overtime_request->refresh();
             $this->notes = '';
