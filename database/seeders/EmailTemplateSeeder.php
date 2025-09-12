@@ -121,5 +121,38 @@ class EmailTemplateSeeder extends Seeder
             'subject' => 'Pengajuan Keuangan Anda Ditolak oleh {{ $sender->name }}',
             'body' => '<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333"><p>Hai <strong>{{ $recipient->name}}</strong>,</p><p>Pengajuan keuangan Anda dengan jumlah <strong >Rp{{ number_format($financial_request->amount, 0, ", ", " . ")}}</strong >telah <strong>ditolak</strong>oleh{{ $sender->name}}. Berikut detailnya: </p><ul><li><strong>Catatan:</strong>{{ $financial_request->notes}}</li></ul><p>Jika ada perubahan atau pertanyaan, silakan hubungi tim Keuangan melalui email: <a href="mailto:keuangan@perusahaan.com" style="color: #1a73e8" >keuangan@perusahaan.com</a >. </p><p>Terima kasih.</p><p>Salam hangat,<br />Tim Keuangan <strong>TPM Group</strong></p><hr style="border-top: 1px solid #ccc" /><p><small style="font-style: italic" >* Email ini dibuat secara otomatis, tidak perlu direspon</small ></p></div>'
         ]);
+
+        // Overtime Request
+        EmailTemplate::create([
+            'category_id' => CategoryEmailTemplate::where('slug', 'recipient-overtime-request')->first()->id,
+            'slug' => 'recipient-overtime-request-email',
+            'name' => 'Recipient Overtime Request Email',
+            'subject' => 'Pengajuan Lembur Baru dari {{ $sender->name }}',
+            'body' => '<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333"><p>Hai <strong>{{ $recipient->name}}</strong>,</p><p>Anda menerima pengajuan lembur baru dari <strong>{{ $sender->name}}</strong>. Berikut detailnya: </p><ul><li><strong>Nama Karyawan:</strong>{{ $sender->name}}</li><li><strong>Tanggal Mulai:</strong>{{ $overtime_request->start_date->format("d-m-Y H:i")}} </li><li><strong>Tanggal Selesai:</strong>{{ $overtime_request->end_date->format("d-m-Y H:i")}} </li><li><strong>Durasi:</strong>{{ number_format($overtime_request->duration, 1)}} jam</li><li><strong>Prioritas:</strong>{{ ucfirst($overtime_request->priority)}}</li><li><strong>Alasan:</strong>{{ $overtime_request->reason}}</li></ul><p>Silakan proses pengajuan ini sesuai prosedur. Jika ada pertanyaan, hubungi pengaju melalui email: <a href="mailto:{{ $sender->email}}" style="color: #1a73e8" >{{ $sender->email}}</a >. </p><p>Terima kasih.</p><p>Salam hangat,<br />Tim HR <strong>TPM Group</strong></p><hr style="border-top: 1px solid #ccc"><p><small style="font-style: italic" >* Email ini dibuat secara otomatis, tidak perlu direspon</small ></p></div>'
+        ]);
+
+        EmailTemplate::create([
+            'category_id' => CategoryEmailTemplate::where('slug', 'sender-overtime-request')->first()->id,
+            'slug' => 'sender-overtime-request-email',
+            'name' => 'Sender Overtime Request Email',
+            'subject' => 'Pengajuan Lembur Anda Telah Masuk',
+            'body' => '<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333"><p>Hai <strong>{{ $recipient->name}}</strong>,</p><p>Pengajuan lembur Anda dari tanggal <strong>{{ $overtime_request->start_date->format("d-m-Y H:i")}}</strong> sampai <strong>{{ $overtime_request->end_date->format("d-m-Y H:i")}}</strong> telah diterima. Berikut detailnya: </p><ul><li><strong>Durasi:</strong>{{ number_format($overtime_request->duration, 1)}} jam</li><li><strong>Prioritas:</strong>{{ ucfirst($overtime_request->priority)}}</li><li><strong>Alasan:</strong>{{ $overtime_request->reason}}</li></ul><p>Jika ada perubahan atau pertanyaan, silakan hubungi tim HR melalui email: <a href="mailto:hr@perusahaan.com" style="color: #1a73e8" >hr@perusahaan.com</a >. </p><p>Terima kasih.</p><p>Salam hangat,<br />Tim HR <strong>TPM Group</strong></p><hr style="border-top: 1px solid #ccc"><p><small style="font-style: italic" >* Email ini dibuat secara otomatis, tidak perlu direspon</small ></p></div>'
+        ]);
+
+        EmailTemplate::create([
+            'category_id' => CategoryEmailTemplate::where('slug', 'approved-overtime-request')->first()->id,
+            'slug' => 'approved-overtime-request-email',
+            'name' => 'Approved Overtime Request Email',
+            'subject' => 'Pengajuan Lembur Anda Telah Disetujui oleh {{ $sender->name }}',
+            'body' => '<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333"><p>Hai <strong>{{ $recipient->name}}</strong>,</p><p>Pengajuan lembur Anda dari tanggal <strong>{{ $overtime_request->start_date->format("d-m-Y H:i")}}</strong> sampai <strong>{{ $overtime_request->end_date->format("d-m-Y H:i")}}</strong> telah <strong>disetujui</strong>. Berikut detailnya: </p><ul><li><strong>Durasi:</strong>{{ number_format($overtime_request->duration, 1)}} jam</li><li><strong>Prioritas:</strong>{{ ucfirst($overtime_request->priority)}}</li><li><strong>Alasan:</strong>{{ $overtime_request->reason}}</li><li><strong>Oleh:</strong>{{ $sender->name}}</li></ul><p>Jika ada pertanyaan lebih lanjut, silakan hubungi tim HR melalui email: <a href="mailto:hr@perusahaan.com" style="color: #1a73e8" >hr@perusahaan.com</a >. </p><p>Terima kasih.</p><p>Salam hangat,<br />Tim HR <strong>TPM Group</strong></p><hr style="border-top: 1px solid #ccc" /><p><small style="font-style: italic" >* Email ini dibuat secara otomatis, tidak perlu direspon</small ></p></div>'
+        ]);
+
+        EmailTemplate::create([
+            'category_id' => CategoryEmailTemplate::where('slug', 'rejected-overtime-request')->first()->id,
+            'slug' => 'rejected-overtime-request-email',
+            'name' => 'Rejected Overtime Request Email',
+            'subject' => 'Pengajuan Lembur Anda Ditolak oleh {{ $sender->name }}',
+            'body' => '<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333"><p>Hai <strong>{{ $recipient->name}}</strong>,</p><p>Pengajuan lembur Anda dari tanggal <strong>{{ $overtime_request->start_date->format("d-m-Y H:i")}}</strong> sampai <strong>{{ $overtime_request->end_date->format("d-m-Y H:i")}}</strong> telah <strong>ditolak</strong>. Berikut detailnya: </p><ul><li><strong>Durasi:</strong>{{ number_format($overtime_request->duration, 1)}} jam</li><li><strong>Prioritas:</strong>{{ ucfirst($overtime_request->priority)}}</li><li><strong>Alasan:</strong>{{ $overtime_request->reason}}</li><li><strong>Oleh:</strong>{{ $sender->name}}</li></ul><p>Untuk mengajukan ulang atau memberikan klarifikasi, silakan hubungi tim HR melalui email: <a href="mailto:hr@perusahaan.com" style="color: #1a73e8" >hr@perusahaan.com</a >. </p><p>Terima kasih.</p><p>Salam hangat,<br />Tim HR <strong>TPM Group</strong></p><hr style="border-top: 1px solid #ccc"><p><small style="font-style: italic" >* Email ini dibuat secara otomatis, tidak perlu direspon</small ></p></div>'
+        ]);
     }
 }

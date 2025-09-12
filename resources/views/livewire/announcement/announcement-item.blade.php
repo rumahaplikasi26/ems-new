@@ -57,21 +57,21 @@
                     <i class= "bx bx-calendar me-1"></i> {{ $created_at }}
                 </li>
                 <li class="list-inline-item me-3">
-                    <i class= "bx bx-group me-1"></i> {{ $recipients->count() }} Recipients
+                    <i class= "bx bx-group me-1"></i> {{ $recipients->count() }} {{ __('ems.recipients_count') }}
                 </li>
             </ul>
         </div>
         <div class="card-footer bg-transparent border-top">
             <li class="list-inline-item me-3">
                 <a href="{{ route('announcement.edit', $slug) }}" class="btn btn-warning btn-sm align-middle"><i
-                        class="bx bx-pencil"></i> Edit</a>
+                        class="bx bx-pencil"></i> {{ __('ems.edit') }}</a>
                 <a href="{{ route('announcement.detail', $slug) }}" class="btn btn-primary btn-sm ms-2 align-middle"><i
-                        class="bx bx-show"></i> Detail</a>
+                        class="bx bx-show"></i> {{ __('ems.view') }}</a>
                 <a href="javascript:void(0)" class="btn btn-danger btn-sm ms-2 align-middle"
-                    wire:click="deleteConfirm({{ $slug }})"><i class="bx bx-trash"></i> Delete</a>
+                    wire:click="deleteConfirm({{ $slug }})"><i class="bx bx-trash"></i> {{ __('ems.delete') }}</a>
                 {{-- Resend Button --}}
                 <a href="javascript:void(0)" class="btn btn-info btn-sm ms-2 align-middle"
-                    wire:click="resend({{ $slug }})"><i class="bx bx-repeat"></i> Resend</a>
+                    wire:click="resend({{ $slug }})"><i class="bx bx-repeat"></i> {{ __('ems.resend') }}</a>
             </li>
         </div>
     </div>

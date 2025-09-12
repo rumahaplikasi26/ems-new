@@ -1,12 +1,12 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Absent Request', 'url' => route('absent-request.index')], ['name' => $mode == 'Create' ? 'Create' : 'Edit Absent Request ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_absent_request')]]], key('breadcrumb'))
 
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? 'Create Absent Request' : 'Edit Absent Request' }}
+                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? __('ems.create_absent_request') : __('ems.edit_absent_request') }}
                     </h4>
 
                     <form action="" wire:submit.prevent="save" wire:ignore class="needs-validation"
@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="notes" class="mb-3">Note</label>
+                                    <label for="notes" class="mb-3">{{ __('ems.notes') }}</label>
                                     <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" wire:model="notes"
                                         rows="3"></textarea>
 
@@ -24,7 +24,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="type_absent" class="mb-3">Type Absent</label>
+                                    <label for="type_absent" class="mb-3">{{ __('ems.type_absent') }}</label>
 
                                     <div class="d-flex gap-3">
                                         <div class="form-check mb-3">
@@ -32,7 +32,7 @@
                                                 id="type_absent1" checked="" wire:model="type_absent"
                                                 value="sakit">
                                             <label class="form-check-label" for="type_absent1">
-                                                Sakit
+                                                {{ __('ems.sick') }}
                                             </label>
                                         </div>
 
@@ -40,7 +40,7 @@
                                             <input class="form-check-input" type="radio" name="type_absent"
                                                 id="type_absent2" wire:model="type_absent" value="izin">
                                             <label class="form-check-label" for="type_absent2">
-                                                Izin
+                                                {{ __('ems.permission') }}
                                             </label>
                                         </div>
 
@@ -48,7 +48,7 @@
                                             <input class="form-check-input" type="radio" name="type_absent"
                                                 id="type_absent3" wire:model="type_absent" value="lainnya">
                                             <label class="form-check-label" for="type_absent3">
-                                                Lainnya
+                                                {{ __('ems.other') }}
                                             </label>
                                         </div>
                                     </div>
@@ -59,10 +59,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="recipients" class="form-label">To Recipients</label>
+                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="Select recipients">
+                                        data-placeholder="{{ __('ems.select_recipients') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach
@@ -78,21 +78,21 @@
                                 <div class="row">
                                     <div class="col-md">
                                         <div class="mb-3">
-                                            <label for="start_date" class="form-label">Start Date</label>
+                                            <label for="start_date" class="form-label">{{ __('ems.start_date') }}</label>
                                             <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date" wire:model="start_date" disabled>
                                         </div>
                                     </div>
 
                                     <div class="col-md">
                                         <div class="mb-3">
-                                            <label for="end_date" class="form-label">End Date</label>
+                                            <label for="end_date" class="form-label">{{ __('ems.end_date') }}</label>
                                             <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date" wire:model="end_date" disabled>
                                         </div>
                                     </div>
 
                                     <div class="col-md">
                                         <div class="mb-3">
-                                            <label for="total_days" class="form-label">Total Day</label>
+                                            <label for="total_days" class="form-label">{{ __('ems.total_day') }}</label>
                                             <input type="number" class="form-control @error('total_days') is-invalid @enderror" id="total_days" wire:model="total_days" disabled>
                                         </div>
                                     </div>
@@ -102,8 +102,8 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <label class="mb-3">Date Range</label>
-                                        <small class="text-warning mb-3">* Jika hanya 1 tanggal, pilih tanggal tersebut saja</small>
+                                        <label class="mb-3">{{ __('ems.date_range') }}</label>
+                                        <small class="text-warning mb-3">{{ __('ems.date_range_note') }}</small>
                                         <div id="date-range-picker" class="bootstrap-datepicker-inline"></div>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
 
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
-                                    wire:target="save">Save</button>
+                                    wire:target="save">{{ __('ems.save') }}</button>
                             </div>
                         </div>
                     </form>

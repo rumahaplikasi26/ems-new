@@ -28,7 +28,7 @@
             data-recipients="
                 @foreach ($users as $user)
                     {{ $user->name }}<br> @endforeach">
-            {{ $recipients->count() }} Recipients
+            {{ $recipients->count() }} {{ __('ems.recipients') }}
         </span>
     </td>
     <td>
@@ -38,18 +38,18 @@
         <div class="d-flex flex-row gap-2">
             @can('view:daily-report')
                 <a href="{{ route('daily-report.detail', ['id' => $daily_report->id]) }}" class="btn btn-sm btn-primary"><i
-                        class="mdi mdi-eye me-1"></i> View</a>
+                        class="mdi mdi-eye me-1"></i> {{ __('ems.view') }}</a>
             @endcan
 
             @if (!$disableUpdate)
                 @can('update:daily-report')
                     <a href="{{ route('daily-report.edit', ['id' => $daily_report->id]) }}"
-                        class="btn btn-sm btn-primary"><i class="mdi mdi-pencil me-1"></i> Edit</a>
+                        class="btn btn-sm btn-primary"><i class="mdi mdi-pencil me-1"></i> {{ __('ems.edit') }}</a>
                 @endcan
 
                 @can('delete:daily-report')
                     <button class="btn btn-sm btn-danger" wire:click="deleteConfirm({{ $daily_report->id }})"><i
-                            class="mdi mdi-delete me-1"></i> Delete</button>
+                            class="mdi mdi-delete me-1"></i> {{ __('ems.delete') }}</button>
                 @endcan
             @endif
         </div>

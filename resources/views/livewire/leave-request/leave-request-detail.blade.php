@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Leave Request', 'url' => route('leave-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.leave_request'), 'url' => route('leave-request.index')], ['name' => __('ems.detail'), 'url' => '#']]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-8">
@@ -7,15 +7,15 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-grow-1">
-                            <h4 class="card-title mb-0">Leave Request Detail</h4>
+                            <h4 class="card-title mb-0">{{ __('ems.leave_request_detail') }}</h4>
                         </div>
                         <div class="flex-shrink-0">
                             @if($leave_request->is_approved)
-                                <span class="badge badge-soft-success font-size-12">Approved</span>
+                                <span class="badge badge-soft-success font-size-12">{{ __('ems.approved') }}</span>
                             @elseif($leave_request->isRejectedByRecipients())
-                                <span class="badge badge-soft-danger font-size-12">Rejected</span>
+                                <span class="badge badge-soft-danger font-size-12">{{ __('ems.rejected') }}</span>
                             @else
-                                <span class="badge badge-soft-warning font-size-12">Pending</span>
+                                <span class="badge badge-soft-warning font-size-12">{{ __('ems.pending') }}</span>
                             @endif
                         </div>
                     </div>
@@ -23,13 +23,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee') }}:</label>
                                 <p class="text-muted">{{ $leave_request->employee->user->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee ID:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee_id') }}:</label>
                                 <p class="text-muted">{{ $leave_request->employee_id }}</p>
                             </div>
                         </div>
@@ -38,13 +38,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Start Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.start_date') }}:</label>
                                 <p class="text-muted">{{ $leave_request->start_date->format('d F Y') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">End Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.end_date') }}:</label>
                                 <p class="text-muted">{{ $leave_request->end_date->format('d F Y') }}</p>
                             </div>
                         </div>

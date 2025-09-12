@@ -3,7 +3,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Working Hours - {{ $employeeName }}</h5>
+                    <h5 class="modal-title">{{ __('ems.working_hours_analytic') }} - {{ $employeeName }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -15,7 +15,7 @@
                                         <option value="{{ $num }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <label class="input-group-text">Month</label>
+                                <label class="input-group-text">{{ __('ems.month') }}</label>
                             </div>
                         </div>
                     </div>

@@ -8,7 +8,7 @@
                             <option value="{{ $month }}">{{ $monthName }}</option>
                         @endforeach
                     </select>
-                    <label class="input-group-text">Month</label>
+                    <label class="input-group-text">{{ __('ems.month') }}</label>
                 </div>
 
                 <div wire:loading>
@@ -17,7 +17,7 @@
                     </div>
                 </div>
             </div>
-            <h4 class="card-title mb-4">Working Hours Analytic</h4>
+            <h4 class="card-title mb-4">{{ __('ems.working_hours_analytic') }}</h4>
         </div>
 
 
@@ -25,17 +25,17 @@
             <div class="col-lg-4">
                 <div class="text-muted">
                     <div class="mb-4">
-                        <p>This Month <b><i>({{ $start_date }} s/d {{ $end_date }})</i></b></p>
-                        <h4>{{ number_format(collect($this_month)->sum(), 2) }} Hours</h4>
+                        <p>{{ __('ems.this_month') }} <b><i>({{ $start_date }} s/d {{ $end_date }})</i></b></p>
+                        <h4>{{ number_format(collect($this_month)->sum(), 2) }} {{ __('ems.hours') }}</h4>
                         <div><span
                                 class="badge @if ($percentage_based_on_last_month > 0) badge-soft-success @else badge-soft-danger @endif font-size-12 me-1">
-                                {{ $percentage_based_on_last_month }}% </span> From previous period</div>
+                                {{ $percentage_based_on_last_month }}% </span> {{ __('ems.from_previous_period') }}</div>
                     </div>
 
                     <div class="mt-4">
-                        <p class="mb-2">Last Month <b><i>({{ $start_date_last_month }} s/d
+                        <p class="mb-2">{{ __('ems.last_month') }} <b><i>({{ $start_date_last_month }} s/d
                                     {{ $end_date_last_month }})</i></b></p>
-                        <h5>{{ number_format(collect($last_month)->sum(), 2) }} Hours</h5>
+                        <h5>{{ number_format(collect($last_month)->sum(), 2) }} {{ __('ems.hours') }}</h5>
                     </div>
 
                 </div>

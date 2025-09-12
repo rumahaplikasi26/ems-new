@@ -7,11 +7,10 @@
         </div>
         <div class="col-sm-6">
             <div class="text-sm-end d-none d-sm-block">
-                Design & Develop by <a href="{{ config('setting.app_author_url') }}" target="_blank">{{ config('setting.app_author') }}</a>
+                {{ __('ems.design_develop_by') }} <a href="{{ config('setting.app_author_url') }}" target="_blank">{{ config('setting.app_author') }}</a>
             </div>
         </div>
     </div>
 
-    @livewire('component.button-tour-guide', key('button-tour-guide'))
 
 </div>

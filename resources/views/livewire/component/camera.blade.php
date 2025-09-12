@@ -1,7 +1,7 @@
 <div>
     <div class="mb-3" wire:ignore>
-        <label for="camera" class="form-label">Capture Photo</label>
-        <p>Izinkan akses kamera untuk mengambil gambar</p>
+        <label for="camera" class="form-label">{{ __('ems.capture_photo') }}</label>
+        <p>{{ __('ems.allow_camera_access') }}</p>
         <div class="camera-container">
             <video id="cameraFeed" autoplay></video>
             <canvas id="cameraCanvas" style="display: none;"></canvas>
@@ -130,7 +130,7 @@
 
                     video.pause();
                 } else {
-                    console.error("Tidak ada stream video yang aktif.");
+                    console.error("{{ __('ems.no_stream_active') }}");
                 }
             });
 
@@ -139,8 +139,8 @@
                     currentIndex = (currentIndex + 1) % videoDevices.length;
                     startCamera(videoDevices[currentIndex].deviceId);
                 } else {
-                    alert("Hanya ada satu kamera yang tersedia.");
-                    console.log("Hanya ada satu kamera yang tersedia.");
+                    alert("{{ __('ems.only_one_camera') }}");
+                    console.log("{{ __('ems.only_one_camera') }}");
                 }
             });
 

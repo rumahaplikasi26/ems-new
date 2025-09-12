@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Overtime Request', 'url' => route('overtime-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.overtime_request'), 'url' => route('overtime-request.index')], ['name' => __('ems.detail'), 'url' => '#']]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-8">
@@ -7,15 +7,15 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-grow-1">
-                            <h4 class="card-title mb-0">Overtime Request Detail</h4>
+                            <h4 class="card-title mb-0">{{ __('ems.overtime_request_detail') }}</h4>
                         </div>
                         <div class="flex-shrink-0">
                             @if($overtime_request->is_approved)
-                                <span class="badge badge-soft-success font-size-12">Approved</span>
+                                <span class="badge badge-soft-success font-size-12">{{ __('ems.approved') }}</span>
                             @elseif($overtime_request->isRejectedByRecipients())
-                                <span class="badge badge-soft-danger font-size-12">Rejected</span>
+                                <span class="badge badge-soft-danger font-size-12">{{ __('ems.rejected') }}</span>
                             @else
-                                <span class="badge badge-soft-warning font-size-12">Pending</span>
+                                <span class="badge badge-soft-warning font-size-12">{{ __('ems.pending') }}</span>
                             @endif
                         </div>
                     </div>
@@ -23,13 +23,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee') }}:</label>
                                 <p class="text-muted">{{ $overtime_request->employee->user->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee ID:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee_id') }}:</label>
                                 <p class="text-muted">{{ $overtime_request->employee_id }}</p>
                             </div>
                         </div>
@@ -38,13 +38,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Start Date & Time:</label>
+                                <label class="form-label fw-bold">{{ __('ems.start_date_time') }}:</label>
                                 <p class="text-muted">{{ $overtime_request->start_date->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">End Date & Time:</label>
+                                <label class="form-label fw-bold">{{ __('ems.end_date_time') }}:</label>
                                 <p class="text-muted">{{ $overtime_request->end_date->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
@@ -53,25 +53,25 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Duration:</label>
-                                <p class="text-muted">{{ number_format($overtime_request->duration, 1) }} hours ({{ $overtime_request->duration_in_days }} days)</p>
+                                <label class="form-label fw-bold">{{ __('ems.duration') }}:</label>
+                                <p class="text-muted">{{ number_format($overtime_request->duration, 1) }} {{ __('ems.hours') }} ({{ $overtime_request->duration_in_days }} {{ __('ems.days') }})</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Priority:</label>
+                                <label class="form-label fw-bold">{{ __('ems.priority') }}:</label>
                                 <p class="text-muted">
                                     @if($overtime_request->priority == 'major')
-                                        <span class="badge badge-soft-danger">Major</span>
+                                        <span class="badge badge-soft-danger">{{ __('ems.major') }}</span>
                                     @else
-                                        <span class="badge badge-soft-success">Minor</span>
+                                        <span class="badge badge-soft-success">{{ __('ems.minor') }}</span>
                                     @endif
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Request Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.request_date') }}:</label>
                                 <p class="text-muted">{{ $overtime_request->created_at->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
 
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Reason:</label>
+                        <label class="form-label fw-bold">{{ __('ems.reason') }}:</label>
                         <div class="border rounded p-3 bg-light">
                             <p class="mb-0">{{ $overtime_request->reason }}</p>
                         </div>
@@ -90,7 +90,7 @@
             <!-- Validation History -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Validation History</h5>
+                    <h5 class="card-title">{{ __('ems.validation_history') }}</h5>
                     @forelse($overtime_request->validates as $validation)
                         <div class="border rounded p-3 mb-3 {{ $validation->status == 'approved' ? 'border-success bg-light-success' : 'border-danger bg-light-danger' }}">
                             <div class="d-flex align-items-center mb-2">
@@ -100,18 +100,18 @@
                                 </div>
                                 <div class="flex-shrink-0">
                                     @if($validation->status == 'approved')
-                                        <span class="badge badge-soft-success">Approved</span>
+                                        <span class="badge badge-soft-success">{{ __('ems.approved') }}</span>
                                     @else
-                                        <span class="badge badge-soft-danger">Rejected</span>
+                                        <span class="badge badge-soft-danger">{{ __('ems.rejected') }}</span>
                                     @endif
                                 </div>
                             </div>
                             @if($validation->notes)
-                                <p class="mb-0"><strong>Notes:</strong> {{ $validation->notes }}</p>
+                                <p class="mb-0"><strong>{{ __('ems.notes') }}:</strong> {{ $validation->notes }}</p>
                             @endif
                         </div>
                     @empty
-                        <p class="text-muted">No validation history yet.</p>
+                        <p class="text-muted">{{ __('ems.no_validation_history_yet') }}</p>
                     @endforelse
                 </div>
             </div>
@@ -121,7 +121,7 @@
             <!-- Recipients -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Recipients</h5>
+                    <h5 class="card-title">{{ __('ems.recipients') }}</h5>
                     @foreach($overtime_request->recipients as $recipient)
                         <div class="d-flex align-items-center mb-2">
                             <div class="flex-grow-1">
@@ -129,9 +129,9 @@
                             </div>
                             <div class="flex-shrink-0">
                                 @if($overtime_request->reads()->where('employee_id', $recipient->employee_id)->exists())
-                                    <i class="mdi mdi-check-circle text-success" title="Read"></i>
+                                    <i class="mdi mdi-check-circle text-success" title="{{ __('ems.read') }}"></i>
                                 @else
-                                    <i class="mdi mdi-clock text-warning" title="Unread"></i>
+                                    <i class="mdi mdi-clock text-warning" title="{{ __('ems.unread') }}"></i>
                                 @endif
                             </div>
                         </div>
@@ -143,20 +143,20 @@
             @if($recipientStatus && !$isApprovedRecipient && !$overtime_request->is_approved)
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Action Required</h5>
+                        <h5 class="card-title">{{ __('ems.action_required') }}</h5>
                         
                         <div class="d-grid gap-2 mt-2">
                             <button type="button" class="btn btn-success" wire:click="approveConfirm" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="approveConfirm">
-                                    <i class="mdi mdi-check me-1"></i> Approve
+                                    <i class="mdi mdi-check me-1"></i> {{ __('ems.approve') }}
                                 </span>
-                                <span wire:loading wire:target="approveConfirm">Processing...</span>
+                                <span wire:loading wire:target="approveConfirm">{{ __('ems.processing') }}</span>
                             </button>
                             <button type="button" class="btn btn-danger" wire:click="rejectConfirm" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="rejectConfirm">
-                                    <i class="mdi mdi-close me-1"></i> Reject
+                                    <i class="mdi mdi-close me-1"></i> {{ __('ems.reject') }}
                                 </span>
-                                <span wire:loading wire:target="rejectConfirm">Processing...</span>
+                                <span wire:loading wire:target="rejectConfirm">{{ __('ems.processing') }}</span>
                             </button>
                         </div>
                     </div>

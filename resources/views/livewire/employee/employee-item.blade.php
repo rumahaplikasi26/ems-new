@@ -40,7 +40,7 @@
                 <span class="badge badge-soft-secondary">CSS</span>
             </div> --}}
 
-            <div class="mt-4 pt-1 d-flex gap-3 justify-content-center">
+            <div class="mt-4 pt-1 d-flex gap-3 justify-content-center" data-tour="employee-actions">
                 @can('view:employee')
                     <a href="{{ route('employee.detail', ['id' => $employee->id]) }}" class="btn btn-soft-primary">View
                         Profile</a>

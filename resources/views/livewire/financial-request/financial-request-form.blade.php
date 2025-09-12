@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Financial Request', 'url' => route('financial-request.index')], ['name' => $mode == 'Create' ? 'Create' : 'Edit Financial Request ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.financial_request'), 'url' => route('financial-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_financial_request')]]], key('breadcrumb'))
 
 
     <div class="row">
@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">
-                        {{ $mode == 'Create' ? 'Create Financial Request' : 'Edit Financial Request' }}
+                        {{ $mode == 'Create' ? __('ems.create_financial_request') : __('ems.edit_financial_request') }}
                     </h4>
 
                     <form wire:submit.prevent="save" class="needs-validation" id="financial-request-form">
@@ -16,7 +16,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="title">Title <span class="text-danger">*</span></label>
+                                            <label for="title">{{ __('ems.title') }} <span class="text-danger">*</span></label>
                                             <input type="text"
                                                 class="form-control @error('title') is-invalid @enderror" id="title"
                                                 name="title" wire:model="title">
@@ -29,7 +29,7 @@
 
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="amount">Amount <span class="text-danger">*</span></label>
+                                            <label for="amount">{{ __('ems.amount') }} <span class="text-danger">*</span></label>
                                             <input type="number"
                                                 class="form-control @error('amount') is-invalid @enderror"
                                                 id="amount" name="amount" wire:model="amount">
@@ -42,7 +42,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="financial_type_id" class="mb-3">Request Type <span
+                                    <label for="financial_type_id" class="mb-3">{{ __('ems.request_type') }} <span
                                             class="text-danger">*</span></label>
 
                                     <div class="d-flex gap-3">
@@ -65,7 +65,7 @@
                                 </div>
 
                                 <div class="mb-3" wire:ignore>
-                                    <label for="notes" class="form-label">Notes</label>
+                                    <label for="notes" class="form-label">{{ __('ems.notes') }}</label>
                                     <div id="toolbar-container">
                                         <span class="ql-formats">
                                             <select class="ql-font"></select>
@@ -129,10 +129,10 @@
                             <div class="col-md-6">
 
                                 <div class="mb-3" wire:ignore>
-                                    <label for="recipients" class="form-label">To Recipients <span class="text-danger">*</span></label>
+                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }} <span class="text-danger">*</span></label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="Select recipients">
+                                        data-placeholder="{{ __('ems.select_recipients') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach
@@ -147,7 +147,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <label class="mb-3">Receipt Image</label>
+                                        <label class="mb-3">{{ __('ems.receipt_image') }}</label>
 
                                         <input type="file"
                                             class="form-control @error('image') is-invalid @enderror" id="image"
@@ -163,7 +163,7 @@
                                 <div class="row" wire:ignore.self>
                                     <div class="col-md-12">
                                         <label for="previewImage"
-                                            class="form-label mt-3">{{ __('Preview Image') }}</label>
+                                            class="form-label mt-3">{{ __('ems.preview_image') }}</label>
 
                                         <span wire:loading wire:target="image"
                                             class="spinner-border spinner-border-sm"></span>
@@ -184,7 +184,7 @@
 
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
-                                    wire:target="save">Save</button>
+                                    wire:target="save">{{ __('ems.save') }}</button>
                             </div>
                         </div>
                     </form>

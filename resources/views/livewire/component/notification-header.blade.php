@@ -9,10 +9,10 @@
         <div class="p-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <h6 class="m-0" key="t-notifications"> Notifications </h6>
+                    <h6 class="m-0" key="t-notifications"> {{ __('ems.notifications') }} </h6>
                 </div>
                 <div class="col-auto">
-                    <a href="#!" class="small" key="t-view-all"> View All</a>
+                    <a href="#!" class="small" key="t-view-all"> {{ __('ems.view_all') }}</a>
                 </div>
             </div>
         </div>
@@ -38,15 +38,14 @@
                 @endforeach
             @else
                 <a href="javascript: void(0);" class="text-reset notification-item">
-                    <h6 class="text-muted text-center mb-3 ">No Notification</h6>
+                    <h6 class="text-muted text-center mb-3 ">{{ __('ems.no_notification') }}</h6>
                 </a>
             @endif
         </div>
         @if ($countNotifications > 0)
             <div class="p-2 border-top d-grid">
                 <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
-                    <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">View
-                        More..</span>
+                    <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">{{ __('ems.view_more') }}</span>
                 </a>
             </div>
         @endif

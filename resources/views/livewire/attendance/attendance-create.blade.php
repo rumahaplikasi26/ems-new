@@ -1,15 +1,15 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Attendance', 'url' => route('attendance.index')], ['name' => 'Create Attendance ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.attendance'), 'url' => route('attendance.index')], ['name' => __('ems.create_attendance')]]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">Attendance</h4>
+                    <h4 class="card-title mb-4">{{ __('ems.attendance') }}</h4>
                     <form wire:submit.prevent="submit" class="needs-validation form-horizontal">
 
                         <div class="mb-3">
-                            <label for="attendance_method_id" class="form-label">Attendance Method</label>
+                            <label for="attendance_method_id" class="form-label">{{ __('ems.attendance_method') }}</label>
 
                             <div class="btn-group d-grid gap-2 d-md-flex" role="group"
                                 aria-label="Basic radio toggle button group">
@@ -35,7 +35,7 @@
                             </section>
                         @elseif($attendance_method_id == 3)
                             <div class="mb-3">
-                                <label for="step" class="form-label">Selesaikan Step</label>
+                                <label for="step" class="form-label">{{ __('ems.complete_step') }}</label>
 
                                 <div class="btn-group d-grid gap-2 d-md-flex" role="group"
                                     aria-label="Basic radio toggle button group">
@@ -44,7 +44,7 @@
                                         value="qr" autocomplete="off" wire:click="activateQRScanner"
                                         @if ($activeCamera === 'qr') checked @endif>
                                     <label class="btn btn-outline-primary" for="activateQRScanner">
-                                        Step 1: Activate QR Scanner
+                                        {{ __('ems.step_1') }}
                                     </label>
 
                                     <input type="radio" class="btn-check" name="activeCamera"
@@ -52,7 +52,7 @@
                                         wire:click="activateSelfieCamera"
                                         @if ($activeCamera === 'selfie') checked @endif>
                                     <label class="btn btn-outline-primary" for="activateSelfieCamera">
-                                        Step 2: Activate Selfie Camera
+                                        {{ __('ems.step_2') }}
                                     </label>
 
                                 </div>
@@ -84,7 +84,7 @@
                         @endif
 
                         <div class="mb-3">
-                            <label for="notes">Notes</label>
+                            <label for="notes">{{ __('ems.notes') }}</label>
                             <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" wire:model="notes">
                             </textarea>
 
@@ -109,12 +109,12 @@
                             <button id="submit" type="submit" class="btn btn-primary w-md col-md"
                                 wire:submit.prevent="submit" wire:loading.attr="disabled" wire:target="submit">
                                 <i wire:loading.class="spinner-border spinner-border-sm" wire:target="submit"></i>
-                                {{ __('Save') }}
+                                {{ __('ems.save') }}
                             </button>
 
                             <button id="cancel" type="button" class="btn btn-light w-md col-md"
                                 wire:click="$dispatch('close-modal')" wire:loading.attr="disabled"
-                                wire:target="submit">{{ __('Cancel') }}</button>
+                                wire:target="submit">{{ __('ems.cancel') }}</button>
                         </div>
                     </form>
                 </div>

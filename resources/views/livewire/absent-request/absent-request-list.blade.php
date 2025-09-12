@@ -8,7 +8,7 @@
             <div class="col-md">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h4 class="card-title">NO DATA</h4>
+                        <h4 class="card-title">{{ __('ems.no_data_available') }}</h4>
                     </div>
                 </div>
             </div>

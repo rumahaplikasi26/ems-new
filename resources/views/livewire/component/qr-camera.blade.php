@@ -1,7 +1,7 @@
 <div>
     <div id="qr-scanner-container" wire:ignore>
-        <label for="qr-scanner" class="form-label">Scan QR Code</label>
-        <p>Scan QR Code Site Di sini sampai tampil Data Site yang di Scan</p>
+        <label for="qr-scanner" class="form-label">{{ __('ems.scan_qr_code') }}</label>
+        <p>{{ __('ems.scan_qr_code_here') }}</p>
 
         <video id="preview"></video>
         <div class="qr-camera-controls">
@@ -70,21 +70,21 @@
                                 video: videoElement
                             });
                             scanner.addListener('scan', function(content) {
-                                console.log('QR Code terdeteksi:', content);
+                                console.log('{{ __('ems.qr_code_detected') }}:', content);
                                 $wire.dispatch('qr-code-scanned', {
                                     content: content
                                 });
                             });
                             scanner.start(cameras[cameraIndex]).catch(function(e) {
-                                alert('Failed to start scanner: ' + e);
-                                console.error('Failed to start scanner:', e);
+                                alert('{{ __('ems.failed_to_start_scanner') }}: ' + e);
+                                console.error('{{ __('ems.failed_to_start_scanner') }}:', e);
                             });
                         } else {
-                            console.error('Tidak ada kamera yang ditemukan.');
+                            console.error('{{ __('ems.no_video_devices') }}');
                         }
                     }).catch(function(e) {
-                        alert('Error accessing cameras: ' + e);
-                        console.error('Error accessing cameras:', e);
+                        alert('{{ __('ems.error_accessing_cameras') }}: ' + e);
+                        console.error('{{ __('ems.error_accessing_cameras') }}:', e);
                     });
                 }, 100);
             }
@@ -94,7 +94,7 @@
                     currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
                     startScanner(currentCameraIndex);
                 } else {
-                    console.log('Hanya ada satu kamera yang tersedia.');
+                    console.log('{{ __('ems.only_one_camera') }}');
                 }
             });
 

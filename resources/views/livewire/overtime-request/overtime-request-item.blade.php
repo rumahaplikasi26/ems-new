@@ -4,11 +4,11 @@
             <div class="d-flex align-start mb-3">
                 <div class="flex-grow-1">
                     @if($isApproved)
-                        <span class="badge badge-soft-success">Approved</span>
+                        <span class="badge badge-soft-success">{{ __('ems.approved') }}</span>
                     @elseif($isRejected)
-                        <span class="badge badge-soft-danger">Rejected</span>
+                        <span class="badge badge-soft-danger">{{ __('ems.rejected') }}</span>
                     @else
-                        <span class="badge badge-soft-secondary">Pending</span>
+                        <span class="badge badge-soft-secondary">{{ __('ems.pending') }}</span>
                     @endif
                 </div>
                 <div class="flex-shrink-0">
@@ -28,18 +28,18 @@
             <div class="d-flex mb-3 justify-content-center gap-2 text-muted">
                 <div class="text-center">
                     <small class="d-block">{{ $overtime_request->start_date->format('d M Y, H:i') }}</small>
-                    <small class="text-muted">to</small>
+                    <small class="text-muted">{{ __('ems.to') }}</small>
                     <small class="d-block">{{ $overtime_request->end_date->format('d M Y, H:i') }}</small>
                     <span class="badge badge-soft-info mt-1">
-                        {{ number_format($overtime_request->duration, 1) }}h ({{ $totalDays }} days)
+                        {{ number_format($overtime_request->duration, 1) }}h ({{ $totalDays }} {{ __('ems.days') }})
                     </span>
                 </div>
             </div>
             <div class="d-flex mb-3 justify-content-center">
                 @if($overtime_request->priority == 'major')
-                    <span class="badge badge-soft-danger">Major Priority</span>
+                    <span class="badge badge-soft-danger">{{ __('ems.major_priority') }}</span>
                 @else
-                    <span class="badge badge-soft-success">Minor Priority</span>
+                    <span class="badge badge-soft-success">{{ __('ems.minor_priority') }}</span>
                 @endif
             </div>
             <div class="hstack gap-2 justify-content-center flex-wrap">
@@ -55,25 +55,25 @@
                 @if ($recipientStatus && !$isApprovedRecipient)
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Action <i class="mdi mdi-chevron-down"></i>
+                            {{ __('ems.action') }} <i class="mdi mdi-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
                             <!-- item-->
-                            <a class="dropdown-item btn btn-soft-danger btn-sm" wire:click="rejectConfirm({{ $overtime_request->id }})" href="javascript:void(0);"><i class="mdi mdi-close"></i> Reject</a>
-                            <a class="dropdown-item btn btn-soft-success btn-sm" wire:click="approveConfirm({{ $overtime_request->id }})" href="javascript:void(0);"><i class="mdi mdi-check"></i> Approve</a>
+                            <a class="dropdown-item btn btn-soft-danger btn-sm" wire:click="rejectConfirm({{ $overtime_request->id }})" href="javascript:void(0);"><i class="mdi mdi-close"></i> {{ __('ems.reject') }}</a>
+                            <a class="dropdown-item btn btn-soft-success btn-sm" wire:click="approveConfirm({{ $overtime_request->id }})" href="javascript:void(0);"><i class="mdi mdi-check"></i> {{ __('ems.approve') }}</a>
                         </div>
                     </div>
                 @endif
 
                 <a href="{{ route('overtime-request.detail', ['id' => $overtime_request->id]) }}"
-                    class="btn btn-soft-warning btn-sm"><i class="mdi mdi-eye-outline"></i> View</a>
+                    class="btn btn-soft-warning btn-sm"><i class="mdi mdi-eye-outline"></i> {{ __('ems.view') }}</a>
 
                 @if (!$disableUpdate && !$disableUpdateApprove)
                     <a href="{{ route('overtime-request.edit', ['id' => $overtime_request->id]) }}"
-                        class="btn btn-soft-primary btn-sm"><i class="mdi mdi-pencil-outline"></i> Edit</a>
+                        class="btn btn-soft-primary btn-sm"><i class="mdi mdi-pencil-outline"></i> {{ __('ems.edit') }}</a>
                     <a href="javascript:void(0)" class="btn btn-soft-danger btn-sm"
                         wire:click="deleteConfirm({{ $overtime_request->id }})"><i class="mdi mdi-delete-outline"></i>
-                        Delete</a>
+                        {{ __('ems.delete') }}</a>
                 @endif
             </div>
         </div>

@@ -1,12 +1,12 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Leave Request', 'url' => route('leave-request.index')], ['name' => $mode == 'Create' ? 'Create' : 'Edit Leave Request ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.leave_request'), 'url' => route('leave-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_leave_request')]]], key('breadcrumb'))
 
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? 'Create Leave Request' : 'Edit Leave Request' }}
+                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? __('ems.create_leave_request') : __('ems.edit_leave_request') }}
                     </h4>
 
                     <form action="" wire:submit.prevent="save" wire:ignore class="needs-validation"
@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="notes" class="mb-3">Note</label>
+                                    <label for="notes" class="mb-3">{{ __('ems.notes') }}</label>
                                     <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" wire:model="notes"
                                         rows="3"></textarea>
 
@@ -24,10 +24,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="recipients" class="form-label">To Recipients</label>
+                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="Select recipients">
+                                        data-placeholder="{{ __('ems.select_recipients') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach

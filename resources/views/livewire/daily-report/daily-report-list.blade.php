@@ -4,11 +4,11 @@
             <thead>
                 <tr>
                     <th scope="col" style="width: 100px">#</th>
-                    <th scope="col">NAME</th>
-                    <th scope="col">DATE</th>
-                    <th scope="col">RECIPIENTS</th>
-                    <th scope="col">CREATED AT</th>
-                    <th scope="col">ACTION</th>
+                    <th scope="col">{{ __('ems.name') }}</th>
+                    <th scope="col">{{ __('ems.date') }}</th>
+                    <th scope="col">{{ __('ems.recipients') }}</th>
+                    <th scope="col">{{ __('ems.created_at') }}</th>
+                    <th scope="col">{{ __('ems.action') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,7 +18,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="6" class="text-center fw-bold">NO DATA</td>
+                        <td colspan="6" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

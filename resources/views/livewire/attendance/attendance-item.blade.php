@@ -35,11 +35,11 @@
                             </strong>
                         </span>
                     @endif
-                    <span class="d-block">Timestamp: <strong>{{ $checkIn['timestamp'] }}</strong></span>
+                    <span class="d-block">{{ __('ems.timestamp') }}: <strong>{{ $checkIn['timestamp'] }}</strong></span>
                     {{-- <span class="d-block">Machine: {{ $checkIn['machine']['name'] }}</span> --}}
-                    <span class="d-block">Attendance Method:
+                    <span class="d-block">{{ __('ems.attendance_method_name') }}:
                         <strong>{{ $checkIn['attendance_method']['name'] }}</strong></span>
-                    <span class="d-block">Location:
+                    <span class="d-block">{{ __('ems.location') }}:
                         <strong>
                             <a href="https://www.google.com/maps?q={{ $checkIn['latitude'] }},{{ $checkIn['longitude'] }}"
                                 target="_blank">{{ $checkIn['longitude'] }}, {{ $checkIn['latitude'] }}</a>
@@ -52,7 +52,7 @@
                 </div>
             </div>
         @else
-            <span class="text-muted">No check in</span>
+            <span class="text-muted">{{ __('ems.no_check_in') }}</span>
         @endif
     </td>
     <td>
@@ -72,11 +72,11 @@
                             </strong>
                         </span>
                     @endif
-                    <span class="d-block">Timestamp: <strong>{{ $checkOut['timestamp'] }}</strong></span>
+                    <span class="d-block">{{ __('ems.timestamp') }}: <strong>{{ $checkOut['timestamp'] }}</strong></span>
                     {{-- <span class="d-block">Machine: {{ $checkOut['machine']['name'] }}</span> --}}
-                    <span class="d-block">Attendance Method:
+                    <span class="d-block">{{ __('ems.attendance_method_name') }}:
                         <strong>{{ $checkOut['attendance_method']['name'] }}</strong></span>
-                    <span class="d-block">Location:
+                    <span class="d-block">{{ __('ems.location') }}:
                         <strong>
                             <a href="https://www.google.com/maps?q={{ $checkOut['latitude'] }},{{ $checkOut['longitude'] }}"
                                 target="_blank">{{ $checkOut['longitude'] }}, {{ $checkOut['latitude'] }}</a>
@@ -89,7 +89,7 @@
                 </div>
             </div>
         @else
-            <span class="text-muted">No check out</span>
+            <span class="text-muted">{{ __('ems.no_check_out') }}</span>
         @endif
     </td>
     <td><span class="badge rounded-pill {{ $badge_color }} font-size-12">{{ $duration_string }}</span></td>

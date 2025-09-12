@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IClockController;
+use App\Http\Controllers\LanguageController;
 use App\Livewire\Activity\ActivityIndex;
 use App\Livewire\Announcement\AnnouncementDetail;
 use App\Livewire\Announcement\AnnouncementForm;
@@ -237,3 +238,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
         Route::get('/visit', Visit::class)->name('report.visit')->middleware('can:view:report-visit');
     });
 });
+
+// Language switching routes
+Route::get('/language/{locale}', [LanguageController::class, 'switchLanguage'])->name('language.switch');
+Route::post('/language/switch', [LanguageController::class, 'switch'])->name('language.switch');
+Route::get('/api/language/current', [LanguageController::class, 'getCurrentLanguage'])->name('language.current');
+Route::get('/api/language/available', [LanguageController::class, 'getAvailableLanguages'])->name('language.available');

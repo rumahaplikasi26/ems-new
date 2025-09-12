@@ -1,36 +1,39 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Attendance', 'url' => route('attendance.index')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.attendance'), 'url' => route('attendance.index')]]], key('breadcrumb'))
+
+    <!-- Tour Guide Button -->
+    <x-tour-guide-button />
 
     <div class="row">
         <div class="col-lg-12">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6" data-tour="attendance-search">
                     <div class="card">
                         <div class="card-body">
-                            <label for="form-label">Search</label>
+                            <label for="form-label">{{ __('ems.search') }}</label>
                             <input type="text" class="form-control" wire:model.live="search"
-                                placeholder="Search Employee ...">
+                                placeholder="{{ __('ems.search_for') }}">
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6" data-tour="attendance-date">
                     <div class="card">
                         <div class="card-body">
 
-                            <label for="form-label">Date</label>
+                            <label for="form-label">{{ __('ems.date') }}</label>
                             <div class="input-daterange input-group" id="attendance-inputgroup"
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
                                 data-date-container='#attendance-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="Start Date" name="start" />
+                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="End Date" name="end" />
+                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -42,11 +45,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 text-end mb-3">
-                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">Reset
-                        Filter</button>
+                <div class="col-12 text-end mb-3" data-tour="attendance-create">
+                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">{{ __('ems.reset') }}
+                        {{ __('ems.filter') }}</button>
                     @can('create:attendance')
-                        <a href="{{ route('attendance.create') }}" class="btn btn-primary mt-2">Attendance Now!</a>
+                        <a href="{{ route('attendance.create') }}" class="btn btn-primary mt-2">{{ __('ems.attendance_now') }}</a>
                     @endcan
                 </div>
             </div>
@@ -56,12 +59,13 @@
     <div class="row">
         {{ $attendances->links() }}
 
-        <div class="col-lg-12">
+        <div class="col-lg-12" data-tour="attendance-table">
             @livewire('attendance.attendance-list', ['attendances' => $attendances->items()], key('attendance-list'))
         </div>
 
         {{ $attendances->links() }}
     </div>
+
 
     @push('styles')
         <link href="{{ asset('libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
@@ -94,5 +98,10 @@
 
             });
         </script>
+
+        <!-- Tour Guide Scripts -->
+        <x-tour-guide-scripts />
     @endpush
+
+    
 </div>

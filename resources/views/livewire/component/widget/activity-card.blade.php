@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title mb-5">Activities</h4>
+        <h4 class="card-title mb-5">{{ __('ems.activities') }}</h4>
         <ul class="verti-timeline list-unstyled">
             @forelse ($activities as $activity)
                 <li class="event-list">
@@ -33,13 +33,13 @@
                         </div>
                         <div class="flex-grow-1">
                             <div>
-                                No activity found
+                                {{ __('ems.no_activity_found') }}
                             </div>
                         </div>
                     </div>
                 </li>
             @endforelse
         </ul>
-        <div class="text-center mt-4"><a href="{{ route('activity.index') }}" class="btn btn-primary waves-effect waves-light btn-sm">View More <i class="mdi mdi-arrow-right ms-1"></i></a></div>
+        <div class="text-center mt-4"><a href="{{ route('activity.index') }}" class="btn btn-primary waves-effect waves-light btn-sm">{{ __('ems.view_more') }} <i class="mdi mdi-arrow-right ms-1"></i></a></div>
     </div>
 </div>

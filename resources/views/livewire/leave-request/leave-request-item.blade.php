@@ -4,11 +4,11 @@
             <div class="d-flex align-start mb-3">
                 <div class="flex-grow-1">
                     @if($isApproved)
-                        <span class="badge badge-soft-success">Approved</span>
+                        <span class="badge badge-soft-success">{{ __('ems.approved') }}</span>
                     @elseif($isRejected)
-                        <span class="badge badge-soft-danger">Rejected</span>
+                        <span class="badge badge-soft-danger">{{ __('ems.rejected') }}</span>
                     @else
-                        <span class="badge badge-soft-secondary">Pending</span>
+                        <span class="badge badge-soft-secondary">{{ __('ems.pending') }}</span>
                     @endif
                 </div>
                 <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
             </div>
             <div class="d-flex mb-3 justify-content-center gap-2 text-muted">
                 <p class="mb-0 text-center">{{ $leave_request->start_date->format('d M') }} -
-                    {{ $leave_request->end_date->format('d M') }} ( {{ $totalDays }} Hari )</p>
+                    {{ $leave_request->end_date->format('d M') }} ( {{ $totalDays }} {{ __('ems.days') }} )</p>
             </div>
             <div class="hstack gap-2 justify-content-center flex-wrap">
                 @foreach ($recipientsWithStatus as $item)
@@ -43,7 +43,7 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
-                            Action <i class="mdi mdi-chevron-down"></i>
+                            {{ __('ems.action') }} <i class="mdi mdi-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
                             <!-- item-->

@@ -4,10 +4,10 @@
             <thead>
                 <tr>
                     <th scope="col" style="width: 100px">#</th>
-                    <th scope="col">NAME</th>
-                    <th scope="col">CHECK IN</th>
-                    <th scope="col">CHECK OUT</th>
-                    <th scope="col">WORKING DURATION</th>
+                    <th scope="col">{{ __('ems.name') }}</th>
+                    <th scope="col">{{ __('ems.check_in') }}</th>
+                    <th scope="col">{{ __('ems.check_out') }}</th>
+                    <th scope="col">{{ __('ems.working_duration') }}</th>
                 </tr>
             </thead>
             <tbody id="attendance-lists">
@@ -17,7 +17,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="5" class="text-center">No Data</td>
+                        <td colspan="5" class="text-center">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>
@@ -32,7 +32,7 @@
                     var id = $(this).data('id');
 
                     $('#notes-in-' + id).html(notes);
-                    $(this).html('Show Less');
+                    $(this).html('{{ __('ems.show_less') }}');
                     $(this).removeClass('read-more-in');
                     $(this).addClass('show-less-in');
                 })
@@ -42,7 +42,7 @@
                     var id = $(this).data('id');
 
                     $('#notes-out-' + id).html(notes);
-                    $(this).html('Show Less');
+                    $(this).html('{{ __('ems.show_less') }}');
                     $(this).removeClass('read-more-out');
                     $(this).addClass('show-less-out');
                 })
@@ -53,7 +53,7 @@
 
                     $('#notes-in-' + id).html(notes);
 
-                    $(this).html('Show More');
+                    $(this).html('{{ __('ems.show_more') }}');
                     $(this).removeClass('show-less-in');
                     $(this).addClass('read-more-in');
                 })
@@ -64,7 +64,7 @@
 
                     $('#notes-out-' + id).html(notes);
 
-                    $(this).html('Show More');
+                    $(this).html('{{ __('ems.show_more') }}');
                     $(this).removeClass('show-less-out');
                     $(this).addClass('read-more-out');
                 })

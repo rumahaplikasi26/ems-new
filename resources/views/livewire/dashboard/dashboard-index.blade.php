@@ -1,8 +1,26 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Dashboard', 'url' => '/']]])
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.dashboard'), 'url' => '/']]])
+
+    <!-- Tour Guide Button -->
+    <button type="button" class="floating-start-tour-btn" id="start-tour">
+        <div class="btn-content">
+            <i class='bx bx-play'></i>
+            <span class="start-tour-text">{{ __('ems.start_tour') }}</span>
+        </div>
+    </button>
+
+    <!-- Welcome message for tour guide -->
+    <div class="row mb-3" data-tour="welcome" style="display: none;">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5 class="alert-heading">{{ __('ems.tour_welcome_title') }}</h5>
+                <p class="mb-0">{{ __('ems.tour_welcome_content') }}</p>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" data-tour="dashboard-profile">
             @livewire('component.widget.dashboard-profile')
         </div>
     </div>
@@ -13,9 +31,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Daily Report',
+                        'title' => __('ems.total_daily_report'),
                         'value' => $totalDailyReport,
-                        'badge' => 'Monthly',
+                        'badge' => __('ems.monthly'),
                     ],
                     'total-daily-report'
                 )
@@ -25,9 +43,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Day Leave',
+                        'title' => __('ems.total_day_leave'),
                         'value' => $totalDayLeaveRequest,
-                        'badge' => 'Monthly',
+                        'badge' => __('ems.monthly'),
                     ],
                     'total-day-leave-request'
                 )
@@ -37,9 +55,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Day Present',
+                        'title' => __('ems.total_day_present'),
                         'value' => $totalDayPresent,
-                        'badge' => 'Monthly',
+                        'badge' => __('ems.monthly'),
                     ],
                     'total-day-present'
                 )
@@ -49,9 +67,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Amount Financial Request',
+                        'title' => __('ems.total_amount_financial_request'),
                         'value' => $totalAmountFinancialRequest,
-                        'badge' => 'Monthly',
+                        'badge' => __('ems.monthly'),
                     ],
                     'total-amount-financial-request'
                 )
@@ -63,9 +81,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Daily Report',
+                        'title' => __('ems.total_daily_report'),
                         'value' => $totalDailyReportYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-daily-report-yesterday'
                 )
@@ -75,9 +93,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Leave',
+                        'title' => __('ems.total_leave'),
                         'value' => $totalLeaveRequestYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-day-leave-request-yesterday'
                 )
@@ -87,9 +105,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Present',
+                        'title' => __('ems.total_present'),
                         'value' => $totalPresentYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-day-present-yesterday'
                 )
@@ -99,9 +117,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Absent',
+                        'title' => __('ems.total_absent'),
                         'value' => $totalAbsentRequestYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-day-absent-request-yesterday'
                 )
@@ -110,9 +128,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Sick',
+                        'title' => __('ems.total_sick'),
                         'value' => $totalSickAsbentRequestYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-day-absent-request-yesterday'
                 )
@@ -121,9 +139,9 @@
                 @livewire(
                     'component.card-mini',
                     [
-                        'title' => 'Total Visit',
+                        'title' => __('ems.total_visit'),
                         'value' => $totalVisitYesterday,
-                        'badge' => 'Yesterday',
+                        'badge' => __('ems.yesterday'),
                     ],
                     'total-visit-yesterday'
                 )
@@ -133,17 +151,17 @@
 
     @hasrole('Employee')
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" data-tour="working-hours-analytic">
                 @livewire('component.widget.working-hours-analytic', ['user' => $authUser])
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md">
+            <div class="col-md" data-tour="working-day-analytic">
                 @livewire('component.widget.working-day-analytic')
             </div>
 
-            <div class="col-md">
+            <div class="col-md" data-tour="activity-card">
                 @livewire('component.widget.activity-card')
             </div>
         </div>
@@ -151,7 +169,7 @@
 
     @can('view:attendance-all')
         <div class="row">
-            <div class="col-xl-6">
+            <div class="col-xl-6" data-tour="working-hours-table">
                 @livewire('component.widget.table.working-hours-analytics')
             </div>
         </div>
@@ -379,5 +397,39 @@
 
     @push('js')
         <script src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+        
+        <!-- Tour Guide Translations -->
+        <script>
+            window.Laravel = window.Laravel || {};
+            window.Laravel.translations = {
+                'start_tour': '{{ __("ems.start_tour") }}',
+                'stop_tour': '{{ __("ems.stop_tour") }}',
+                'next': '{{ __("ems.next") }}',
+                'previous': '{{ __("ems.previous") }}',
+                'finish': '{{ __("ems.finish") }}',
+                'skip': '{{ __("ems.skip") }}',
+                'tour_dashboard_only': '{{ __("ems.tour_dashboard_only") }}',
+                'tour_elements_missing': '{{ __("ems.tour_elements_missing") }}',
+                'tour_welcome_title': '{{ __("ems.tour_welcome_title") }}',
+                'tour_welcome_content': '{{ __("ems.tour_welcome_content") }}',
+                'tour_dashboard_profile_title': '{{ __("ems.tour_dashboard_profile_title") }}',
+                'tour_dashboard_profile_content': '{{ __("ems.tour_dashboard_profile_content") }}',
+                'tour_working_hours_title': '{{ __("ems.tour_working_hours_title") }}',
+                'tour_working_hours_content': '{{ __("ems.tour_working_hours_content") }}',
+                'tour_working_day_title': '{{ __("ems.tour_working_day_title") }}',
+                'tour_working_day_content': '{{ __("ems.tour_working_day_content") }}',
+                'tour_working_hours_table_title': '{{ __("ems.tour_working_hours_table_title") }}',
+                'tour_working_hours_table_content': '{{ __("ems.tour_working_hours_table_content") }}',
+                'tour_activity_card_title': '{{ __("ems.tour_activity_card_title") }}',
+                'tour_activity_card_content': '{{ __("ems.tour_activity_card_content") }}',
+                'tour_sidebar_title': '{{ __("ems.tour_sidebar_title") }}',
+                'tour_sidebar_content': '{{ __("ems.tour_sidebar_content") }}',
+                'tour_header_title': '{{ __("ems.tour_header_title") }}',
+                'tour_header_content': '{{ __("ems.tour_header_content") }}'
+            };
+        </script>
+        
+        <!-- Simple Tour Guide Script -->
+        <script src="{{ asset('js/simple-tour-guide.js') }}"></script>
     @endpush
 </div>

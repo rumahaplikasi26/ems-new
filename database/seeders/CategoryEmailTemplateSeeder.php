@@ -98,5 +98,31 @@ class CategoryEmailTemplateSeeder extends Seeder
             'slug' => 'rejected-financial-request',
             'description' => 'Jika Financial Request Di Reject maka email ini yang akan di kirimkan kepada user yang mengajukan',
         ]);
+
+        // Overtime Request
+
+        CategoryEmailTemplate::create([
+            'name' => 'Recipient Overtime Request',
+            'slug' => 'recipient-overtime-request',
+            'description' => 'Untuk email penerima request overtime',
+        ]);
+
+        CategoryEmailTemplate::create([
+            'name' => 'Sender Overtime Request',
+            'slug' => 'sender-overtime-request',
+            'description' => 'untuk pengirim request overtime',
+        ]);
+
+        CategoryEmailTemplate::create([
+            'name' => 'Approved Overtime Request',
+            'slug' => 'approved-overtime-request',
+            'description' => 'Jika Overtime Request Sudah Di Approve maka email ini yang akan di kirimkan kepada user yang mengajukan',
+        ]);
+
+        CategoryEmailTemplate::create([
+            'name' => 'Rejected Overtime Request',
+            'slug' => 'rejected-overtime-request',
+            'description' => 'Jika Overtime Request Di Reject maka email ini yang akan di kirimkan kepada user yang mengajukan',
+        ]);
     }
 }

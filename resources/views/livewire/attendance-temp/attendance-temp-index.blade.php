@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Attendance', 'url' => route('attendance.index')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.attendance'), 'url' => route('attendance.index')]]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-12">
@@ -7,9 +7,9 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <label for="form-label">Search</label>
+                            <label for="form-label">{{ __('ems.search') }}</label>
                             <input type="text" class="form-control" wire:model.live="search"
-                                placeholder="Search Employee ...">
+                                placeholder="{{ __('ems.search_for') }}">
                         </div>
                     </div>
                 </div>
@@ -18,19 +18,19 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <label for="form-label">Date</label>
+                            <label for="form-label">{{ __('ems.date') }}</label>
                             <div class="input-daterange input-group" id="attendance-inputgroup"
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
                                 data-date-container='#attendance-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="Start Date" name="start" />
+                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="End Date" name="end" />
+                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -43,8 +43,8 @@
                 </div>
 
                 <div class="col-12 text-end mb-3">
-                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">Reset
-                        Filter</button>
+                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">{{ __('ems.reset') }}
+                        {{ __('ems.filter') }}</button>
                 </div>
             </div>
         </div>

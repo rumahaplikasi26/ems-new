@@ -3,7 +3,7 @@
         <div data-simplebar class="h-100">
             <div class="rightbar-title d-flex align-items-center px-3 py-4">
 
-                <h5 class="m-0 me-2">Settings</h5>
+                <h5 class="m-0 me-2">{{ __('ems.settings') }}</h5>
 
                 <a href="javascript:void(0);" class="right-bar-toggle ms-auto">
                     <i class="mdi mdi-close noti-icon"></i>
@@ -12,7 +12,7 @@
 
             <!-- Settings -->
             <hr class="mt-0" />
-            <h6 class="text-center mb-0">Choose Layouts</h6>
+            <h6 class="text-center mb-0">{{ __('ems.choose_layouts') }}</h6>
 
             <div class="p-4">
                 <div class="mb-2">
@@ -21,7 +21,7 @@
 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input theme-choice" type="checkbox" id="light-mode-switch" checked>
-                    <label class="form-check-label" for="light-mode-switch">Light Mode</label>
+                    <label class="form-check-label" for="light-mode-switch">{{ __('ems.light_mode') }}</label>
                 </div>
 
                 <div class="mb-2">
@@ -29,7 +29,7 @@
                 </div>
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input theme-choice" type="checkbox" id="dark-mode-switch">
-                    <label class="form-check-label" for="dark-mode-switch">Dark Mode</label>
+                    <label class="form-check-label" for="dark-mode-switch">{{ __('ems.dark_mode') }}</label>
                 </div>
 
                 <div class="mb-2">
@@ -37,7 +37,7 @@
                 </div>
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input theme-choice" type="checkbox" id="rtl-mode-switch">
-                    <label class="form-check-label" for="rtl-mode-switch">RTL Mode</label>
+                    <label class="form-check-label" for="rtl-mode-switch">{{ __('ems.rtl_mode') }}</label>
                 </div>
 
                 <div class="mb-2">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-check form-switch mb-5">
                     <input class="form-check-input theme-choice" type="checkbox" id="dark-rtl-mode-switch">
-                    <label class="form-check-label" for="dark-rtl-mode-switch">Dark RTL Mode</label>
+                    <label class="form-check-label" for="dark-rtl-mode-switch">{{ __('ems.dark_rtl_mode') }}</label>
                 </div>
 
 

@@ -67,6 +67,26 @@ class OvertimeRequestDetail extends BaseComponent
             // Check and update approval status
             $this->overtime_request->checkAndUpdateApprovalStatus();
 
+            // Send email notification
+            SendEmailJob::dispatch($this->overtime_request->employee->user, 'approved-overtime-request', ['overtime_request' => $this->overtime_request], $this->authUser);
+
+            // Create notification
+            createNotification(
+                $this->overtime_request->employee->user->id,
+                'Approved Overtime Request',
+                'approved-overtime-request',
+                'Overtime Request',
+                'Overtime Request has been approved',
+                route('overtime-request.detail', $this->overtime_request->id)
+            );
+
+            // Log activity
+            activity()
+                ->causedBy($this->authUser)
+                ->withProperties(['ip' => request()->ip()])
+                ->event('approve')
+                ->log("{$this->authUser->name} telah approve Overtime Request");
+
             // Update recipient status after approval
             $this->isApprovedRecipient = true;
             
@@ -103,6 +123,26 @@ class OvertimeRequestDetail extends BaseComponent
                 'status' => 'rejected',
                 'notes' => $this->notes
             ]);
+
+            // Send email notification
+            SendEmailJob::dispatch($this->overtime_request->employee->user, 'rejected-overtime-request', ['overtime_request' => $this->overtime_request], $this->authUser);
+
+            // Create notification
+            createNotification(
+                $this->overtime_request->employee->user->id,
+                'Rejected Overtime Request',
+                'rejected-overtime-request',
+                'Overtime Request',
+                'Overtime Request has been rejected',
+                route('overtime-request.detail', $this->overtime_request->id)
+            );
+
+            // Log activity
+            activity()
+                ->causedBy($this->authUser)
+                ->withProperties(['ip' => request()->ip()])
+                ->event('reject overtime request')
+                ->log("{$this->authUser->name} telah reject Overtime Request");
 
             // Update recipient status after rejection  
             $this->isApprovedRecipient = true; // Set to true to hide action buttons

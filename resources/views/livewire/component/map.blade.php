@@ -1,7 +1,7 @@
 <div>
     <div class="mb-3" wire:ignore data-tg-group="visit-create" data-tg-title="Step Create Visit" data-tg-tour="Tampilan map otomatis mendeteksi lokasi">
-        <label for="map" class="form-label">{{ __('Location') }}</label>
-        <p>Jika koordinat kurang akurat, silahkan klik tombol Refresh Koordinat pada map</p>
+        <label for="map" class="form-label">{{ __('ems.location') }}</label>
+        <p>{{ __('ems.refresh_coordinates') }}</p>
         <i wire:loading class="spinner-border" wire:target="updateCoordinates"></i>
         <div id="map"></div>
     </div>
@@ -32,12 +32,12 @@
                                 longitude: userLng
                             });
                         }, function(error) {
-                            Swal.fire("Error mendapatkan lokasi: " + error.message);
-                            console.error("Error mendapatkan lokasi: " + error.message);
+                            Swal.fire("{{ __('ems.error_getting_location') }}: " + error.message);
+                            console.error("{{ __('ems.error_getting_location') }}: " + error.message);
                         });
                     } else {
-                        Swal.fire("Geolocation tidak didukung oleh browser ini.");
-                        console.error("Geolocation tidak didukung oleh browser ini.");
+                        Swal.fire("{{ __('ems.geolocation_not_supported') }}");
+                        console.error("{{ __('ems.geolocation_not_supported') }}");
                     }
                 }
                 // Mengambil koordinat lokasi pengguna saat halaman pertama kali diakses
@@ -64,7 +64,7 @@
                     controlDiv.style.marginTop = "10px";
                     controlDiv.style.marginLeft = "10px";
                     controlDiv.style.textAlign = "center";
-                    controlDiv.title = "Klik untuk refresh koordinat";
+                    controlDiv.title = "{{ __('ems.click_to_refresh') }}";
 
                     const controlText = document.createElement("div");
                     controlText.style.fontSize = "16px";
@@ -149,7 +149,7 @@
 
                         // Tambahkan InfoWindow untuk menampilkan jarak
                         var infoWindow = new google.maps.InfoWindow({
-                            content: 'Jarak ke Lokasi Kantor: ' + distanceInKm + ' km'
+                            content: '{{ __('ems.distance_to_office') }}: ' + distanceInKm + ' km'
                         });
 
                         infoWindow.open(map, marker);

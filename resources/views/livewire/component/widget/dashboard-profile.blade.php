@@ -9,7 +9,7 @@
                     </div>
                     <div class="flex-grow-1 align-self-center">
                         <div class="text-muted">
-                            <p class="mb-2">Welcome to {{ config('setting.app_name') }}</p>
+                            <p class="mb-2">{{ __('ems.welcome_to') }} {{ config('setting.app_name') }}</p>
                             <h5 class="mb-1">{{ $name }}</h5>
                             <p class="mb-0">{{ $position }}</p>
                         </div>
@@ -22,19 +22,19 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div>
-                                <p class="text-muted text-truncate mb-2">Today</p>
+                                <p class="text-muted text-truncate mb-2">{{ __('ems.today') }}</p>
                                 <h5 class="mb-0">{{ date('l, d F Y') }}</h5>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div>
-                                <p class="text-muted text-truncate mb-2">Time</p>
+                                <p class="text-muted text-truncate mb-2">{{ __('ems.time') }}</p>
                                 <h5 class="mb-0" id="clock">{{ date('H:i:s') }}</h5>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div>
-                                <p class="text-muted text-truncate mb-2">Total Employee</p>
+                                <p class="text-muted text-truncate mb-2">{{ __('ems.total_employee') }}</p>
                                 <h5 class="mb-0">{{ $totalEmployee }}</h5>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
             <div class="col-lg-1 d-none d-lg-block">
                 <div class="clearfix mt-4 mt-lg-0">
                     <a href="{{ route('profile.index') }}" class="btn btn-primary btn-sm">
-                        <i class="mdi mdi-account-edit-outline"></i> Profile
+                        <i class="mdi mdi-account-edit-outline"></i> {{ __('ems.profile') }}
                     </a>
                 </div>
             </div>

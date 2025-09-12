@@ -8,7 +8,7 @@
                             <option value="{{ $month }}">{{ $monthName }}</option>
                         @endforeach
                     </select>
-                    <label class="input-group-text">Month</label>
+                    <label class="input-group-text">{{ __('ems.month') }}</label>
                 </div>
 
                 <div wire:loading>
@@ -18,21 +18,21 @@
                 </div>
             </div>
 
-            <h4 class="card-title mb-4">Employees Working Hours Analytics</h4>
+            <h4 class="card-title mb-4">{{ __('ems.employees_working_hours_analytics') }}</h4>
         </div>
 
         <div class="table-responsive mt-3">
             <table class="table table-sm mb-0 table-hover table-borderless">
                 <thead class="table-light align-middle text-center">
                     <tr>
-                        <th scope="col" rowspan="2">Name</th>
-                        <th scope="col" colspan="2">Total Working Hours</th>
-                        <th scope="col" rowspan="2">Percentage</th>
-                        <th scope="col" rowspan="2">Detail</th>
+                        <th scope="col" rowspan="2">{{ __('ems.name') }}</th>
+                        <th scope="col" colspan="2">{{ __('ems.total_working_hours') }}</th>
+                        <th scope="col" rowspan="2">{{ __('ems.percentage') }}</th>
+                        <th scope="col" rowspan="2">{{ __('ems.detail') }}</th>
                     </tr>
                     <tr>
-                        <th scope="col">This Month</th>
-                        <th scope="col">Last Month</th>
+                        <th scope="col">{{ __('ems.this_month') }}</th>
+                        <th scope="col">{{ __('ems.last_month') }}</th>
                     </tr>
                 </thead>
                 <tbody>

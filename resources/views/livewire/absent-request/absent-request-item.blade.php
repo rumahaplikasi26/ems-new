@@ -4,11 +4,11 @@
             <div class="d-flex align-start mb-3">
                 <div class="flex-grow-1">
                     @if($isApproved)
-                        <span class="badge badge-soft-success">Approved</span>
+                        <span class="badge badge-soft-success">{{ __('ems.approved') }}</span>
                     @elseif($isRejected)
-                        <span class="badge badge-soft-danger">Rejected</span>
+                        <span class="badge badge-soft-danger">{{ __('ems.rejected') }}</span>
                     @else
-                        <span class="badge badge-soft-secondary">Pending</span>
+                        <span class="badge badge-soft-secondary">{{ __('ems.pending') }}</span>
                     @endif
                 </div>
                 <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
             </div>
             <div class="d-flex mb-3 justify-content-center gap-2 text-muted">
                 <p class="mb-0 text-center">{{ $absent_request->start_date->format('d M') }} -
-                    {{ $absent_request->end_date->format('d M') }} ( {{ $totalDays }} Hari )</p>
+                    {{ $absent_request->end_date->format('d M') }} ( {{ $totalDays }} {{ __('ems.days') }} )</p>
             </div>
             <div class="hstack gap-2 justify-content-center flex-wrap">
                 @foreach ($recipientsWithStatus as $item)
@@ -42,25 +42,25 @@
                 @if ($recipientStatus && !$isApprovedRecipient)
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Action <i class="mdi mdi-chevron-down"></i>
+                            {{ __('ems.action') }} <i class="mdi mdi-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
                             <!-- item-->
-                            <a class="dropdown-item btn btn-soft-danger btn-sm" wire:click="rejectConfirm({{ $absent_request->id }})" href="javascript:void(0);"><i class="mdi mdi-close"></i> Reject</a>
-                            <a class="dropdown-item btn btn-soft-success btn-sm" wire:click="approveConfirm({{ $absent_request->id }})" href="javascript:void(0);"><i class="mdi mdi-check"></i> Approve</a>
+                            <a class="dropdown-item btn btn-soft-danger btn-sm" wire:click="rejectConfirm({{ $absent_request->id }})" href="javascript:void(0);"><i class="mdi mdi-close"></i> {{ __('ems.reject') }}</a>
+                            <a class="dropdown-item btn btn-soft-success btn-sm" wire:click="approveConfirm({{ $absent_request->id }})" href="javascript:void(0);"><i class="mdi mdi-check"></i> {{ __('ems.approve') }}</a>
                         </div>
                     </div>
                 @endif
 
                 <a href="{{ route('absent-request.detail', ['id' => $absent_request->id]) }}"
-                    class="btn btn-soft-warning btn-sm"><i class="mdi mdi-eye-outline"></i> View</a>
+                    class="btn btn-soft-warning btn-sm"><i class="mdi mdi-eye-outline"></i> {{ __('ems.view') }}</a>
 
                 @if (!$disableUpdate && !$disableUpdateApprove)
                     <a href="{{ route('absent-request.edit', ['id' => $absent_request->id]) }}"
-                        class="btn btn-soft-primary btn-sm"><i class="mdi mdi-pencil-outline"></i> Edit</a>
+                        class="btn btn-soft-primary btn-sm"><i class="mdi mdi-pencil-outline"></i> {{ __('ems.edit') }}</a>
                     <a href="javascript:void(0)" class="btn btn-soft-danger btn-sm"
                         wire:click="deleteConfirm({{ $absent_request->id }})"><i class="mdi mdi-delete-outline"></i>
-                        Delete</a>
+                        {{ __('ems.delete') }}</a>
                 @endif
             </div>
         </div>

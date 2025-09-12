@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Absent Request', 'url' => route('absent-request.index')], ['name' => 'Detail', 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => __('ems.view'), 'url' => '#']]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-8">
@@ -7,15 +7,15 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-grow-1">
-                            <h4 class="card-title mb-0">Absent Request Detail</h4>
+                            <h4 class="card-title mb-0">{{ __('ems.absent_request_detail') }}</h4>
                         </div>
                         <div class="flex-shrink-0">
                             @if($absent_request->is_approved)
-                                <span class="badge badge-soft-success font-size-12">Approved</span>
+                                <span class="badge badge-soft-success font-size-12">{{ __('ems.approved') }}</span>
                             @elseif($absent_request->isRejectedByRecipients())
-                                <span class="badge badge-soft-danger font-size-12">Rejected</span>
+                                <span class="badge badge-soft-danger font-size-12">{{ __('ems.rejected') }}</span>
                             @else
-                                <span class="badge badge-soft-warning font-size-12">Pending</span>
+                                <span class="badge badge-soft-warning font-size-12">{{ __('ems.pending') }}</span>
                             @endif
                         </div>
                     </div>
@@ -23,13 +23,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee') }}:</label>
                                 <p class="text-muted">{{ $absent_request->employee->user->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Employee ID:</label>
+                                <label class="form-label fw-bold">{{ __('ems.employee_id') }}:</label>
                                 <p class="text-muted">{{ $absent_request->employee_id }}</p>
                             </div>
                         </div>
@@ -38,13 +38,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Start Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.start_date') }}:</label>
                                 <p class="text-muted">{{ $absent_request->start_date->format('d F Y') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">End Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.end_date') }}:</label>
                                 <p class="text-muted">{{ $absent_request->end_date->format('d F Y') }}</p>
                             </div>
                         </div>
@@ -53,13 +53,13 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Duration:</label>
-                                <p class="text-muted">{{ $absent_request->total_days }} days</p>
+                                <label class="form-label fw-bold">{{ __('ems.duration') }}:</label>
+                                <p class="text-muted">{{ $absent_request->total_days }} {{ __('ems.days') }}</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Type:</label>
+                                <label class="form-label fw-bold">{{ __('ems.type') }}:</label>
                                 <p class="text-muted">
                                     <span class="badge badge-soft-info">{{ ucfirst($absent_request->type_absent ?? 'N/A') }}</span>
                                 </p>
@@ -67,16 +67,16 @@
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Request Date:</label>
+                                <label class="form-label fw-bold">{{ __('ems.request_date') }}:</label>
                                 <p class="text-muted">{{ $absent_request->created_at->format('d F Y, H:i') }}</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Notes:</label>
+                        <label class="form-label fw-bold">{{ __('ems.notes') }}:</label>
                         <div class="border rounded p-3 bg-light">
-                            <p class="mb-0">{{ $absent_request->notes ?? 'No notes provided.' }}</p>
+                            <p class="mb-0">{{ $absent_request->notes ?? __('ems.no_notes_provided') }}</p>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
             <!-- Validation History -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Validation History</h5>
+                    <h5 class="card-title">{{ __('ems.validation_history') }}</h5>
                     @forelse($absent_request->validates as $validation)
                         <div class="border rounded p-3 mb-3 {{ $validation->status == 'approved' ? 'border-success bg-light-success' : 'border-danger bg-light-danger' }}">
                             <div class="d-flex align-items-center mb-2">
@@ -95,18 +95,18 @@
                                 </div>
                                 <div class="flex-shrink-0">
                                     @if($validation->status == 'approved')
-                                        <span class="badge badge-soft-success">Approved</span>
+                                        <span class="badge badge-soft-success">{{ __('ems.approved') }}</span>
                                     @else
-                                        <span class="badge badge-soft-danger">Rejected</span>
+                                        <span class="badge badge-soft-danger">{{ __('ems.rejected') }}</span>
                                     @endif
                                 </div>
                             </div>
                             @if($validation->notes)
-                                <p class="mb-0"><strong>Notes:</strong> {{ $validation->notes }}</p>
+                                <p class="mb-0"><strong>{{ __('ems.notes') }}:</strong> {{ $validation->notes }}</p>
                             @endif
                         </div>
                     @empty
-                        <p class="text-muted">No validation history yet.</p>
+                        <p class="text-muted">{{ __('ems.no_validation_history') }}</p>
                     @endforelse
                 </div>
             </div>
@@ -116,7 +116,7 @@
             <!-- Recipients -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Recipients</h5>
+                    <h5 class="card-title">{{ __('ems.recipients') }}</h5>
                     @foreach($absent_request->recipients as $recipient)
                         <div class="d-flex align-items-center mb-2">
                             <div class="flex-grow-1">
@@ -124,9 +124,9 @@
                             </div>
                             <div class="flex-shrink-0">
                                 @if($absent_request->reads()->where('employee_id', $recipient->employee_id)->exists())
-                                    <i class="mdi mdi-check-circle text-success" title="Read"></i>
+                                    <i class="mdi mdi-check-circle text-success" title="{{ __('ems.read') }}"></i>
                                 @else
-                                    <i class="mdi mdi-clock text-warning" title="Unread"></i>
+                                    <i class="mdi mdi-clock text-warning" title="{{ __('ems.unread') }}"></i>
                                 @endif
                             </div>
                         </div>
@@ -137,7 +137,7 @@
             <!-- Calendar -->
             <div class="card" wire:ignore>
                 <div class="card-body">
-                    <h5 class="card-title">Calendar</h5>
+                    <h5 class="card-title">{{ __('ems.calendar') }}</h5>
                     <div id="calendar"></div>
                 </div>
             </div>
@@ -146,20 +146,20 @@
             @if($recipientStatus && !$isApprovedRecipient && !$absent_request->is_approved)
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Action Required</h5>
+                        <h5 class="card-title">{{ __('ems.action_required') }}</h5>
 
                         <div class="d-grid gap-2 mt-2">
                             <button type="button" class="btn btn-success" wire:click="approveConfirm" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="approveConfirm">
-                                    <i class="mdi mdi-check me-1"></i> Approve
+                                    <i class="mdi mdi-check me-1"></i> {{ __('ems.approve') }}
                                 </span>
-                                <span wire:loading wire:target="approve">Processing...</span>
+                                <span wire:loading wire:target="approve">{{ __('ems.processing') }}</span>
                             </button>
                             <button type="button" class="btn btn-danger" wire:click="rejectConfirm" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="rejectConfirm">
-                                    <i class="mdi mdi-close me-1"></i> Reject
+                                    <i class="mdi mdi-close me-1"></i> {{ __('ems.reject') }}
                                 </span>
-                                <span wire:loading wire:target="reject">Processing...</span>
+                                <span wire:loading wire:target="reject">{{ __('ems.processing') }}</span>
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Leave Request', 'url' => route('leave-request.index')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.leave_request'), 'url' => route('leave-request.index')]]], key('breadcrumb'))
 
     <div class="row">
         <div class="col-lg-12">
@@ -7,8 +7,8 @@
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <label for="form-label">Search</label>
-                            <input type="text" class="form-control" wire:model.live="search" placeholder="Search ...">
+                            <label for="form-label">{{ __('ems.search') }}</label>
+                            <input type="text" class="form-control" wire:model.live="search" placeholder="{{ __('ems.search_for') }}">
                         </div>
                     </div>
                 </div>
@@ -16,9 +16,9 @@
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body" wire:ignore>
-                            <label for="employees">Select Employee</label>
+                            <label for="employees">{{ __('ems.select_employee') }}</label>
                             <select class="form-control select2-multiple" id="employees"
-                                data-placeholder="Select Employee" wire:model="employee_id" multiple>
+                                data-placeholder="{{ __('ems.select_employee') }}" wire:model="employee_id" multiple>
                                 @foreach ($employees as $employee)
                                     <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                 @endforeach
@@ -31,19 +31,19 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <label for="form-label">Date</label>
+                            <label for="form-label">{{ __('ems.date') }}</label>
                             <div class="input-daterange input-group" id="leave-request-inputgroup"
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
                                 data-date-container='#leave-request-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="Start Date" name="start" />
+                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="End Date" name="end" />
+                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -56,8 +56,8 @@
                 </div>
 
                 <div class="col-12 text-end mb-3">
-                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">Reset
-                        Filter</button>
+                    <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">{{ __('ems.reset') }}
+                        {{ __('ems.filter') }}</button>
                     @can('create:leave-request')
                         <a href="{{ route('leave-request.create') }}" class="btn btn-primary mt-2">Create</a>
                     @endcan

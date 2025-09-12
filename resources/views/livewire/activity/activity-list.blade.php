@@ -4,9 +4,9 @@
             <thead>
                 <tr>
                     <th scope="col" style="width: 100px">#</th>
-                    <th scope="col">USER</th>
-                    <th scope="col">TIMESTAMP</th>
-                    <th scope="col">DESCRIPTION</th>
+                    <th scope="col">{{ __('ems.user') }}</th>
+                    <th scope="col">{{ __('ems.timestamp') }}</th>
+                    <th scope="col">{{ __('ems.description') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -16,7 +16,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="5" class="text-center fw-bold">NO DATA</td>
+                        <td colspan="5" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

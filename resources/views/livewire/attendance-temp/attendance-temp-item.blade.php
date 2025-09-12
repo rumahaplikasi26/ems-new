@@ -37,12 +37,12 @@
         <div class="d-flex ">
             {{-- Buat Button Approve --}}
             <div class="flex-shrink-0 me-3">
-                <a href="javascript:void(0);" wire:click="approveConfirm()" class="btn btn-sm btn-success"><i class="bx bx-check"></i> Approve</a>
+                <a href="javascript:void(0);" wire:click="approveConfirm()" class="btn btn-sm btn-success"><i class="bx bx-check"></i> {{ __('ems.approve') }}</a>
             </div>
 
             {{-- Buat Button Reject --}}
             <div class="flex-shrink-0 me-3">
-                <a href="javascript:void(0);" wire:click="rejectConfirm()" class="btn btn-sm btn-danger"><i class="bx bx-x"></i> Reject</a>
+                <a href="javascript:void(0);" wire:click="rejectConfirm()" class="btn btn-sm btn-danger"><i class="bx bx-x"></i> {{ __('ems.reject') }}</a>
             </div>
         </div>
     </td>

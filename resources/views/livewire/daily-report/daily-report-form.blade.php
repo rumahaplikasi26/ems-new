@@ -1,24 +1,24 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'],
-     ['name' => 'Daily Report', 'url' => route('daily-report.index')],
-     ['name' => $mode == 'Create' ? 'Create' : 'Edit Daily Report ']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'],
+     ['name' => __('ems.daily_report'), 'url' => route('daily-report.index')],
+     ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_daily_report')]]], key('breadcrumb'))
 
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? 'Create Daily Report' : 'Edit Daily Report' }}</h4>
+                    <h4 class="card-title mb-4">{{ $mode == 'Create' ? __('ems.create_daily_report') : __('ems.edit_daily_report') }}</h4>
 
                     <form action="" wire:submit.prevent="save" wire:ignore class="needs-validation"
                         id="daily-report-form">
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="date" class="form-label">Date</label>
+                                    <label for="date" class="form-label">{{ __('ems.date') }}</label>
                                     <input id="date-daily-report" name="date" wire:model="date" type="date"
                                         class="form-control @error('date') is-invalid @enderror"
-                                        placeholder="Enter date ...">
+                                        placeholder="{{ __('ems.enter_date') }}">
                                     @error('date')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -29,8 +29,8 @@
 
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="recipients" class="form-label">To Recipients</label>
-                                    <select name="recipients" wire:model="recipients" class="form-select select2-multiple" id="" multiple data-placeholder="Select recipients">
+                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
+                                    <select name="recipients" wire:model="recipients" class="form-select select2-multiple" id="" multiple data-placeholder="{{ __('ems.select_recipients') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach
@@ -48,7 +48,7 @@
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
+                                    <label for="description" class="form-label">{{ __('ems.description') }}</label>
                                     <div id="toolbar-container">
                                         <span class="ql-formats">
                                             <select class="ql-font"></select>
@@ -110,7 +110,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
-                            wire:target="save">Save</button>
+                            wire:target="save">{{ __('ems.save') }}</button>
                     </form>
                 </div>
             </div>

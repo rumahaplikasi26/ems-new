@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => 'Application', 'url' => '/'], ['name' => 'Announcement', 'url' => route('announcement.index')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.announcement'), 'url' => route('announcement.index')]]], key('breadcrumb'))
 
 
     <form action="" wire:submit.prevent="save" wire:ignore.self class="needs-validation" id="announcement-form">
@@ -8,15 +8,15 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title mb-4">
-                            {{ $type == 'create' ? 'Create Announcement' : 'Edit Announcement' }}</h4>
+                            {{ $type == 'create' ? __('ems.create_announcement') : __('ems.edit_announcement') }}</h4>
 
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Title</label>
+                                    <label for="title" class="form-label">{{ __('ems.title') }}</label>
                                     <input id="title" name="title" wire:model="title" type="text"
                                         class="form-control @error('title') is-invalid @enderror"
-                                        placeholder="Enter Title ...">
+                                        placeholder="{{ __('ems.enter_title') }}">
 
                                     @error('title')
                                         <span class="invalid-feedback" role="alert">
@@ -28,11 +28,11 @@
 
                             <div class="col-md">
                                 <div class="mb-3" wire:ignore>
-                                    <label for="recipients" class="form-label">To Recipients</label>
+                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="Select recipients">
-                                        <option value="all">Select All</option>
+                                        data-placeholder="{{ __('ems.select_recipients') }}">
+                                        <option value="all">{{ __('ems.select_all') }}</option>
 
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -55,7 +55,7 @@
             <div class="col-md-3">
                 <div class="card mb-5">
                     <div class="card-body">
-                        <h4 class="card-title mb-3">Placeholder Title</h4>
+                        <h4 class="card-title mb-3">{{ __('ems.placeholder_title') }}</h4>
                         <div class="d-flex flex-wrap gap-2">
                             <a href="javascript:void(0)" class="placeholder-item-title text-muted text-decoration"
                                 data-placeholder="name"><u>name</u></a>
@@ -73,15 +73,15 @@
             <div class="col-lg">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Placeholders</h4>
-                        <p class="card-title-desc">Select placeholder to add in body of email</p>
+                        <h4 class="card-title">{{ __('ems.placeholders') }}</h4>
+                        <p class="card-title-desc">{{ __('ems.select_placeholder') }}</p>
 
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" data-bs-toggle="tab" href="#user" role="tab">
                                     <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                                    <span class="d-none d-sm-block">User</span>
+                                    <span class="d-none d-sm-block">{{ __('ems.user') }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -111,7 +111,7 @@
                         <div class="row" wire:ignore>
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="body" class="form-label">Body</label>
+                                    <label for="body" class="form-label">{{ __('ems.body') }}</label>
                                     <div id="toolbar-container">
                                         <span class="ql-formats">
                                             <select class="ql-font"></select>
@@ -173,7 +173,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
-                            wire:target="save">Save</button>
+                            wire:target="save">{{ __('ems.save') }}</button>
                     </div>
                 </div>
             </div>
@@ -184,7 +184,7 @@
         <div class="col-md">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Preview</h4>
+                    <h4 class="card-title mb-3">{{ __('ems.preview') }}</h4>
 
                     <div class="preview-container">
                         <div id="preview" class="preview-content">
