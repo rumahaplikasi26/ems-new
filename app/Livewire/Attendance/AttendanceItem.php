@@ -18,7 +18,7 @@ class AttendanceItem extends Component
     public $badge_color;
     public $distanceInFormatted, $distanceOutFormatted;
     public $noteInExcerpt, $noteOutExcerpt;
-
+    public $approved_by, $approved_at, $approved_by_name, $approved_at_formatted;
     /**
      * Mount the component
      *
@@ -45,6 +45,10 @@ class AttendanceItem extends Component
         $this->duration_string = $this->attendance['duration_string'];
         $this->duration = $this->attendance['duration'];
         $this->badge_color = $this->statusDuration();
+        $this->approved_by = $this->attendance['approved_by'];
+        $this->approved_at = $this->attendance['approved_at'];
+        $this->approved_by_name = $this->attendance['approved_by_name'];
+        $this->approved_at_formatted = $this->attendance['approved_at_formatted'];
         $this->distanceFormatted();
         $this->notesExcerpt();
     }

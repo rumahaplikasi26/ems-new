@@ -21,7 +21,9 @@ class AttendanceTemp extends Model
         'notes',
         'image_path',
         'image_url',
-        'distance'
+        'distance',
+        'approved_by',
+        'approved_at',
     ];
 
     public function employee()
@@ -43,4 +45,10 @@ class AttendanceTemp extends Model
     {
         return $this->belongsTo(Site::class);
     }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
 }

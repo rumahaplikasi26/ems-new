@@ -17,7 +17,7 @@ class AttendanceTempItem extends BaseComponent
     public $attendance;
 
     public $employee;
-    public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $noteExcerpt, $latitude, $longitude, $image_path, $created_at;
+    public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $noteExcerpt, $latitude, $longitude, $image_path, $created_at, $approved_by, $approved_at, $approved_by_name, $approved_at_formatted;
 
     public function mount()
     {
@@ -33,7 +33,10 @@ class AttendanceTempItem extends BaseComponent
         $this->created_at = $this->attendance->created_at;
         $this->notes = $this->attendance->notes;
         $this->image_path = $this->attendance->image_path;
-
+        $this->approved_by = $this->attendance->approved_by;
+        $this->approved_at = $this->attendance->approved_at;
+        $this->approved_by_name = $this->attendance->approved_by->name;
+        $this->approved_at_formatted = $this->attendance->approved_at->format('d-m-Y H:i:s');
         $this->distanceFormatted();
         $this->notesExcerpt();
     }
@@ -112,6 +115,8 @@ class AttendanceTempItem extends BaseComponent
         try{
             $attendanceTemp = $this->attendance;
             $attendance = $attendanceTemp->replicate();
+            $attendance->approved_by = $this->authUser->id;
+            $attendance->approved_at = now();
             $attendance->setTable('attendances');
             $attendance->save();
 
