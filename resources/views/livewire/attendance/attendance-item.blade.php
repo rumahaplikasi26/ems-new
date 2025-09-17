@@ -49,9 +49,9 @@
                     <span class="text-wrap">
                         {!! $noteInExcerpt !!}
                     </span>
-                    @if($approved_by_name)
-                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $approved_by_name }}</strong></span>
-                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $approved_at_formatted }}</strong></span>
+                    @if($checkIn['approved_by_name'])
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $checkIn['approved_by_name'] }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $checkIn['approved_at_formatted'] }}</strong></span>
                     @endif
                 </div>
             </div>
@@ -90,9 +90,9 @@
                     <span class="text-wrap">
                         {!! $noteOutExcerpt !!}
                     </span>
-                    @if($approved_by_name)
-                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $approved_by_name }}</strong></span>
-                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $approved_at_formatted }}</strong></span>
+                    @if($checkOut['approved_by_name'])
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $checkOut['approved_by_name'] }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $checkOut['approved_at_formatted'] }}</strong></span>
                     @endif
                 </div>
             </div>

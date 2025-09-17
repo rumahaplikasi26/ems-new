@@ -147,6 +147,10 @@ class AttendanceIndex extends BaseComponent
                     'image_url' => $checkInDetail->image_url ?? null,
                     'distance' => $checkInDetail->distance,
                     'notes' => $checkInDetail->notes,
+                    'approved_by' => $checkInDetail->approved_by,
+                    'approved_at' => $checkInDetail->approved_at,
+                    'approved_by_name' => $checkInDetail->approvedBy?->name,
+                    'approved_at_formatted' => $checkInDetail->approved_at?->format('d-m-Y H:i:s'),
                 ] : null,
                 'check_out' => $checkOutDetail ? [
                     'id' => $checkOutDetail->id,
@@ -171,15 +175,15 @@ class AttendanceIndex extends BaseComponent
                     'image_url' => $checkOutDetail->image_url ?? null,
                     'distance' => $checkOutDetail->distance,
                     'notes' => $checkOutDetail->notes,
+                    'approved_by' => $checkOutDetail->approved_by,
+                    'approved_at' => $checkOutDetail->approved_at,
+                    'approved_by_name' => $checkOutDetail->approvedBy?->name,
+                    'approved_at_formatted' => $checkOutDetail->approved_at?->format('d-m-Y H:i:s'),
                 ] : null,
                 'employee_id' => $attendance->employee_id,
                 'date' => $attendance->date,
                 'duration_string' => $formattedDuration, // Total hours
                 'duration' => $duration, // Total hours in decimal
-                'approved_by' => $checkInDetail->approved_by,
-                'approved_at' => $checkInDetail->approved_at,
-                'approved_by_name' => $checkInDetail->approvedBy?->name,
-                'approved_at_formatted' => $checkInDetail->approved_at?->format('d-m-Y H:i:s'),
             ];
         });
 
