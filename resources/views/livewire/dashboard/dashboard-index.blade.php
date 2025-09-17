@@ -1,24 +1,6 @@
 <div>
     @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.dashboard'), 'url' => '/']]])
 
-    <!-- Tour Guide Button -->
-    <button type="button" class="floating-start-tour-btn" id="start-tour">
-        <div class="btn-content">
-            <i class='bx bx-play'></i>
-            <span class="start-tour-text">{{ __('ems.start_tour') }}</span>
-        </div>
-    </button>
-
-    <!-- Welcome message for tour guide -->
-    <div class="row mb-3" data-tour="welcome" style="display: none;">
-        <div class="col-12">
-            <div class="alert alert-info">
-                <h5 class="alert-heading">{{ __('ems.tour_welcome_title') }}</h5>
-                <p class="mb-0">{{ __('ems.tour_welcome_content') }}</p>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-md-12" data-tour="dashboard-profile">
             @livewire('component.widget.dashboard-profile')
@@ -397,39 +379,5 @@
 
     @push('js')
         <script src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-        
-        <!-- Tour Guide Translations -->
-        <script>
-            window.Laravel = window.Laravel || {};
-            window.Laravel.translations = {
-                'start_tour': '{{ __("ems.start_tour") }}',
-                'stop_tour': '{{ __("ems.stop_tour") }}',
-                'next': '{{ __("ems.next") }}',
-                'previous': '{{ __("ems.previous") }}',
-                'finish': '{{ __("ems.finish") }}',
-                'skip': '{{ __("ems.skip") }}',
-                'tour_dashboard_only': '{{ __("ems.tour_dashboard_only") }}',
-                'tour_elements_missing': '{{ __("ems.tour_elements_missing") }}',
-                'tour_welcome_title': '{{ __("ems.tour_welcome_title") }}',
-                'tour_welcome_content': '{{ __("ems.tour_welcome_content") }}',
-                'tour_dashboard_profile_title': '{{ __("ems.tour_dashboard_profile_title") }}',
-                'tour_dashboard_profile_content': '{{ __("ems.tour_dashboard_profile_content") }}',
-                'tour_working_hours_title': '{{ __("ems.tour_working_hours_title") }}',
-                'tour_working_hours_content': '{{ __("ems.tour_working_hours_content") }}',
-                'tour_working_day_title': '{{ __("ems.tour_working_day_title") }}',
-                'tour_working_day_content': '{{ __("ems.tour_working_day_content") }}',
-                'tour_working_hours_table_title': '{{ __("ems.tour_working_hours_table_title") }}',
-                'tour_working_hours_table_content': '{{ __("ems.tour_working_hours_table_content") }}',
-                'tour_activity_card_title': '{{ __("ems.tour_activity_card_title") }}',
-                'tour_activity_card_content': '{{ __("ems.tour_activity_card_content") }}',
-                'tour_sidebar_title': '{{ __("ems.tour_sidebar_title") }}',
-                'tour_sidebar_content': '{{ __("ems.tour_sidebar_content") }}',
-                'tour_header_title': '{{ __("ems.tour_header_title") }}',
-                'tour_header_content': '{{ __("ems.tour_header_content") }}'
-            };
-        </script>
-        
-        <!-- Simple Tour Guide Script -->
-        <script src="{{ asset('js/simple-tour-guide.js') }}"></script>
     @endpush
 </div>

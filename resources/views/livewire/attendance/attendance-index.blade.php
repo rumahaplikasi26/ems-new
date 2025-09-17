@@ -1,9 +1,6 @@
 <div>
     @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.attendance'), 'url' => route('attendance.index')]]], key('breadcrumb'))
 
-    <!-- Tour Guide Button -->
-    <x-tour-guide-button />
-
     <div class="row">
         <div class="col-lg-12">
             <div class="row">
@@ -99,8 +96,7 @@
             });
         </script>
 
-        <!-- Tour Guide Scripts -->
-        <x-tour-guide-scripts />
+        
     @endpush
 
     

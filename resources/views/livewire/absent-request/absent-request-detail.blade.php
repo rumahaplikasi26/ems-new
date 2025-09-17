@@ -116,7 +116,7 @@
             <!-- Recipients -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">{{ __('ems.recipients') }}</h5>
+                    <h5 class="card-title">{{ __('ems.approvals') }}</h5>
                     @foreach($absent_request->recipients as $recipient)
                         <div class="d-flex align-items-center mb-2">
                             <div class="flex-grow-1">

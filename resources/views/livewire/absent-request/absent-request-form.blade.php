@@ -59,10 +59,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
+                                    <label for="recipients" class="form-label">{{ __('ems.approval') }}</label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="{{ __('ems.select_recipients') }}">
+                                        data-placeholder="{{ __('ems.select_approvals') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach

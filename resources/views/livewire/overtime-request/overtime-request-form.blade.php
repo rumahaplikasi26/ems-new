@@ -57,9 +57,9 @@
                         </div>
 
                         <div class="mb-3" wire:ignore>
-                            <label for="recipients" class="form-label">{{ __('ems.recipients') }} <span class="text-danger">*</span></label>
+                            <label for="recipients" class="form-label">{{ __('ems.approval') }} <span class="text-danger">*</span></label>
                             <select class="form-control select2-multiple @error('recipients') is-invalid @enderror" 
-                                    id="recipients" multiple data-placeholder="{{ __('ems.select_recipients') }}">
+                                    id="recipients" multiple data-placeholder="{{ __('ems.select_approvals') }}">
                                 @foreach($employees as $emp)
                                     <option value="{{ $emp->id }}">{{ $emp->user->name }}</option>
                                 @endforeach

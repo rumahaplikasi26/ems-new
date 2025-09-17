@@ -24,10 +24,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="recipients" class="form-label">{{ __('ems.to_recipients') }}</label>
+                                    <label for="recipients" class="form-label">{{ __('ems.approval') }}</label>
                                     <select name="recipients" wire:model="recipients"
                                         class="form-select select2-multiple" id="" multiple
-                                        data-placeholder="{{ __('ems.select_recipients') }}">
+                                        data-placeholder="{{ __('ems.select_approvals') }}">
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
                                         @endforeach
@@ -42,32 +42,32 @@
 
                                 <div class="row">
                                     <div class="col-md">
-                                        <label for="type_leave" class="mb-3">Leave Period to be Taken</label>
+                                        <label for="type_leave" class="mb-3">{{ __('ems.leave_period_to_be_taken') }}</label>
                                         <div class="input-group mb-3">
                                             <input type="text" class="form-control" wire:model="leave_period"
                                                 readonly>
                                             <span class="input-group-text bg-primary text-white"
-                                                id="option-date">Hari</span>
+                                                id="option-date">{{ __('ems.day') }}</span>
                                         </div>
                                     </div>
 
                                     <div class="col-md">
-                                        <label for="type_leave" class="mb-3">Already Taken</label>
+                                        <label for="type_leave" class="mb-3">{{ __('ems.already_taken') }}</label>
                                         <div class="input-group mb-3">
                                             <input type="text" class="form-control" wire:model="leave_taken"
                                                 readonly>
                                             <span class="input-group-text bg-primary text-white"
-                                                id="option-date">Hari</span>
+                                                id="option-date">{{ __('ems.day') }}</span>
                                         </div>
                                     </div>
 
                                     <div class="col-md">
-                                        <label for="type_leave" class="mb-3">Remaining</label>
+                                        <label for="type_leave" class="mb-3">{{ __('ems.remaining') }}</label>
                                         <div class="input-group mb-3">
                                             <input type="text" class="form-control" wire:model="leave_remaining"
                                                 readonly>
                                             <span class="input-group-text bg-primary text-white"
-                                                id="option-date">Hari</span>
+                                                id="option-date">{{ __('ems.day') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -75,14 +75,14 @@
                                 <div class="row">
                                     <div class="col-md">
                                         <div class="mb-3">
-                                            <label for="start_date" class="form-label">Start Date</label>
+                                            <label for="start_date" class="form-label">{{ __('ems.start_date') }}</label>
                                             <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date" wire:model="start_date" disabled>
                                         </div>
                                     </div>
 
                                     <div class="col-md">
                                         <div class="mb-3">
-                                            <label for="end_date" class="form-label">End Date</label>
+                                            <label for="end_date" class="form-label">{{ __('ems.end_date') }}</label>
                                             <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date" wire:model="end_date" disabled>
                                         </div>
                                     </div>
@@ -93,7 +93,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <label class="mb-3">Date Range</label>
+                                        <label class="mb-3">{{ __('ems.date_range') }}</label>
                                         <div id="date-range-picker" class="bootstrap-datepicker-inline"></div>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
 
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
-                                    wire:target="save">Save</button>
+                                    wire:target="save">{{ __('ems.save') }}</button>
                             </div>
                         </div>
                     </form>

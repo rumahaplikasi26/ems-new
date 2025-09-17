@@ -139,11 +139,18 @@ return [
     'other' => 'Lainnya',
     'to_recipients' => 'Kepada Penerima',
     'select_recipients' => 'Pilih Penerima',
+    'approval' => 'Persetujuan',
+    'approvals' => 'Persetujuan',
+    'select_approvals' => 'Pilih Persetujuan',
     'start_date' => 'Tanggal Mulai',
     'end_date' => 'Tanggal Selesai',
     'total_day' => 'Total Hari',
     'total_days' => 'Total Hari',
     'date_range' => 'Rentang Tanggal',
+    'day' => 'Hari',
+    'already_taken' => 'Sudah Diambil',
+    'remaining' => 'Sisa',
+    'leave_period_to_be_taken' => 'Periode Cuti yang Akan Diambil',
     'date_range_note' => '* Jika hanya 1 tanggal, pilih tanggal tersebut saja',
     'absent_request_detail' => 'Detail Permintaan Absen',
     'create_absent_request' => 'Buat Permintaan Absen',
@@ -665,6 +672,9 @@ return [
     'import_master_data' => 'Import Master Data',
 
     'setting' => 'Pengaturan',
+    'configuration' => 'Konfigurasi',
+
+    'report' => 'Laporan',
 
     'report_attendance' => 'Laporan Kehadiran',
     'report_overtime' => 'Laporan Lembur',
