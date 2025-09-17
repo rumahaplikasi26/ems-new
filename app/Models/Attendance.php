@@ -26,6 +26,10 @@ class Attendance extends Model
         'approved_at',
     ];
 
+    protected $casts = [
+        'approved_at' => 'datetime',
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

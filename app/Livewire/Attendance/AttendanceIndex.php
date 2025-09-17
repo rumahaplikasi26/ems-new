@@ -176,6 +176,10 @@ class AttendanceIndex extends BaseComponent
                 'date' => $attendance->date,
                 'duration_string' => $formattedDuration, // Total hours
                 'duration' => $duration, // Total hours in decimal
+                'approved_by' => $checkInDetail->approved_by,
+                'approved_at' => $checkInDetail->approved_at,
+                'approved_by_name' => $checkInDetail->approvedBy?->name,
+                'approved_at_formatted' => $checkInDetail->approved_at?->format('d-m-Y H:i:s'),
             ];
         });
 

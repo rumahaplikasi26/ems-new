@@ -35,7 +35,7 @@ class AttendanceTempItem extends BaseComponent
         $this->image_path = $this->attendance->image_path;
         $this->approved_by = $this->attendance->approved_by;
         $this->approved_at = $this->attendance->approved_at;
-        $this->approved_by_name = $this->attendance->approved_by?->name;
+        $this->approved_by_name = $this->attendance->approvedBy?->name;
         $this->approved_at_formatted = $this->attendance->approved_at?->format('d-m-Y H:i:s');
         $this->distanceFormatted();
         $this->notesExcerpt();

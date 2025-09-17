@@ -56,7 +56,7 @@ class AttendanceTempIndex extends Component
             $query->whereDate('timestamp', '>=', $this->start_date);
         })->when($this->end_date, function ($query) {
             $query->whereDate('timestamp', '<=', $this->end_date);
-        });
+        })->orderBy('timestamp', 'desc');
 
         $attendances = $attendances->paginate($this->perPage);
 

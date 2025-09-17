@@ -49,6 +49,10 @@
                     <span class="text-wrap">
                         {!! $noteInExcerpt !!}
                     </span>
+                    @if($approved_by_name)
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $approved_by_name }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $approved_at_formatted }}</strong></span>
+                    @endif
                 </div>
             </div>
         @else
@@ -86,6 +90,10 @@
                     <span class="text-wrap">
                         {!! $noteOutExcerpt !!}
                     </span>
+                    @if($approved_by_name)
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $approved_by_name }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $approved_at_formatted }}</strong></span>
+                    @endif
                 </div>
             </div>
         @else

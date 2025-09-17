@@ -578,6 +578,9 @@ return [
     'cancelled' => 'Dibatalkan',
     'in_progress' => 'Sedang Berlangsung',
 
+    'approved_by' => 'Disetujui Oleh',
+    'approved_at' => 'Disetujui Pada',
+
     // Form Labels
     'select_position' => 'Pilih Posisi',
     'select_department' => 'Pilih Departemen',
