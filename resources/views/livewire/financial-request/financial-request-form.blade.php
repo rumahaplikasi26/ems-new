@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.financial_request'), 'url' => route('financial-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_financial_request')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.financial_request'), 'url' => route('financial-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_financial_request')]]], key: 'breadcrumb')
 
 
     <div class="row">
@@ -151,12 +151,49 @@
 
                                         <input type="file"
                                             class="form-control @error('image') is-invalid @enderror" id="image"
-                                            wire:model="image">
+                                            wire:model="image" accept="image/*">
+                                        <div class="form-text">
+                                            {{ __('ems.allowed_file_types') }}: JPG, JPEG, PNG, GIF (Max: 2MB)
+                                        </div>
                                         @error('image')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label class="mb-3">{{ __('ems.attachment') }}</label>
+
+                                        <input type="file"
+                                            class="form-control @error('file') is-invalid @enderror" id="file"
+                                            wire:model="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                                        <div class="form-text">
+                                            {{ __('ems.allowed_file_types') }}: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (Max: 2MB)
+                                        </div>
+                                        
+                                        @error('file')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+
+                                        @if($file)
+                                            <div class="mt-2">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="mdi mdi-file-document-outline me-2"></i>
+                                                    <span class="text-muted">{{ $file->getClientOriginalName() }}</span>
+                                                    <span class="badge badge-soft-info ms-2">{{ number_format($file->getSize() / 1024, 2) }} KB</span>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if($file_url && $mode == 'Edit')
+                                            @livewire('component.file-preview', [
+                                                'fileUrl' => $file_url,
+                                                'fileName' => basename($file_path)
+                                            ], key: 'file-preview-' . $id)
+                                        @endif
                                     </div>
                                 </div>
 

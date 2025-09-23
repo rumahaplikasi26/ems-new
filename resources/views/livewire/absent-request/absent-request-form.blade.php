@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_absent_request')]]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => $mode == 'Create' ? __('ems.create') : __('ems.edit_absent_request')]]],  'breadcrumb')
 
 
     <div class="row">
@@ -73,6 +73,46 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="file" class="form-label">{{ __('ems.attachment') }}</label>
+                                    <input type="file" class="form-control @error('file') is-invalid @enderror" 
+                                           id="file" wire:model="file" 
+                                           accept="jpg,jpeg,png,gif">
+                                    <div class="form-text">
+                                        {{ __('ems.allowed_file_types') }}: JPG, JPEG, PNG, GIF (Max: 2MB)
+                                    </div>
+                                    
+                                    @error('file')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+
+                                    @if($file)
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="mdi mdi-file-document-outline me-2"></i>
+                                                <span class="text-muted">{{ $file->getClientOriginalName() }}</span>
+                                                <span class="badge badge-soft-info ms-2">{{ number_format($file->getSize() / 1024, 2) }} KB</span>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($file_url && $mode == 'Edit')
+                                        @livewire('component.file-preview', [
+                                            'fileUrl' => $file_url,
+                                            'fileName' => basename($file_path)
+                                        ], key: 'file-preview-' . $id)
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="mdi mdi-file-document-outline me-2"></i>
+                                                <span class="text-muted">{{ __('ems.current_file') }}: {{ basename($file_path) }}</span>
+                                                <a href="{{ $file_url }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                                                    <i class="mdi mdi-download"></i> {{ __('ems.download') }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="row">

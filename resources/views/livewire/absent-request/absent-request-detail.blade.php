@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => __('ems.view'), 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.absent_request'), 'url' => route('absent-request.index')], ['name' => __('ems.view'), 'url' => '#']]], 'breadcrumb')
 
     <div class="row">
         <div class="col-lg-8">
@@ -79,6 +79,16 @@
                             <p class="mb-0">{{ $absent_request->notes ?? __('ems.no_notes_provided') }}</p>
                         </div>
                     </div>
+
+                    @if($absent_request->file_path && $absent_request->file_url)
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ __('ems.attachment') }}:</label>
+                            @livewire('component.file-preview', [
+                                'fileUrl' => $absent_request->file_url,
+                                'fileName' => basename($absent_request->file_path)
+                            ],  'file-preview-' . $absent_request->id)
+                        </div>
+                    @endif
                 </div>
             </div>
 

@@ -19,7 +19,7 @@ class FinancialRequestForm extends BaseComponent
 
     public $mode = 'Create';
     public $financial_request;
-    public $employee_id, $financial_type_id, $title, $amount, $notes, $receipt_image_path, $receipt_image_url, $image, $uid;
+    public $employee_id, $financial_type_id, $title, $amount, $notes, $receipt_image_path, $receipt_image_url, $image, $uid, $file;
     public $employees;
     public $previewImage = 'https://undergroundgym.cz/wp-content/themes/gymat/assets/img/noimage_1210X584.jpg';
 
@@ -81,6 +81,7 @@ class FinancialRequestForm extends BaseComponent
                 'title' => 'required',
                 'amount' => 'required|numeric|gt:0',
                 'recipients' => 'required',
+                'file' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:2048',
             ]);
 
             if ($this->mode == 'Create') {

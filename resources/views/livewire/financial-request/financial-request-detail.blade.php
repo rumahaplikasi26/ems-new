@@ -1,5 +1,5 @@
 <div>
-    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.financial_request'), 'url' => route('financial-request.index')], ['name' => __('ems.detail'), 'url' => '#']]], key('breadcrumb'))
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.financial_request'), 'url' => route('financial-request.index')], ['name' => __('ems.detail'), 'url' => '#']]], key: 'breadcrumb')
 
     <div class="row">
         <div class="col-lg-8">
@@ -77,14 +77,13 @@
                         </div>
                     </div>
 
-                    @if($financial_request->file_path)
+                    @if($financial_request->file_path && $financial_request->file_url)
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Attachment:</label>
-                            <div class="border rounded p-3 bg-light">
-                                <a href="{{ $financial_request->file_url }}" target="_blank" class="btn btn-soft-primary btn-sm">
-                                    <i class="mdi mdi-file-download"></i> Download Attachment
-                                </a>
-                            </div>
+                            <label class="form-label fw-bold">{{ __('ems.attachment') }}:</label>
+                            @livewire('component.file-preview', [
+                                'fileUrl' => $financial_request->file_url,
+                                'fileName' => basename($financial_request->file_path)
+                            ], key: 'file-preview-' . $financial_request->id)
                         </div>
                     @endif
                 </div>

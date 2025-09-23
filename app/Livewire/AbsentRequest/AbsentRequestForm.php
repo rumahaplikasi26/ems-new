@@ -9,17 +9,20 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
-use Livewire\Component;
+use Livewire\Features\SupportFileUploads\WithFileUploads;   
+
 
 class AbsentRequestForm extends BaseComponent
 {
-    use LivewireAlert;
+    use LivewireAlert, WithFileUploads;
 
     public $mode = 'Create';
     public $absent_request;
-    public $notes, $employee_id, $start_date, $end_date, $type_absent, $total_days, $recipients = [];
+    public $notes, $employee_id, $start_date, $end_date, $type_absent, $file_path, $file_url, $total_days, $file, $recipients = [];
     public $employee;
     public $employees;
 
@@ -36,6 +39,8 @@ class AbsentRequestForm extends BaseComponent
             $this->start_date = $this->absent_request->start_date->format('Y-m-d');
             $this->end_date = $this->absent_request->end_date->format('Y-m-d');
             $this->type_absent = $this->absent_request->type_absent;
+            $this->file_path = $this->absent_request->file_path;
+            $this->file_url = $this->absent_request->file_url;
             $this->recipients = $this->absent_request->recipients->pluck('employee_id')->toArray();
 
             $this->dispatch('set-default-form', param: 'recipients', value: $this->recipients);
@@ -48,6 +53,8 @@ class AbsentRequestForm extends BaseComponent
             $this->start_date = '';
             $this->end_date = '';
             $this->type_absent = '';
+            $this->file_path = '';
+            $this->file_url = '';
         }
     }
 
@@ -71,6 +78,7 @@ class AbsentRequestForm extends BaseComponent
                 'end_date' => 'required|after_or_equal:start_date|date|after_or_equal:today',
                 'type_absent' => 'required',
                 'recipients' => 'required',
+                'file' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:2048',
             ]);
 
             if ($this->mode == 'Create') {
@@ -87,14 +95,28 @@ class AbsentRequestForm extends BaseComponent
     {
         try {
             $period = $this->getTotalPeriod();
-            // Simpan AbsentRequest terlebih dahulu
+
+            if ($this->file) {
+                // Generate nama file random menggunakan UUID
+                $fileName = Str::uuid() . '.' . $this->file->getClientOriginalExtension();
+
+                // Store image in GCS using Laravel Storage
+                $disk = Storage::disk('gcs');
+                $this->file_path = $disk->putFileAs('files', $this->file, $fileName);
+
+                // Get the full public URL of the uploaded file
+                $this->file_url = $disk->url($this->file_path);
+            } 
+
             $absentRequest = AbsentRequest::create([
                 'notes' => $this->notes,
                 'employee_id' => $this->employee_id,
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'type_absent' => $this->type_absent,
-                'total_days' => $period
+                'total_days' => $period,
+                'file_path' => $this->file_path,
+                'file_url' => $this->file_url,
             ]);
 
             // Buat recipients menggunakan relasi yang ada
@@ -153,13 +175,23 @@ class AbsentRequestForm extends BaseComponent
     {
         try {
             $period = $this->getTotalPeriod();
+
+            if ($this->file) {
+                $fileName = Str::uuid() . '.' . $this->file->getClientOriginalExtension();
+                $disk = Storage::disk('gcs');
+                $this->file_path = $disk->putFileAs('files', $this->file, $fileName);
+                $this->file_url = $disk->url($this->file_path);
+            }
+
             $this->absent_request->update([
                 'notes' => $this->notes,
                 'employee_id' => $this->employee_id,
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'type_absent' => $this->type_absent,
-                'total_days' => $period
+                'total_days' => $period,
+                'file_path' => $this->file_path,
+                'file_url' => $this->file_url,
             ]);
 
             // Hapus semua recipients yang ada
