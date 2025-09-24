@@ -20,10 +20,13 @@ class Attendance extends Component
     public $employees;
     public $selectedEmployees = [];
     public $startDate, $endDate, $countDays;
+    public $shifts;
+    public $selectedShifts = [];
 
     public function mount()
     {
         $this->employees = Employee::with('user:id,name')->get(['id', 'user_id']);
+        $this->shifts = \App\Models\Shift::where('is_active', true)->get(['id', 'name']);
     }
 
     #[On('change-input-form')]
@@ -41,7 +44,7 @@ class Attendance extends Component
                 'selectedEmployees' => 'required|array|min:1'
             ]);
 
-            $this->dispatch('attendance-preview', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+            $this->dispatch('attendance-preview', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate, shifts: $this->selectedShifts);
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
         }
@@ -57,7 +60,7 @@ class Attendance extends Component
             ]);
 
             // Get the reports data by dispatching to preview component
-            $this->dispatch('export-attendance-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+            $this->dispatch('export-attendance-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate, shifts: $this->selectedShifts);
             
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
@@ -67,6 +70,7 @@ class Attendance extends Component
     public function resetFilter()
     {
         $this->selectedEmployees = [];
+        $this->selectedShifts = [];
         $this->startDate = null;
         $this->endDate = null;
         $this->dispatch('reset-attendance-preview');

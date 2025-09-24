@@ -653,6 +653,11 @@ return [
 
     //  Sidebar Menu
     'site' => 'Site',
+    'select_site' => 'Select Site',
+    'shift' => 'Shift',
+    'select_shift' => 'Select Shift',
+    'shift_schedule' => 'Shift Schedule',
+    'select_shift_schedule' => 'Select Shift Schedule',
     'attendance_temporary' => 'Attendance Temporary',
     'setting' => 'Setting',
     'all_daily_report' => 'All Daily Report',

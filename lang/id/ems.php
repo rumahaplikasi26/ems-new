@@ -657,6 +657,11 @@ return [
 
     //  Sidebar Menu
     'site' => 'Lokasi',
+    'select_site' => 'Pilih Lokasi',
+    'shift' => 'Shift',
+    'select_shift' => 'Pilih Shift',
+    'shift_schedule' => 'Jadwal Shift',
+    'select_shift_schedule' => 'Pilih Jadwal Shift',
     'attendance_temporary' => 'Kehadiran Sementara',
     'setting' => 'Pengaturan',
     'all_daily_report' => 'Semua Laporan Harian',

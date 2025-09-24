@@ -72,7 +72,11 @@ use App\Livewire\EmailTemplateManager\EmailTemplateManagerIndex;
 use App\Livewire\FinancialRequest\FinancialRequestAll;
 use App\Livewire\Visit\VisitCreate;
 use App\Livewire\Visit\VisitIndex;
-
+use App\Livewire\Shift\ShiftIndex;
+use App\Livewire\Shift\ShiftForm;
+use App\Livewire\Shift\ShiftDetail;
+use App\Livewire\ShiftSchedule\ShiftScheduleIndex;
+use App\Livewire\ShiftSchedule\ShiftScheduleForm;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -133,6 +137,18 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
         Route::get('/', RoleIndex::class)->name('role.index')->middleware('can:view:role');
         Route::get('create', RoleForm::class)->name('role.create')->middleware('can:create:role');
         Route::get('edit/{id}', RoleForm::class)->name('role.edit')->middleware('can:update:role');
+    });
+
+    Route::group(['prefix' => 'shift'], function () {
+        Route::get('/', ShiftIndex::class)->name('shift.index')->middleware('can:view:shift');
+        Route::get('create', ShiftForm::class)->name('shift.create')->middleware('can:create:shift');
+        Route::get('edit/{id}', ShiftForm::class)->name('shift.edit')->middleware('can:update:shift');
+    });
+
+    Route::group(['prefix' => 'shift-schedule'], function () {
+        Route::get('/', ShiftScheduleIndex::class)->name('shift-schedule.index')->middleware('can:view:shift-schedule');
+        Route::get('create', ShiftScheduleForm::class)->name('shift-schedule.create')->middleware('can:create:shift-schedule');
+        Route::get('edit/{id}', ShiftScheduleForm::class)->name('shift-schedule.edit')->middleware('can:update:shift-schedule');
     });
 
     Route::group(['prefix' => 'employee'], function () {

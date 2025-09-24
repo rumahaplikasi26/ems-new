@@ -123,6 +123,18 @@ class RoleSeeder extends Seeder
             'update:permission' => ['Administrator'],
             'delete:permission' => ['Administrator'],
 
+            // Shift
+            'view:shift' => ['Administrator'],
+            'create:shift' => ['Administrator'],
+            'update:shift' => ['Administrator'],
+            'delete:shift' => ['Administrator'],
+
+            // Shift Schedule
+            'view:shift-schedule' => ['Administrator'],
+            'create:shift-schedule' => ['Administrator'],
+            'update:shift-schedule' => ['Administrator'],
+            'delete:shift-schedule' => ['Administrator'],
+
             // Settings
             'view:setting' => ['Administrator'],
             'create:setting' => ['Administrator'],

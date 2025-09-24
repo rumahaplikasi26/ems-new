@@ -29,12 +29,17 @@ class DepartmentSeeder extends Seeder
         //     ]);
         // }
 
-        DB::table('departments')->insert([
+        // Create departments with supervisors
+        $departments = [
             ['name' => 'DIRECTOR', 'site_id' => 1, 'supervisor_id' => null],
-            ['name' => 'HRD', 'site_id' => 1, 'supervisor_id' => null],
-            ['name' => 'IT', 'site_id' => 1, 'supervisor_id' => null],
-            ['name' => 'FINANCE', 'site_id' => 1, 'supervisor_id' => null],
-            ['name' => 'OPERATIONAL', 'site_id' => 1, 'supervisor_id' => null],
-        ]);
+            ['name' => 'HRD', 'site_id' => 1, 'supervisor_id' => null], // Will be updated after employees are created
+            ['name' => 'IT', 'site_id' => 1, 'supervisor_id' => null], // Will be updated after employees are created
+            ['name' => 'FINANCE', 'site_id' => 1, 'supervisor_id' => null], // Will be updated after employees are created
+            ['name' => 'OPERATIONAL', 'site_id' => 1, 'supervisor_id' => null], // Will be updated after employees are created
+        ];
+
+        foreach ($departments as $department) {
+            Department::create($department);
+        }
     }
 }

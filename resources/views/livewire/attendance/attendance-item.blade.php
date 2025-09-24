@@ -26,10 +26,16 @@
                     <img class="rounded avatar-md" src="{{ $checkIn['image_url'] ?? asset('images/time.png') }}" alt="{{ $checkIn['image_url'] ?? asset('images/time.png') }}">
                 </div>
                 <div class="flex-grow-1">
-                    @if ($checkIn['attendance_method']['id'] == 3)
+                    @if ($checkIn['shift'] && $checkIn['shift']['name'])
+                        <span class="d-block">
+                            <span class="badge bg-primary me-1">{{ $checkIn['shift']['name'] }}</span>
+                            <small class="text-muted">({{ $checkIn['shift']['start_time'] }} - {{ $checkIn['shift']['end_time'] }})</small>
+                        </span>
+                    @endif
+                    @if ($checkIn['site'] && $checkIn['site']['name'])
                         <span class="d-block">
                             <strong>
-                                {{ $checkIn['site']['name'] }} -
+                                {{ __('ems.site') }}: {{ $checkIn['site']['name'] }} -
                                 <a href="https://www.google.com/maps?q={{ $checkIn['site']['latitude'] }},{{ $checkIn['site']['longitude'] }}"
                                     target="_blank">{{ $checkIn['site']['longitude'] }},{{ $checkIn['site']['latitude'] }}</a>
                             </strong>
@@ -67,12 +73,18 @@
                         alt="{{ $checkOut['image_url'] ?? asset('images/time.png') }}">
                 </div>
                 <div class="flex-grow-1">
-                    @if ($checkOut['attendance_method']['id'] == 3)
+                    @if ($checkOut['shift'] && $checkOut['shift']['name'])
+                        <span class="d-block">
+                            <span class="badge bg-primary me-1">{{ $checkOut['shift']['name'] }}</span>
+                            <small class="text-muted">({{ $checkOut['shift']['start_time'] }} - {{ $checkOut['shift']['end_time'] }})</small>
+                        </span>
+                    @endif
+                    @if ($checkOut['site'] && $checkOut['site']['name'])
                         <span class="d-block">
                             <strong>
-                                {{ $checkIn['site']['name'] }} -
-                                <a href="https://www.google.com/maps?q={{ $checkIn['site']['latitude'] }},{{ $checkIn['site']['longitude'] }}"
-                                    target="_blank">{{ $checkIn['site']['longitude'] }},{{ $checkIn['site']['latitude'] }}</a>
+                                {{ __('ems.site') }}: {{ $checkOut['site']['name'] }} -
+                                <a href="https://www.google.com/maps?q={{ $checkOut['site']['latitude'] }},{{ $checkOut['site']['longitude'] }}"
+                                    target="_blank">{{ $checkOut['site']['longitude'] }},{{ $checkOut['site']['latitude'] }}</a>
                             </strong>
                         </span>
                     @endif

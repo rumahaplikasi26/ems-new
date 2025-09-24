@@ -23,6 +23,13 @@
         <strong>{{ $timestamp }}</strong>
     </td>
     <td>
+        @if($shift_name)
+            <span class="badge bg-primary">{{ $shift_name }}</span>
+        @else
+            <span class="text-muted">-</span>
+        @endif
+    </td>
+    <td>
         {!! $distanceFormatted !!}
     </td>
     <td>

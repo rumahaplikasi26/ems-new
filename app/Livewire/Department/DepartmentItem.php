@@ -13,9 +13,6 @@ class DepartmentItem extends BaseComponent
 {
     use LivewireAlert;
 
-    protected $listeners = [
-        'refreshIndex' => '$refresh',
-    ];
 
     public $department;
     public $limitDisplay = 5;

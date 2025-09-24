@@ -27,6 +27,7 @@ class Employee extends Model
         'marital_status',
         'religion',
         'position_id',
+        'shift_id',
         'whatsapp_number',
 
         // Salary
@@ -55,9 +56,72 @@ class Employee extends Model
         return $this->hasMany(Department::class, 'supervisor_id');
     }
 
+    // Get all departments supervised by this employee
+    public function supervisedDepartments()
+    {
+        return $this->hasMany(Department::class, 'supervisor_id');
+    }
+
+    // Get all employees under this supervisor's departments
+    public function supervisedEmployees()
+    {
+        return Employee::whereHas('position.department', function ($query) {
+            $query->where('supervisor_id', $this->id);
+        });
+    }
+
+    // Check if this employee is a supervisor
+    public function isSupervisor()
+    {
+        return $this->supervisedDepartments()->exists();
+    }
+
+    // Get employee IDs under supervision
+    public function getSupervisedEmployeeIds()
+    {
+        return $this->supervisedEmployees()->pluck('id');
+    }
+
     public function position()
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function shiftSchedules()
+    {
+        return $this->hasMany(EmployeeShiftSchedule::class);
+    }
+
+    // Get employee's shift for a specific date
+    public function getShiftForDate($date)
+    {
+        // First check if there's a specific schedule for this date
+        $schedule = $this->shiftSchedules()
+            ->active()
+            ->forDate($date)
+            ->with('shift')
+            ->first();
+
+        if ($schedule) {
+            return $schedule->shift;
+        }
+
+        // Fallback to default shift
+        return $this->shift;
+    }
+
+    // Check if employee has a shift schedule for a specific date
+    public function hasShiftScheduleForDate($date)
+    {
+        return $this->shiftSchedules()
+            ->active()
+            ->forDate($date)
+            ->exists();
     }
 
     public function attendances(): HasMany

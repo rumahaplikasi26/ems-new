@@ -29,7 +29,45 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="shift_id" class="form-label">{{ __('ems.shift') }} <span class="text-danger">*</span></label>
+                            <select class="form-select @error('shift_id') is-invalid @enderror" 
+                                    id="shift_id" 
+                                    wire:model="shift_id">
+                                <option value="">{{ __('ems.select_shift') }}</option>
+                                @foreach ($shifts as $shift)
+                                    <option value="{{ $shift->id }}">
+                                        {{ $shift->name }} ({{ $shift->start_time }} - {{ $shift->end_time }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('shift_id')
+                                <div class="invalid-feedback">
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                        </div>
+
                         @if ($attendance_method_id == 2)
+                            <div class="mb-3" wire:ignore>
+                                <label for="site_id" class="form-label">{{ __('ems.site') }} <span class="text-danger">*</span></label>
+                                
+                                <select class="form-select select-site @error('site_id') is-invalid @enderror" 
+                                        id="site_id" 
+                                        wire:model="site_id"
+                                        data-placeholder="{{ __('ems.select_site') }}">
+                                    <option value="">{{ __('ems.select_site') }}</option>
+                                    @foreach ($sites as $site)
+                                        <option value="{{ $site->id }}">{{ $site->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('site_id')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+
                             <section class="mb-3">
                                 @livewire('component.camera', key('selfie-camera-tag'))
                             </section>
@@ -123,3 +161,64 @@
     </div>
 
 </div>
+
+@push('styles')
+    <link href="{{ asset('libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+@endpush
+
+@push('js')
+    <script src="{{ asset('libs/select2/js/select2.min.js') }}"></script>
+    <script>
+        document.addEventListener('livewire:init', function() {
+            // Initialize Select2 for site dropdown
+            function initSelect2() {
+                // Check if select element exists
+                if ($('.select-site').length === 0) {
+                    return;
+                }
+                
+                // Destroy existing Select2 if it exists
+                if ($('.select-site').hasClass('select2-hidden-accessible')) {
+                    $('.select-site').select2('destroy');
+                }
+                
+                // Initialize Select2
+                $('.select-site').select2({
+                    width: '100%',
+                    placeholder: '{{ __('ems.select_site') }}',
+                    allowClear: true
+                });
+            }
+
+            // Handle site selection change
+            $(document).on('change', '.select-site', function() {
+                @this.set('site_id', this.value);
+            });
+
+            // Initialize Select2 when attendance method changes to Tag (2)
+            Livewire.on('attendance-method-changed', () => {
+                // Destroy existing Select2 if it exists
+                if ($('.select-site').hasClass('select2-hidden-accessible')) {
+                    $('.select-site').select2('destroy');
+                }
+                $('.select-site').val(null);
+            });
+
+            // Initialize Select2 when explicitly requested
+            Livewire.on('init-select2', () => {
+                setTimeout(() => {
+                    initSelect2();
+                }, 300);
+            });
+
+            // Listen for Livewire updates and initialize Select2 when site dropdown appears
+            Livewire.hook('morph.updated', ({ el, component }) => {
+                if (el.querySelector('.select-site')) {
+                    setTimeout(() => {
+                        initSelect2();
+                    }, 100);
+                }
+            });
+        });
+    </script>
+@endpush

@@ -16,6 +16,7 @@ class AttendanceTemp extends Model
         'attendance_method_id',
         'timestamp',
         'site_id',
+        'shift_id',
         'longitude',
         'latitude',
         'notes',
@@ -53,6 +54,11 @@ class AttendanceTemp extends Model
     public function approvedBy()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
     }
 
 }

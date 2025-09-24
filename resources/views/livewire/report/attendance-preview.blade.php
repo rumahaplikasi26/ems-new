@@ -8,7 +8,9 @@
                     S = Sick/Sakit<br>
                     I = Permit/Izin<br>
                     A = Absent (Lainnya)<br>
-                    - = No Activity/Tidak ada aktivitas
+                    - = No Activity/Tidak ada aktivitas<br>
+                    <strong>Format Waktu:</strong> HH:MM-HH:MM (Shift Name)<br>
+                    <em>Contoh: 08:00-17:00 (Shift 1)</em>
                 </div>
             </div>
         </div>

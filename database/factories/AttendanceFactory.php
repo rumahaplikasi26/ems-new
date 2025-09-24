@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Employee;
 use App\Models\User;
 use App\Models\Machine;
+use App\Models\Shift;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,6 +28,7 @@ class AttendanceFactory extends Factory
             'attendance_method_id' => 1,
             'timestamp' => $this->faker->dateTimeBetween('-2 years', 'now'),
             'site_id' => 1,
+            'shift_id' => Shift::all()->random()->id,
             'longitude' => $this->faker->longitude(),
             'latitude' => $this->faker->latitude(),
             'notes' => $this->faker->sentence,

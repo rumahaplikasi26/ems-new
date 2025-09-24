@@ -3,10 +3,11 @@
 namespace App\Livewire\AttendanceTemp;
 
 use App\Models\AttendanceTemp;
+use App\Livewire\BaseComponent;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class AttendanceTempIndex extends Component
+class AttendanceTempIndex extends BaseComponent
 {
     use WithPagination;
 
@@ -47,7 +48,7 @@ class AttendanceTempIndex extends Component
 
     public function render()
     {
-        $attendances = AttendanceTemp::with('employee.user', 'attendanceMethod')
+        $attendances = AttendanceTemp::with('employee.user', 'attendanceMethod', 'shift')
         ->when($this->search, function ($query) {
             $query->whereHas('employee.user', function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
@@ -58,7 +59,22 @@ class AttendanceTempIndex extends Component
             $query->whereDate('timestamp', '<=', $this->end_date);
         })->orderBy('timestamp', 'desc');
 
-        $attendances = $attendances->paginate($this->perPage);
+        // Apply supervisor filter
+        if ($this->authUser->can('view:attendance-all')) {
+            $attendances = $attendances->paginate($this->perPage);
+        } else {
+            // Check if user is a supervisor
+            if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
+                // Get employee IDs under supervision
+                $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
+                // Include supervisor's own attendance
+                $supervisedEmployeeIds->push($this->authUser->employee->id);
+                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
+            } else {
+                // Regular employee - only see their own attendance
+                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+            }
+        }
 
         return view('livewire.attendance-temp.attendance-temp-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance Temp', 'attendances' => $attendances]);
     }

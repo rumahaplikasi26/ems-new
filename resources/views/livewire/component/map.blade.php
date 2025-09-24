@@ -43,12 +43,18 @@
                 // Mengambil koordinat lokasi pengguna saat halaman pertama kali diakses
 
                 Livewire.on('refresh-map', (data) => {
-                    // console.log(data);
+                    console.log('refresh-map event received:', data);
                     let initialLat = parseFloat(data.latitude);
                     let initialLng = parseFloat(data.longitude);
                     let site_latitude = parseFloat(data.site_latitude);
                     let site_longitude = parseFloat(data.site_longitude);
                     let site_name = data.site_name;
+
+                    console.log('Map coordinates:', {
+                        user: { lat: initialLat, lng: initialLng },
+                        site: { lat: site_latitude, lng: site_longitude },
+                        site_name: site_name
+                    });
 
                     initMap(initialLat, initialLng, site_latitude, site_longitude, site_name);
                 });
@@ -81,85 +87,107 @@
 
                 function initMap(initialLat = 0, initialLng = 0, site_latitude = 0, site_longitude = 0, site_name =
                     "") {
-                    console.log(site_longitude, site_latitude);
+                    console.log('initMap called with:', { initialLat, initialLng, site_latitude, site_longitude, site_name });
+                    
+                    // Clear existing map if it exists
+                    const mapElement = document.getElementById('map');
+                    if (mapElement) {
+                        mapElement.innerHTML = '';
+                    }
+                    
                     var mapOptions = {
                         zoom: 20, // Adjust zoom level as needed
                         center: {
-                            lat: initialLat,
-                            lng: initialLng
+                            lat: initialLat || site_latitude,
+                            lng: initialLng || site_longitude
                         },
                     };
 
                     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-                    // Tambahkan marker untuk lokasi fallback
+                    // Tambahkan marker untuk lokasi site
                     var fallbackMarker = new google.maps.Marker({
                         position: {
                             lat: site_latitude,
                             lng: site_longitude
                         },
                         map: map,
-                        title: site_name,
-                    });
-
-                    var marker = new google.maps.Marker({
-                        position: {
-                            lat: initialLat,
-                            lng: initialLng
-                        },
-                        map: map,
-                        draggable: true,
-                    });
-
-                    // Tambahkan garis jarak antara lokasi pengguna dan fallback location
-                    var lineCoordinates = [{
-                            lat: site_latitude,
-                            lng: site_longitude
-                        },
-                        {
-                            lat: initialLat,
-                            lng: initialLng
+                        title: site_name || 'Site Location',
+                        icon: {
+                            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
                         }
-                    ];
-
-                    var polyline = new google.maps.Polyline({
-                        path: lineCoordinates,
-                        geodesic: true,
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 1.0,
-                        strokeWeight: 2
                     });
 
-                    polyline.setMap(map);
-
-                    // Pastikan pustaka geometry tersedia sebelum menghitung jarak
-                    if (google.maps.geometry) {
-                        // Menghitung jarak antara dua titik
-                        var distance = google.maps.geometry.spherical.computeDistanceBetween(
-                            new google.maps.LatLng(site_latitude, site_longitude),
-                            new google.maps.LatLng(initialLat, initialLng)
-                        );
-
-                        // Konversi jarak ke kilometer
-                        var distanceInKm = (distance / 1000).toFixed(2);
-
-                        Livewire.dispatch('update-distance', {
-                            distance: distanceInKm
+                    // Tambahkan marker untuk lokasi user (jika koordinat user tersedia)
+                    var marker = null;
+                    if (initialLat && initialLng && initialLat !== 0 && initialLng !== 0) {
+                        marker = new google.maps.Marker({
+                            position: {
+                                lat: initialLat,
+                                lng: initialLng
+                            },
+                            map: map,
+                            draggable: true,
+                            title: 'Your Location'
                         });
-
-                        // Tambahkan InfoWindow untuk menampilkan jarak
-                        var infoWindow = new google.maps.InfoWindow({
-                            content: '{{ __('ems.distance_to_office') }}: ' + distanceInKm + ' km'
-                        });
-
-                        infoWindow.open(map, marker);
-                    } else {
-                        console.error("Pustaka geometry Google Maps tidak tersedia.");
                     }
 
-                    if (!isNaN(initialLat) && !isNaN(initialLng)) {
+                    // Tambahkan garis jarak antara lokasi pengguna dan site location (jika user location tersedia)
+                    var polyline = null;
+                    if (marker && initialLat && initialLng && initialLat !== 0 && initialLng !== 0) {
+                        var lineCoordinates = [{
+                                lat: site_latitude,
+                                lng: site_longitude
+                            },
+                            {
+                                lat: initialLat,
+                                lng: initialLng
+                            }
+                        ];
+
+                        polyline = new google.maps.Polyline({
+                            path: lineCoordinates,
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 1.0,
+                            strokeWeight: 2
+                        });
+
+                        polyline.setMap(map);
+
+                        // Pastikan pustaka geometry tersedia sebelum menghitung jarak
+                        if (google.maps.geometry) {
+                            // Menghitung jarak antara dua titik
+                            var distance = google.maps.geometry.spherical.computeDistanceBetween(
+                                new google.maps.LatLng(site_latitude, site_longitude),
+                                new google.maps.LatLng(initialLat, initialLng)
+                            );
+
+                            // Konversi jarak ke kilometer
+                            var distanceInKm = (distance / 1000).toFixed(2);
+
+                            Livewire.dispatch('update-distance', {
+                                distance: distanceInKm
+                            });
+
+                            // Tambahkan InfoWindow untuk menampilkan jarak
+                            var infoWindow = new google.maps.InfoWindow({
+                                content: '{{ __('ems.distance_to_office') }}: ' + distanceInKm + ' km'
+                            });
+
+                            infoWindow.open(map, marker);
+                        } else {
+                            console.error("Pustaka geometry Google Maps tidak tersedia.");
+                        }
+                    }
+
+                    // Set map center based on available coordinates
+                    if (marker && !isNaN(initialLat) && !isNaN(initialLng) && initialLat !== 0 && initialLng !== 0) {
                         marker.setPosition(new google.maps.LatLng(initialLat, initialLng));
                         map.setCenter(new google.maps.LatLng(initialLat, initialLng));
+                    } else {
+                        // If no user location, center on site location
+                        map.setCenter(new google.maps.LatLng(site_latitude, site_longitude));
                     }
 
                     // Create the DIV to hold the control.

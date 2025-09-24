@@ -26,15 +26,17 @@ class AttendanceReportExport implements FromCollection, WithHeadings, WithMappin
     public $startDate;
     public $endDate;
     public $selectedEmployees;
+    public $selectedShifts;
     public $dateRange;
     public $countDays;
     public $reports;
 
-    public function __construct($startDate, $endDate, $selectedEmployees, $reports)
+    public function __construct($startDate, $endDate, $selectedEmployees, $reports, $selectedShifts = [])
     {
         $this->startDate = Carbon::parse($startDate)->startOfDay();
         $this->endDate = Carbon::parse($endDate)->endOfDay();
         $this->selectedEmployees = $selectedEmployees;
+        $this->selectedShifts = $selectedShifts;
         $this->reports = collect($reports);
         $this->countDays = daysBetween($this->startDate, $this->endDate) + 1;
         
@@ -174,6 +176,11 @@ class AttendanceReportExport implements FromCollection, WithHeadings, WithMappin
 
     public function title(): string
     {
-        return 'Attendance Report';
+        $title = 'Attendance Report';
+        if (!empty($this->selectedShifts)) {
+            $shiftNames = \App\Models\Shift::whereIn('id', $this->selectedShifts)->pluck('name')->implode(', ');
+            $title .= ' - Shifts: ' . $shiftNames;
+        }
+        return $title;
     }
 }

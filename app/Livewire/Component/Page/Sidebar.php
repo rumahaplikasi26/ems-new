@@ -68,6 +68,20 @@ class Sidebar extends BaseComponent
                     'permission' => 'view:role'
                 ],
                 [
+                    'name' => 'Shift',
+                    'url' => '/shift',
+                    'route' => 'shift.index',
+                    'icon' => 'bx bx-time',
+                    'permission' => 'view:shift'
+                ],
+                [
+                    'name' => 'Shift Schedule',
+                    'url' => '/shift-schedule',
+                    'route' => 'shift-schedule.index',
+                    'icon' => 'bx bx-calendar',
+                    'permission' => 'view:shift-schedule'
+                ],
+                [
                     'name' => 'Employee',
                     'url' => '/employee',
                     'route' => 'employee.index',

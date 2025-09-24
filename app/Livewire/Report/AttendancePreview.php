@@ -22,13 +22,15 @@ class AttendancePreview extends Component
     public $startDate;
     public $endDate;
     public $selectedEmployees;
+    public $selectedShifts = [];
     public $countDays;
     public $reports;
 
     #[On('attendance-preview')]
-    public function preview($employees, $startDate, $endDate)
+    public function preview($employees, $startDate, $endDate, $shifts = [])
     {
         $this->selectedEmployees = $employees;
+        $this->selectedShifts = $shifts;
 
         $this->startDate = Carbon::parse($startDate)->startOfDay();
         $this->endDate = Carbon::parse($endDate)->endOfDay();
@@ -44,11 +46,18 @@ class AttendancePreview extends Component
                 ->whereIn('id', $this->selectedEmployees)
                 ->get(['id', 'user_id']);
 
-            // Fetch semua attendance data dalam satu query
-            $attendances = Attendance::select('employee_id', 'timestamp')
+            // Fetch semua attendance data dalam satu query dengan shift information
+            $attendanceQuery = Attendance::with('shift:id,name,start_time,end_time')
+                ->select('employee_id', 'timestamp', 'shift_id')
                 ->whereIn('employee_id', $this->selectedEmployees)
-                ->whereBetween('timestamp', [$this->startDate, $this->endDate])
-                ->orderBy('timestamp')
+                ->whereBetween('timestamp', [$this->startDate, $this->endDate]);
+            
+            // Filter by shifts if selected
+            if (!empty($this->selectedShifts)) {
+                $attendanceQuery->whereIn('shift_id', $this->selectedShifts);
+            }
+            
+            $attendances = $attendanceQuery->orderBy('timestamp')
                 ->get()
                 ->groupBy('employee_id');
 
@@ -124,6 +133,11 @@ class AttendancePreview extends Component
                         $timeRange = Carbon::parse($firstAttendance->timestamp)->format('H:i') .
                                     '-' .
                                     Carbon::parse($lastAttendance->timestamp)->format('H:i');
+                        
+                        // Add shift information if available
+                        if ($firstAttendance->shift) {
+                            $timeRange .= ' (' . $firstAttendance->shift->name . ')';
+                        }
                     } else {
                         $timeRange = '-';
                     }
@@ -154,17 +168,17 @@ class AttendancePreview extends Component
     }
 
     #[On('export-attendance-data')]
-    public function exportAttendanceData($employees, $startDate, $endDate)
+    public function exportAttendanceData($employees, $startDate, $endDate, $shifts = [])
     {
         try {
             // Generate the report data first
-            $this->preview($employees, $startDate, $endDate);
+            $this->preview($employees, $startDate, $endDate, $shifts);
             
             if ($this->reports && $this->reports->isNotEmpty()) {
                 $fileName = 'attendance_report_' . Carbon::parse($startDate)->format('Y-m-d') . '_to_' . Carbon::parse($endDate)->format('Y-m-d') . '.xlsx';
                 
                 return Excel::download(
-                    new AttendanceReportExport($startDate, $endDate, $employees, $this->reports->toArray()),
+                    new AttendanceReportExport($startDate, $endDate, $employees, $this->reports->toArray(), $shifts),
                     $fileName
                 );
             } else {
@@ -182,7 +196,7 @@ class AttendancePreview extends Component
                 $fileName = 'attendance_report_' . Carbon::parse($this->startDate)->format('Y-m-d') . '_to_' . Carbon::parse($this->endDate)->format('Y-m-d') . '.xlsx';
                 
                 return Excel::download(
-                    new AttendanceReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray()),
+                    new AttendanceReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray(), $this->selectedShifts),
                     $fileName
                 );
             } else {

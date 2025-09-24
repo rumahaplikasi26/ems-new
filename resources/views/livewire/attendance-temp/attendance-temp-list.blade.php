@@ -6,6 +6,7 @@
                     <th scope="col" style="width: 100px">#</th>
                     <th scope="col">{{ __('ems.name') }}</th>
                     <th scope="col">{{ __('ems.timestamp') }}</th>
+                    <th scope="col">{{ __('ems.shift') }}</th>
                     <th scope="col">{{ __('ems.distance') }}</th>
                     <th scope="col">{{ __('ems.location') }}</th>
                     <th scope="col">{{ __('ems.notes') }}</th>

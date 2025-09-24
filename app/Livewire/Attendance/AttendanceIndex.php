@@ -49,7 +49,7 @@ class AttendanceIndex extends BaseComponent
     public function render()
     {
         // Fetch attendance data with related models
-        $attendances = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod'])
+        $attendances = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
             ->when($this->search, function ($query) {
                 $query->whereHas('employee.user', function ($query) {
                     $query->where('name', 'like', '%' . $this->search . '%');
@@ -65,25 +65,35 @@ class AttendanceIndex extends BaseComponent
             ->selectRaw('DATE(timestamp) as date')
             ->selectRaw('MIN(timestamp) as check_in')
             ->selectRaw('MAX(timestamp) as check_out')
-            ->groupBy('employee_id', 'date')
+            ->groupBy('employee_id', 'date', 'shift_id')
             ->orderBy('date', 'desc');
 
         if ($this->authUser->can('view:attendance-all')) {
             $attendances = $attendances->paginate($this->perPage);
         } else {
-            $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+            // Check if user is a supervisor
+            if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
+                // Get employee IDs under supervision
+                $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
+                // Include supervisor's own attendance
+                $supervisedEmployeeIds->push($this->authUser->employee->id);
+                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
+            } else {
+                // Regular employee - only see their own attendance
+                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+            }
         }
 
         // Fetch all check-in and check-out records at once with relations
         $checkInDetails = Attendance::whereIn('timestamp', $attendances->pluck('check_in'))
-            ->with(['employee.user', 'machine', 'site', 'attendanceMethod'])
+            ->with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
             ->get()
             ->keyBy(function ($item) {
                 return $item->employee_id . '-' . $item->timestamp;
             });
 
         $checkOutDetails = Attendance::whereIn('timestamp', $attendances->pluck('check_out'))
-            ->with(['employee.user', 'machine', 'site', 'attendanceMethod'])
+            ->with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
             ->get()
             ->keyBy(function ($item) {
                 return $item->employee_id . '-' . $item->timestamp;
@@ -141,6 +151,12 @@ class AttendanceIndex extends BaseComponent
                         'longitude' => $checkInDetail->site->longitude,
                         'latitude' => $checkInDetail->site->latitude,
                     ] : null,
+                    'shift' => $checkInDetail->shift ? [
+                        'id' => $checkInDetail->shift->id,
+                        'name' => $checkInDetail->shift->name,
+                        'start_time' => $checkInDetail->shift->start_time,
+                        'end_time' => $checkInDetail->shift->end_time,
+                    ] : null,
                     'uid' => $checkInDetail->uid,
                     'longitude' => $checkInDetail->longitude,
                     'latitude' => $checkInDetail->latitude,
@@ -168,6 +184,12 @@ class AttendanceIndex extends BaseComponent
                         'name' => $checkOutDetail->site->name,
                         'longitude' => $checkOutDetail->site->longitude,
                         'latitude' => $checkOutDetail->site->latitude,
+                    ] : null,
+                    'shift' => $checkOutDetail->shift ? [
+                        'id' => $checkOutDetail->shift->id,
+                        'name' => $checkOutDetail->shift->name,
+                        'start_time' => $checkOutDetail->shift->start_time,
+                        'end_time' => $checkOutDetail->shift->end_time,
                     ] : null,
                     'uid' => $checkOutDetail->uid,
                     'longitude' => $checkOutDetail->longitude,

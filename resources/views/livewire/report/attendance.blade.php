@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-body" wire:ignore>
                             <label for="form-label">Select Employees</label>
@@ -26,7 +26,29 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body" wire:ignore>
+                            <label for="form-label">Select Shifts (Optional)</label>
+                            <select name="shifts" wire:model="shifts" class="form-select select2-shift"
+                                id="" multiple data-placeholder="Select Shifts">
+                                <option value="all">All Shifts</option>
+
+                                @foreach ($shifts as $shift)
+                                    <option value="{{ $shift->id }}">{{ $shift->name }}</option>
+                                @endforeach
+                            </select>
+
+                            @error('shifts')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
 
@@ -88,6 +110,7 @@
                 initDatePicker();
 
                 let selectElement = $('.select2-multiple');
+                let shiftElement = $('.select2-shift');
 
                 selectElement.select2({
                     width: '100%',
@@ -103,6 +126,22 @@
                         $(".select2-multiple > option").prop("selected", "selected");
                         $('.select2-multiple > option[value="all"]').prop("selected", false);
                         $(".select2-multiple").trigger("change");
+                    }
+                });
+
+                shiftElement.select2({
+                    width: '100%',
+                }).on('change', function() {
+                    let selectedValues = $(this).val();
+                    Livewire.dispatch('change-input-form', ['selectedShifts', selectedValues]);
+                });
+
+                shiftElement.on("select2:select", function(e) {
+                    var data = e.params.data.text;
+                    if (data == 'All Shifts') {
+                        $(".select2-shift > option").prop("selected", "selected");
+                        $('.select2-shift > option[value="all"]').prop("selected", false);
+                        $(".select2-shift").trigger("change");
                     }
                 });
 
