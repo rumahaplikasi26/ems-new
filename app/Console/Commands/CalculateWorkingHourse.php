@@ -33,7 +33,7 @@ class CalculateWorkingHourse extends Command
         // $date = Carbon::parse('2025-06-26')->subDays(1)->format('Y-m-d'); // Calculate for yesterday
         // $date = Carbon::now()->subDays(1)->format('Y-m-d'); // Calculate for yesterday
 
-        $datePeriods = CarbonPeriod::create(Carbon::parse('2023-01-01'), Carbon::now()->subDays(1));
+        $datePeriods = CarbonPeriod::create(Carbon::now()->subDays(30), Carbon::now()->subDays(1));
 
         foreach ($datePeriods as $date) {
             if (HolidayHelper::isHoliday($date)) {
