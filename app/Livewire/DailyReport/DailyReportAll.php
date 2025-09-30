@@ -7,11 +7,12 @@ use App\Models\Employee;
 use App\Models\DailyReport;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Livewire\WithPagination;
 use Livewire\Attributes\Url;
 
 class DailyReportAll extends Component
 {
-
+    use WithPagination;     
     public $employee_id = [];
     public $perPage = 10;
     public $start_date;
