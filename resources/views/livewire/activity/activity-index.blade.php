@@ -38,14 +38,14 @@
                                 data-date-format="yyyy-mm-dd" data-date-container='#activity-inputgroup'
                                 data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
+                                    wire:model.live="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
+                                    wire:model.live="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -69,7 +69,7 @@
         {{ $activities->links() }}
 
         <div class="col-lg-12">
-            @livewire('activity.activity-list', ['activities' => $activities->getCollection()], key('activity-list'))
+            @livewire('activity.activity-list', ['activities' => $activities], key('activity-list'))
         </div>
 
         {{ $activities->links() }}
@@ -110,10 +110,35 @@
                         let startDate = $('#activity-inputgroup').find('input[name="start"]').val();
                         let endDate = $('#activity-inputgroup').find('input[name="end"]').val();
 
-                        @this.set('start_date', startDate);
-                        @this.set('end_date', endDate);
+                        if (startDate) {
+                            @this.set('start_date', startDate);
+                        }
+                        if (endDate) {
+                            @this.set('end_date', endDate);
+                        }
+                    });
+
+                    // Also listen for input changes (manual typing)
+                    $('#activity-inputgroup').find('input[name="start"]').on('change', function() {
+                        @this.set('start_date', $(this).val());
+                    });
+
+                    $('#activity-inputgroup').find('input[name="end"]').on('change', function() {
+                        @this.set('end_date', $(this).val());
                     });
                 }
+
+                // Listen for reset events
+                Livewire.on('resetSelect2', () => {
+                    selectElement.val(null).trigger('change');
+                });
+
+                Livewire.on('resetDatePicker', () => {
+                    $('#activity-inputgroup').find('input').val('');
+                    $('#activity-inputgroup').datepicker('update');
+                    @this.set('start_date', '');
+                    @this.set('end_date', '');
+                });
 
             });
         </script>

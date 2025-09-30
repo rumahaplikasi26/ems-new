@@ -29,6 +29,20 @@ class ActivityIndex extends BaseComponent
         $this->users = User::all();
     }
 
+    public function resetFilter()
+    {
+        $this->search = '';
+        $this->user_ids = [];
+        $this->start_date = '';
+        $this->end_date = '';
+        
+        // Reset select2
+        $this->dispatch('resetSelect2');
+        
+        // Reset date picker
+        $this->dispatch('resetDatePicker');
+    }
+
     public function render()
     {
         $activities = Activity::with('causer')->when($this->search, function ($query) {
@@ -48,6 +62,6 @@ class ActivityIndex extends BaseComponent
             $activities = $activities->where('causer_id', $this->authUser->id)->paginate($this->perPage);
         }
 
-        return view('livewire.activity.activity-index', compact('activities'))->layout('layouts.app', ['title' => 'Activity']);
+        return view('livewire.activity.activity-index', compact('activities'));
     }
 }
