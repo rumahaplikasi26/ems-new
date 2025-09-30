@@ -12,10 +12,6 @@ class PositionItem extends Component
 {
     use LivewireAlert;
 
-    protected $listeners = [
-        'refreshIndex' => '$refresh',
-    ];
-
     public $position;
 
     public $limitDisplay = 5;

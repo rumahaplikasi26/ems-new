@@ -14,7 +14,7 @@ class PositionIndex extends Component
 
     #[Url(except: '')]
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 20;
     public $department_id;
     public $showForm = true;
     public $departments;

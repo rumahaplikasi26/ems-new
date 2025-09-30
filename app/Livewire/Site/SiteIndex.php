@@ -13,7 +13,7 @@ class SiteIndex extends Component
     use LivewireAlert, WithPagination;
     #[Url(except: '')]
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 20;
 
     protected $listeners = [
         'refreshIndex' => '$refresh',
