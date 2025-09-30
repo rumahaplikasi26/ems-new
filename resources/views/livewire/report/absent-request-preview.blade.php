@@ -2,11 +2,6 @@
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="card-title mb-0">Absent Request Reports</h4>
-            @if ($reports && $reports->isNotEmpty())
-                <button class="btn btn-success btn-sm" wire:click="exportExcel" wire:loading.attr="disabled">
-                    <i class="fas fa-file-excel"></i> Export Excel
-                </button>
-            @endif
         </div>
         @if ($reports)
             <div class="table-responsive mt-4">

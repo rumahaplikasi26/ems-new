@@ -42,8 +42,36 @@ class LeaveRequest extends Component
         }
     }
 
+    public function resetFilter()
+    {
+        $this->selectedEmployees = [];
+        $this->startDate = '';
+        $this->endDate = '';
+        
+        // Reset select2
+        $this->dispatch('resetSelect2');
+        
+        // Reset date picker
+        $this->dispatch('resetDatePicker');
+    }
+
+    public function exportReport()
+    {
+        try {
+            $this->validate([
+                'startDate' => 'required',
+                'endDate' => 'required',
+                'selectedEmployees' => 'required|array|min:1'
+            ]);
+
+            $this->dispatch('export-leave-request-data', employees: $this->selectedEmployees, startDate: $this->startDate, endDate: $this->endDate);
+        } catch (\Exception $e) {
+            $this->alert('error', $e->getMessage());
+        }
+    }
+
     public function render()
     {
-        return view('livewire.report.leave-request')->layout('layouts.app', ['title' => 'Leave Request']);
+        return view('livewire.report.leave-request');
     }
 }
