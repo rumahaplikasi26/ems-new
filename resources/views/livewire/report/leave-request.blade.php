@@ -60,6 +60,8 @@
                         Filter</button>
                     <button class="btn btn-primary mt-2" wire:click="preview"
                         wire:loading.attr="disabled">Preview</button>
+                    <button class="btn btn-success mt-2" wire:click="exportReport"
+                        wire:loading.attr="disabled">Export Excel</button>
                 </div>
             </div>
 
@@ -113,10 +115,35 @@
                         let startDate = $('#leave-request-inputgroup').find('input[name="start"]').val();
                         let endDate = $('#leave-request-inputgroup').find('input[name="end"]').val();
 
-                        @this.set('startDate', startDate);
-                        @this.set('endDate', endDate);
+                        if (startDate) {
+                            @this.set('startDate', startDate);
+                        }
+                        if (endDate) {
+                            @this.set('endDate', endDate);
+                        }
+                    });
+
+                    // Also listen for input changes (manual typing)
+                    $('#leave-request-inputgroup').find('input[name="start"]').on('change', function() {
+                        @this.set('startDate', $(this).val());
+                    });
+
+                    $('#leave-request-inputgroup').find('input[name="end"]').on('change', function() {
+                        @this.set('endDate', $(this).val());
                     });
                 }
+
+                // Listen for reset events
+                Livewire.on('resetSelect2', () => {
+                    selectElement.val(null).trigger('change');
+                });
+
+                Livewire.on('resetDatePicker', () => {
+                    $('#leave-request-inputgroup').find('input').val('');
+                    $('#leave-request-inputgroup').datepicker('update');
+                    @this.set('startDate', '');
+                    @this.set('endDate', '');
+                });
 
             });
         </script>

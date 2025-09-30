@@ -1,6 +1,13 @@
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title mb-3">Leave Request Reports</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title mb-0">Leave Request Reports</h4>
+            @if($reports && $reports->isNotEmpty())
+                <button class="btn btn-success" wire:click="exportExcel" wire:loading.attr="disabled">
+                    <i class="fas fa-download"></i> Export Excel
+                </button>
+            @endif
+        </div>
         @if ($reports)
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-sm">
@@ -17,14 +24,16 @@
                     </thead>
                     <tbody>
                         @foreach ($reports as $leaveRequest)
-                            <th><small>{{ $leaveRequest->employee_id }}</small></th>
-                            <th><small>{{ $leaveRequest->employee->user->name }}</small></th>
-                            <th class="text-center"><small>{{ $leaveRequest->start_date->format('d/m') }} -
-                                    {{ $leaveRequest->end_date->format('d/m') }}</small></th>
-                            <th class="text-center"><small>{{ $leaveRequest->total_days }}</small></th>
-                            <th class="text-center"><small>{{ $leaveRequest->current_total_leave }}</small></th>
-                            <th class="text-center"><small>{{ $leaveRequest->total_leave_after_request }}</small></th>
-                            <th><small>{{ $leaveRequest->notes }}</small></th>
+                            <tr>
+                                <td><small>{{ $leaveRequest->employee_id }}</small></td>
+                                <td><small>{{ $leaveRequest->employee->user->name }}</small></td>
+                                <td class="text-center"><small>{{ $leaveRequest->start_date->format('d/m') }} -
+                                        {{ $leaveRequest->end_date->format('d/m') }}</small></td>
+                                <td class="text-center"><small>{{ $leaveRequest->total_days }}</small></td>
+                                <td class="text-center"><small>{{ $leaveRequest->current_total_leave }}</small></td>
+                                <td class="text-center"><small>{{ $leaveRequest->total_leave_after_request }}</small></td>
+                                <td><small>{{ $leaveRequest->notes }}</small></td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
