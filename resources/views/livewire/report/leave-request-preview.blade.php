@@ -1,8 +1,6 @@
 <div class="card">
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="card-title mb-0">Leave Request Reports</h4>
-        </div>
+        <h4 class="card-title mb-3">Leave Request Reports</h4>
         @if ($reports)
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-sm">

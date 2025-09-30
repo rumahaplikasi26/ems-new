@@ -72,6 +72,6 @@ class LeaveRequest extends Component
 
     public function render()
     {
-        return view('livewire.report.leave-request');
+        return view('livewire.report.leave-request')->layout('layouts.app', ['title' => 'Leave Request']);
     }
 }
