@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Mode - EMS System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .maintenance-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .ems-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .maintenance-icon {
+            font-size: 60px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .maintenance-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+
+        .maintenance-subtitle {
+            font-size: 1.1em;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .maintenance-description {
+            font-size: 0.95em;
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .estimated-time {
+            background: #fef5e7;
+            border: 1px solid #f6e05e;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .estimated-time h3 {
+            color: #d69e2e;
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+
+        .contact-info {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .contact-info h3 {
+            color: #38a169;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .contact-item {
+            color: #276749;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .refresh-button {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px 0;
+        }
+
+        .refresh-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.85em;
+        }
+
+        .footer a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .maintenance-title {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="ems-logo">EMS</div>
+        
+        <div class="maintenance-icon">🔧</div>
+        
+        <h1 class="maintenance-title">System Maintenance</h1>
+        
+        <p class="maintenance-subtitle">
+            We're currently performing scheduled maintenance
+        </p>
+        
+        <p class="maintenance-description">
+            Our team is working to improve the Employee Management System performance and add new features. 
+            We apologize for any inconvenience.
+        </p>
+
+        <div class="estimated-time">
+            <h3>⏰ Estimated Completion Time</h3>
+            <p>We expect to complete maintenance within the next <strong>2-3 hours</strong></p>
+        </div>
+
+        <div class="contact-info">
+            <h3>📞 Need Assistance?</h3>
+            <div class="contact-item">📱 +62 21 1234 5678</div>
+            <div class="contact-item">✉️ ems-support@company.com</div>
+            <div class="contact-item">💬 +62 812 3456 7890 (WhatsApp)</div>
+        </div>
+
+        <button class="refresh-button" onclick="window.location.reload()">
+            🔄 Check Again
+        </button>
+
+        <div class="footer">
+            <p>
+                &copy; 2024 <strong>Employee Management System</strong>. All rights reserved.<br>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Auto refresh every 5 minutes
+        setTimeout(() => {
+            window.location.reload();
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
