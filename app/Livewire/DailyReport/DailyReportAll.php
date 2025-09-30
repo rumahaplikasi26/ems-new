@@ -66,6 +66,6 @@ class DailyReportAll extends Component
 
         $daily_reports = $query->latest()->paginate($this->perPage);
 
-        return view('livewire.daily-report.daily-report-all', compact('daily_reports'));
+        return view('livewire.daily-report.daily-report-all', compact('daily_reports'))->layout('layouts.app', ['title' => 'Daily Report All']);
     }
 }
