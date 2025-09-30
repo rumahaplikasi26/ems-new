@@ -38,14 +38,14 @@
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
                                 data-date-container='#financial-request-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
+                                    wire:model.live="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
+                                    wire:model.live="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -98,15 +98,15 @@
                 }
 
                 function initDatePicker() {
-                    $('#attendance-inputgroup').datepicker({
+                    $('#financial-request-inputgroup').datepicker({
                         format: 'yyyy-mm-dd',
                         autoclose: true,
                         todayHighlight: true,
-                        inputs: $('#attendance-inputgroup').find('input')
+                        inputs: $('#financial-request-inputgroup').find('input')
                     }).on('changeDate', function(e) {
                         // Update the Livewire property when date is selected
-                        let startDate = $('#attendance-inputgroup').find('input[name="start"]').val();
-                        let endDate = $('#attendance-inputgroup').find('input[name="end"]').val();
+                        let startDate = $('#financial-request-inputgroup').find('input[name="start"]').val();
+                        let endDate = $('#financial-request-inputgroup').find('input[name="end"]').val();
 
                         @this.set('start_date', startDate);
                         @this.set('end_date', endDate);

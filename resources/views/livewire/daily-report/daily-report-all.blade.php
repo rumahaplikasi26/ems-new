@@ -36,14 +36,14 @@
                                 data-provide="datepicker" data-date-format="yyyy-mm-dd"
                                 data-date-container='#daily-report-inputgroup' data-date-autoclose="true">
                                 <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
+                                    wire:model.live="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
+                                    wire:model.live="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -98,20 +98,45 @@
                 }
 
                 function initDatePicker() {
-                    $('#attendance-inputgroup').datepicker({
+                    $('#daily-report-inputgroup').datepicker({
                         format: 'yyyy-mm-dd',
                         autoclose: true,
                         todayHighlight: true,
-                        inputs: $('#attendance-inputgroup').find('input')
+                        inputs: $('#daily-report-inputgroup').find('input')
                     }).on('changeDate', function(e) {
                         // Update the Livewire property when date is selected
-                        let startDate = $('#attendance-inputgroup').find('input[name="start"]').val();
-                        let endDate = $('#attendance-inputgroup').find('input[name="end"]').val();
+                        let startDate = $('#daily-report-inputgroup').find('input[name="start"]').val();
+                        let endDate = $('#daily-report-inputgroup').find('input[name="end"]').val();
 
-                        @this.set('start_date', startDate);
-                        @this.set('end_date', endDate);
+                        if (startDate) {
+                            @this.set('start_date', startDate);
+                        }
+                        if (endDate) {
+                            @this.set('end_date', endDate);
+                        }
+                    });
+
+                    // Also listen for input changes (manual typing)
+                    $('#daily-report-inputgroup').find('input[name="start"]').on('change', function() {
+                        @this.set('start_date', $(this).val());
+                    });
+
+                    $('#daily-report-inputgroup').find('input[name="end"]').on('change', function() {
+                        @this.set('end_date', $(this).val());
                     });
                 }
+
+                // Listen for reset events
+                Livewire.on('resetSelect2', () => {
+                    selectElement.val(null).trigger('change');
+                });
+
+                Livewire.on('resetDatePicker', () => {
+                    $('#daily-report-inputgroup').find('input').val('');
+                    $('#daily-report-inputgroup').datepicker('update');
+                    @this.set('start_date', '');
+                    @this.set('end_date', '');
+                });
 
             });
         </script>
