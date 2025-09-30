@@ -33,6 +33,9 @@
         {!! $distanceFormatted !!}
     </td>
     <td>
+        <span class="badge bg-primary">{{ $site_name }}</span>
+    </td>
+    <td>
         <a href="https://www.google.com/maps/search/{{ $latitude }},{{ $longitude }}" target="_blank">{{ $longitude }}, {{ $latitude }}</a>
     </td>
     <td>

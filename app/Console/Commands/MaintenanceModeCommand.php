@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 
 class MaintenanceModeCommand extends Command
 {
@@ -12,14 +11,14 @@ class MaintenanceModeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'maintenance {action} {--message=} {--eta=} {--email=} {--phone=}';
+    protected $signature = 'maintenance {action} {--message=} {--secret=} {--render=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Enable or disable maintenance mode for EMS system';
+    protected $description = 'Enable or disable maintenance mode for EMS system using Laravel built-in maintenance mode';
 
     /**
      * Execute the console command.
@@ -50,108 +49,80 @@ class MaintenanceModeCommand extends Command
 
     private function enableMaintenance()
     {
-        $envFile = base_path('.env');
-        
-        if (!File::exists($envFile)) {
-            $this->error('.env file not found!');
-            return;
+        $message = $this->option('message') ?: 'The EMS system is currently under maintenance. Please try again later.';
+        $secret = $this->option('secret');
+        $render = $this->option('render') ?: 'maintenance';
+
+        // Generate secret if not provided
+        if (!$secret) {
+            $secret = 'ems-' . bin2hex(random_bytes(8));
         }
 
-        $envContent = File::get($envFile);
+        // Build artisan down command
+        $command = "php artisan down --message=\"{$message}\" --secret=\"{$secret}\"";
         
-        // Get options
-        $message = $this->option('message') ?: 'We are currently performing scheduled maintenance on the Employee Management System. Please try again later.';
-        $eta = $this->option('eta') ?: '2-3 hours';
-        $email = $this->option('email') ?: 'ems-support@company.com';
-        $phone = $this->option('phone') ?: '+62 21 1234 5678';
-
-        // Update or add maintenance mode settings
-        $maintenanceSettings = [
-            'MAINTENANCE_MODE=true',
-            'MAINTENANCE_MESSAGE="' . addslashes($message) . '"',
-            'MAINTENANCE_ETA="' . addslashes($eta) . '"',
-            'MAINTENANCE_CONTACT_EMAIL="' . addslashes($email) . '"',
-            'MAINTENANCE_CONTACT_PHONE="' . addslashes($phone) . '"'
-        ];
-
-        foreach ($maintenanceSettings as $setting) {
-            $key = explode('=', $setting)[0];
-            
-            if (preg_match("/^{$key}=.*/m", $envContent)) {
-                // Update existing setting
-                $envContent = preg_replace("/^{$key}=.*/m", $setting, $envContent);
-            } else {
-                // Add new setting
-                $envContent .= "\n{$setting}";
-            }
+        if ($render) {
+            $command .= " --render=\"{$render}\"";
         }
 
-        File::put($envFile, $envContent);
+        // Execute the command
+        exec($command, $output, $returnCode);
 
-        $this->info('✅ EMS Maintenance mode enabled successfully!');
-        $this->line("📝 Message: {$message}");
-        $this->line("⏰ ETA: {$eta}");
-        $this->line("📧 Contact: {$email}");
-        $this->line("📱 Phone: {$phone}");
-        $this->warn('⚠️  Remember to run: php artisan config:clear');
+        if ($returnCode === 0) {
+            $this->info('✅ EMS Maintenance mode enabled successfully!');
+            $this->line("📝 Message: {$message}");
+            $this->line("🔑 Secret: {$secret}");
+            $this->line("");
+            $this->comment("🔧 Developer Access:");
+            $this->line("URL: yourdomain.com/{$secret}");
+            $this->line("Or: yourdomain.com?secret={$secret}");
+            $this->line("");
+            $this->comment("📋 To disable maintenance:");
+            $this->line("php artisan up");
+            $this->line("Or: php artisan maintenance off");
+        } else {
+            $this->error('❌ Failed to enable maintenance mode!');
+            $this->line("Command: {$command}");
+        }
     }
 
     private function disableMaintenance()
     {
-        $envFile = base_path('.env');
-        
-        if (!File::exists($envFile)) {
-            $this->error('.env file not found!');
-            return;
+        // Execute php artisan up
+        exec('php artisan up', $output, $returnCode);
+
+        if ($returnCode === 0) {
+            $this->info('✅ EMS Maintenance mode disabled successfully!');
+        } else {
+            $this->error('❌ Failed to disable maintenance mode!');
         }
-
-        $envContent = File::get($envFile);
-        
-        // Remove maintenance mode settings
-        $maintenanceKeys = [
-            'MAINTENANCE_MODE',
-            'MAINTENANCE_MESSAGE',
-            'MAINTENANCE_ETA',
-            'MAINTENANCE_CONTACT_EMAIL',
-            'MAINTENANCE_CONTACT_PHONE'
-        ];
-
-        foreach ($maintenanceKeys as $key) {
-            $envContent = preg_replace("/^{$key}=.*\n?/m", '', $envContent);
-        }
-
-        File::put($envFile, $envContent);
-
-        $this->info('✅ EMS Maintenance mode disabled successfully!');
-        $this->warn('⚠️  Remember to run: php artisan config:clear');
     }
 
     private function checkStatus()
     {
-        $envFile = base_path('.env');
-        
-        if (!File::exists($envFile)) {
-            $this->error('.env file not found!');
-            return;
-        }
-
-        $envContent = File::get($envFile);
-        
-        $isEnabled = strpos($envContent, 'MAINTENANCE_MODE=true') !== false;
-        
-        if ($isEnabled) {
+        if (app()->isDownForMaintenance()) {
             $this->warn('🔧 EMS Maintenance mode is ENABLED');
             
-            // Extract settings
-            preg_match('/MAINTENANCE_MESSAGE="([^"]*)"/', $envContent, $message);
-            preg_match('/MAINTENANCE_ETA="([^"]*)"/', $envContent, $eta);
-            preg_match('/MAINTENANCE_CONTACT_EMAIL="([^"]*)"/', $envContent, $email);
-            preg_match('/MAINTENANCE_CONTACT_PHONE="([^"]*)"/', $envContent, $phone);
+            // Try to get maintenance data
+            $maintenanceData = app('Illuminate\Foundation\Application')->maintenanceMode();
             
-            $this->line("📝 Message: " . ($message[1] ?? 'Default message'));
-            $this->line("⏰ ETA: " . ($eta[1] ?? 'Not set'));
-            $this->line("📧 Email: " . ($email[1] ?? 'Not set'));
-            $this->line("📱 Phone: " . ($phone[1] ?? 'Not set'));
+            if ($maintenanceData) {
+                $this->line("📝 Message: " . ($maintenanceData['message'] ?? 'Default message'));
+                $this->line("🔑 Secret: " . ($maintenanceData['secret'] ?? 'Not set'));
+                $this->line("🎨 Render: " . ($maintenanceData['render'] ?? 'Default'));
+                
+                if (isset($maintenanceData['secret'])) {
+                    $this->line("");
+                    $this->comment("🔧 Developer Access:");
+                    $this->line("URL: yourdomain.com/{$maintenanceData['secret']}");
+                    $this->line("Or: yourdomain.com?secret={$maintenanceData['secret']}");
+                }
+            }
+            
+            $this->line("");
+            $this->comment("📋 To disable maintenance:");
+            $this->line("php artisan up");
+            $this->line("Or: php artisan maintenance off");
         } else {
             $this->info('✅ EMS Maintenance mode is DISABLED');
         }

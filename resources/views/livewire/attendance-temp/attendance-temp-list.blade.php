@@ -8,6 +8,7 @@
                     <th scope="col">{{ __('ems.timestamp') }}</th>
                     <th scope="col">{{ __('ems.shift') }}</th>
                     <th scope="col">{{ __('ems.distance') }}</th>
+                    <th scope="col">{{ __('ems.site_name') }}</th>
                     <th scope="col">{{ __('ems.location') }}</th>
                     <th scope="col">{{ __('ems.notes') }}</th>
                     <th scope="col">{{ __('ems.action') }}</th>
@@ -20,7 +21,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="7" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
+                        <td colspan="9" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

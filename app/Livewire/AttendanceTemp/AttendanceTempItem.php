@@ -17,7 +17,7 @@ class AttendanceTempItem extends BaseComponent
     public $attendance;
 
     public $employee;
-    public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $noteExcerpt, $latitude, $longitude, $image_path, $created_at, $approved_by, $approved_at, $approved_by_name, $approved_at_formatted, $shift_id, $shift_name;
+    public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $site_name, $noteExcerpt, $latitude, $longitude, $image_path, $created_at, $approved_by, $approved_at, $approved_by_name, $approved_at_formatted, $shift_id, $shift_name;
 
     public function mount()
     {
@@ -38,6 +38,7 @@ class AttendanceTempItem extends BaseComponent
         $this->approved_by_name = $this->attendance->approvedBy?->name;
         $this->shift_id = $this->attendance->shift_id;
         $this->shift_name = $this->attendance->shift?->name;
+        $this->site_name = $this->attendance->site?->name;
         $this->approved_at_formatted = $this->attendance->approved_at?->format('d-m-Y H:i:s');
 
         $this->distanceFormatted();

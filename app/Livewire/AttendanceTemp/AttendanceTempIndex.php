@@ -48,7 +48,7 @@ class AttendanceTempIndex extends BaseComponent
 
     public function render()
     {
-        $attendances = AttendanceTemp::with('employee.user', 'attendanceMethod', 'shift')
+        $attendances = AttendanceTemp::with('employee.user', 'attendanceMethod', 'shift', 'site')
         ->when($this->search, function ($query) {
             $query->whereHas('employee.user', function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');

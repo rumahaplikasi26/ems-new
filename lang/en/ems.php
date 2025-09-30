@@ -236,7 +236,7 @@ return [
     'distance' => 'Distance',
     'approve' => 'Approve',
     'reject' => 'Reject',
-
+    'site_name' => 'Site Name',
     // Authentication Management
     'welcome_back' => 'Welcome Back!',
     'sign_in_to_continue' => 'Sign in to continue to',

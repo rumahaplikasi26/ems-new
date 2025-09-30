@@ -15,8 +15,8 @@ class MaintenanceMode
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if maintenance mode is enabled
-        if (config('app.maintenance_mode', false)) {
+        // Check if Laravel maintenance mode is enabled
+        if (app()->isDownForMaintenance()) {
             // Allow access to specific routes during maintenance
             $allowedRoutes = [
                 'maintenance',
@@ -43,24 +43,17 @@ class MaintenanceMode
                 return $next($request);
             }
 
-            // Return maintenance page for all other requests
+            // Return simple 503 error for all other requests
             if ($request->expectsJson()) {
                 return response()->json([
-                    'error' => 'Maintenance Mode',
+                    'error' => 'Service Unavailable',
                     'message' => 'The EMS system is currently under maintenance. Please try again later.',
-                    'estimated_completion' => config('app.maintenance_eta', '2-3 hours'),
-                    'contact_email' => config('app.maintenance_contact_email', 'ems-support@company.com'),
-                    'contact_phone' => config('app.maintenance_contact_phone', '+62 21 1234 5678')
+                    'status' => 503
                 ], 503);
             }
 
-            return response()->view('maintenance', [
-                'message' => config('app.maintenance_message', 'We are currently performing scheduled maintenance on the Employee Management System.'),
-                'estimated_completion' => config('app.maintenance_eta', '2-3 hours'),
-                'contact_email' => config('app.maintenance_contact_email', 'ems-support@company.com'),
-                'contact_phone' => config('app.maintenance_contact_phone', '+62 21 1234 5678'),
-                'system_name' => 'Employee Management System'
-            ], 503);
+            // Return simple 503 HTML response
+            return response('<h1>503 Service Unavailable</h1><p>The EMS system is currently under maintenance. Please try again later.</p>', 503);
         }
 
         return $next($request);

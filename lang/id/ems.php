@@ -237,7 +237,7 @@ return [
     'distance' => 'Jarak',
     'approve' => 'Setujui',
     'reject' => 'Tolak',
-
+    'site_name' => 'Nama Site',
     // Authentication Management
     'welcome_back' => 'Selamat Datang Kembali!',
     'sign_in_to_continue' => 'Masuk untuk melanjutkan ke',
