@@ -71,14 +71,27 @@ class AbsentRequestPreview extends Component
             if ($this->reports && $this->reports->isNotEmpty()) {
                 $fileName = 'absent_request_report_' . Carbon::parse($startDate)->format('Y-m-d') . '_to_' . Carbon::parse($endDate)->format('Y-m-d') . '.xlsx';
                 
+                // Log for debugging
+                \Log::info('Exporting absent request data', [
+                    'count' => $this->reports->count(),
+                    'first_item' => $this->reports->first(),
+                    'employees' => $employees,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate
+                ]);
+                
                 return Excel::download(
-                    new AbsentRequestReportExport($startDate, $endDate, $employees, $this->reports->toArray()),
+                    new AbsentRequestReportExport($startDate, $endDate, $employees, $this->reports),
                     $fileName
                 );
             } else {
                 $this->alert('warning', 'No data available for export.');
             }
         } catch (\Exception $e) {
+            \Log::error('Export failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->alert('error', 'Export failed: ' . $e->getMessage());
         }
     }
@@ -89,14 +102,27 @@ class AbsentRequestPreview extends Component
             if ($this->reports && $this->reports->isNotEmpty()) {
                 $fileName = 'absent_request_report_' . Carbon::parse($this->startDate)->format('Y-m-d') . '_to_' . Carbon::parse($this->endDate)->format('Y-m-d') . '.xlsx';
                 
+                // Log for debugging
+                \Log::info('Exporting absent request data (exportExcel)', [
+                    'count' => $this->reports->count(),
+                    'first_item' => $this->reports->first(),
+                    'employees' => $this->selectedEmployees,
+                    'start_date' => $this->startDate,
+                    'end_date' => $this->endDate
+                ]);
+                
                 return Excel::download(
-                    new AbsentRequestReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports->toArray()),
+                    new AbsentRequestReportExport($this->startDate, $this->endDate, $this->selectedEmployees, $this->reports),
                     $fileName
                 );
             } else {
                 $this->alert('warning', 'No data available for export. Please generate the report first.');
             }
         } catch (\Exception $e) {
+            \Log::error('Export failed (exportExcel)', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->alert('error', 'Export failed: ' . $e->getMessage());
         }
     }

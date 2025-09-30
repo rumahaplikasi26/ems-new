@@ -28,7 +28,8 @@ class AbsentRequestReportExport implements FromCollection, WithHeadings, WithMap
         $this->startDate = Carbon::parse($startDate)->startOfDay();
         $this->endDate = Carbon::parse($endDate)->endOfDay();
         $this->selectedEmployees = $selectedEmployees;
-        $this->reports = collect($reports);
+        // Ensure we have a collection, whether it's passed as array or collection
+        $this->reports = is_array($reports) ? collect($reports) : $reports;
     }
 
     public function collection()
@@ -52,20 +53,43 @@ class AbsentRequestReportExport implements FromCollection, WithHeadings, WithMap
 
     public function map($absentRequest): array
     {
-        $startDate = Carbon::parse($absentRequest->start_date);
-        $endDate = Carbon::parse($absentRequest->end_date);
-        $duration = $startDate->diffInDays($endDate) + 1;
+        try {
+            // Handle both object and array data
+            $startDate = Carbon::parse(is_array($absentRequest) ? $absentRequest['start_date'] : $absentRequest->start_date);
+            $endDate = Carbon::parse(is_array($absentRequest) ? $absentRequest['end_date'] : $absentRequest->end_date);
+            $duration = $startDate->diffInDays($endDate) + 1;
 
-        return [
-            $absentRequest->employee_id,
-            $absentRequest->employee->user->name ?? 'N/A',
-            $startDate->format('d/m/Y'),
-            $endDate->format('d/m/Y'),
-            $duration,
-            $absentRequest->type_absent ?? 'N/A',
-            $absentRequest->notes ?? '-',
-            $absentRequest->is_approved ? 'Approved' : 'Pending'
-        ];
+            // Get employee name safely
+            $employeeName = 'N/A';
+            if (is_array($absentRequest)) {
+                $employeeName = $absentRequest['employee']['user']['name'] ?? 'N/A';
+            } else {
+                $employeeName = $absentRequest->employee->user->name ?? 'N/A';
+            }
+
+            return [
+                is_array($absentRequest) ? $absentRequest['employee_id'] : $absentRequest->employee_id,
+                $employeeName,
+                $startDate->format('d/m/Y'),
+                $endDate->format('d/m/Y'),
+                $duration,
+                is_array($absentRequest) ? ($absentRequest['type_absent'] ?? 'N/A') : ($absentRequest->type_absent ?? 'N/A'),
+                is_array($absentRequest) ? ($absentRequest['notes'] ?? '-') : ($absentRequest->notes ?? '-'),
+                is_array($absentRequest) ? (($absentRequest['is_approved'] ?? false) ? 'Approved' : 'Pending') : ($absentRequest->is_approved ? 'Approved' : 'Pending')
+            ];
+        } catch (\Exception $e) {
+            // Return error data if mapping fails
+            return [
+                'ERROR',
+                'Error: ' . $e->getMessage(),
+                'N/A',
+                'N/A',
+                0,
+                'N/A',
+                'N/A',
+                'Error'
+            ];
+        }
     }
 
     public function styles(Worksheet $sheet)

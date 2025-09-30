@@ -6,7 +6,6 @@ use Livewire\Component;
 use App\Models\Employee;
 use App\Models\DailyReport;
 use Illuminate\Support\Facades\Auth;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\WithPagination;
 use Livewire\Attributes\Url;
 

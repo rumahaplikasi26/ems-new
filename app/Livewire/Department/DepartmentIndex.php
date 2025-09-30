@@ -15,7 +15,7 @@ class DepartmentIndex extends Component
 
     #[Url(except: '')]
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 20;
     public $site_id;
     public $showForm = true;
     public $sites, $employees;
