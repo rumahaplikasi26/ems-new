@@ -69,7 +69,7 @@
         {{ $activities->links() }}
 
         <div class="col-lg-12">
-            @livewire('activity.activity-list', ['activities' => $activities], key('activity-list'))
+            @livewire('activity.activity-list', ['activities' => $activities->getCollection()], key('activity-list'))
         </div>
 
         {{ $activities->links() }}
@@ -110,35 +110,10 @@
                         let startDate = $('#activity-inputgroup').find('input[name="start"]').val();
                         let endDate = $('#activity-inputgroup').find('input[name="end"]').val();
 
-                        if (startDate) {
-                            @this.set('start_date', startDate);
-                        }
-                        if (endDate) {
-                            @this.set('end_date', endDate);
-                        }
-                    });
-
-                    // Also listen for input changes (manual typing)
-                    $('#activity-inputgroup').find('input[name="start"]').on('change', function() {
-                        @this.set('start_date', $(this).val());
-                    });
-
-                    $('#activity-inputgroup').find('input[name="end"]').on('change', function() {
-                        @this.set('end_date', $(this).val());
+                        @this.set('start_date', startDate);
+                        @this.set('end_date', endDate);
                     });
                 }
-
-                // Listen for reset events
-                Livewire.on('resetSelect2', () => {
-                    selectElement.val(null).trigger('change');
-                });
-
-                Livewire.on('resetDatePicker', () => {
-                    $('#activity-inputgroup').find('input').val('');
-                    $('#activity-inputgroup').datepicker('update');
-                    @this.set('start_date', '');
-                    @this.set('end_date', '');
-                });
 
             });
         </script>

@@ -115,35 +115,10 @@
                         let startDate = $('#leave-request-inputgroup').find('input[name="start"]').val();
                         let endDate = $('#leave-request-inputgroup').find('input[name="end"]').val();
 
-                        if (startDate) {
-                            @this.set('startDate', startDate);
-                        }
-                        if (endDate) {
-                            @this.set('endDate', endDate);
-                        }
-                    });
-
-                    // Also listen for input changes (manual typing)
-                    $('#leave-request-inputgroup').find('input[name="start"]').on('change', function() {
-                        @this.set('startDate', $(this).val());
-                    });
-
-                    $('#leave-request-inputgroup').find('input[name="end"]').on('change', function() {
-                        @this.set('endDate', $(this).val());
+                        @this.set('startDate', startDate);
+                        @this.set('endDate', endDate);
                     });
                 }
-
-                // Listen for reset events
-                Livewire.on('resetSelect2', () => {
-                    selectElement.val(null).trigger('change');
-                });
-
-                Livewire.on('resetDatePicker', () => {
-                    $('#leave-request-inputgroup').find('input').val('');
-                    $('#leave-request-inputgroup').datepicker('update');
-                    @this.set('startDate', '');
-                    @this.set('endDate', '');
-                });
 
             });
         </script>

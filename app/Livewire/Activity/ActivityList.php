@@ -7,12 +7,11 @@ use Livewire\Component;
 
 class ActivityList extends Component
 {
+    #[Reactive]
     public $activities;
 
     public function render()
     {
-        return view('livewire.activity.activity-list', [
-            'activities' => $this->activities,
-        ]);
+        return view('livewire.activity.activity-list');
     }
 }
