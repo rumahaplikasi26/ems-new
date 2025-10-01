@@ -220,8 +220,27 @@ class AttendanceIndex extends BaseComponent
         // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Use collection's paginate method for better Livewire integration
-        $attendances = $sortedData->paginate($this->perPage, $this->getPage());
+        // Calculate pagination
+        $currentPage = $this->getPage();
+        $perPage = $this->perPage;
+        $total = $sortedData->count();
+        $offset = ($currentPage - 1) * $perPage;
+        $paginatedData = $sortedData->slice($offset, $perPage)->values();
+        
+        // Create paginator with proper Livewire integration
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedData,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
+        
+        // Set the paginator's appends to preserve query parameters
+        $attendances->appends(request()->query());
 
         // dd($attendances);
 
