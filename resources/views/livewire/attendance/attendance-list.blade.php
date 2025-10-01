@@ -16,7 +16,7 @@
             <tbody id="attendance-lists">
                 @if ($attendances)
                     @foreach ($attendances as $attendance)
-                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance['id']))
+                        @livewire('attendance-temp.attendance-temp-item', ['attendance' => $attendance], key($attendance['id']))
                     @endforeach
                 @else
                     <tr>
