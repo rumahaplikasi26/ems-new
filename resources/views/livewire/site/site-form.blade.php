@@ -98,32 +98,40 @@
 
     @push('js')
 
-        <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initMap"></script>
 
         <script>
             document.addEventListener('livewire:init', function () {
-                window.initMap = function () {
+                initMap();
+
+                function initMap() {
                     var initialLat = parseFloat(@json($latitude));
                     var initialLng = parseFloat(@json($longitude));
 
-                    var fallbackLat = -6.2631219;
-                    var fallbackLng = 106.7988398;
+                    // Fallback location (e.g., center of a specific city)
+                    var fallbackLat = -6.2631219; // Latitude for Jakarta, for example
+                    var fallbackLng = 106.7988398; // Longitude for Jakarta
 
+                    // If initialLat or initialLng is null, use fallback location
                     if (isNaN(initialLat) || isNaN(initialLng)) {
                         initialLat = fallbackLat;
                         initialLng = fallbackLng;
                     }
 
                     var mapOptions = {
-                        zoom: 20,
-                        center: { lat: initialLat, lng: initialLng },
+                        zoom: 20, // Adjust zoom level as needed
+                        center: {
+                            lat: initialLat,
+                            lng: initialLng
+                        },
                     };
 
                     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
                     var marker = new google.maps.Marker({
-                        position: { lat: initialLat, lng: initialLng },
+                        position: {
+                            lat: initialLat,
+                            lng: initialLng
+                        },
                         map: map,
                         draggable: true,
                     });
@@ -132,7 +140,10 @@
                         var lat = event.latLng.lat();
                         var lng = event.latLng.lng();
 
-                        Livewire.dispatch('update-coordinates', { lat: lat, lng: lng });
+                        Livewire.dispatch('update-coordinates', {
+                            lat: lat,
+                            lng: lng
+                        });
 
                         marker.setPosition(new google.maps.LatLng(lat, lng));
                         geocodeLatLng(lat, lng);
@@ -140,9 +151,14 @@
 
                     function geocodeLatLng(lat, lng) {
                         var geocoder = new google.maps.Geocoder();
-                        var latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+                        var latlng = {
+                            lat: parseFloat(lat),
+                            lng: parseFloat(lng)
+                        };
 
-                        geocoder.geocode({ location: latlng }, function (results, status) {
+                        geocoder.geocode({
+                            'location': latlng
+                        }, function (results, status) {
                             if (status === 'OK') {
                                 if (results[0]) {
                                     Livewire.dispatch('update-address', {
@@ -156,9 +172,16 @@
                             }
                         });
                     }
+
+                    if (!isNaN(initialLat) && !isNaN(initialLng)) {
+                        marker.setPosition(new google.maps.LatLng(initialLat, initialLng));
+                        map.setCenter(new google.maps.LatLng(initialLat, initialLng));
+                    }
                 }
             });
         </script>
+
+        <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}"></script>
 
 
         <style>
