@@ -2,19 +2,19 @@
 
 namespace App\Livewire\Attendance;
 
+use App\Models\Attendance;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class AttendanceItem extends Component
 {
 
-    #[Reactive]
     public $attendance;
 
     public $employee;
     public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $site_name, $noteExcerpt, $latitude, $longitude, $image_path, $created_at, $approved_by, $approved_at, $approved_by_name, $approved_at_formatted, $shift_id, $shift_name;
 
-    public function mount()
+    public function mount(Attendance $attendance)
     {
         $this->attendance_id = $this->attendance->id;
         $this->employee = $this->attendance->employee;
