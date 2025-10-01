@@ -97,11 +97,20 @@
     </div>
 
     @push('js')
-
-
         <script>
+            // Define global initMap function for Google Maps callback
+            window.initSiteFormMap = function() {
+                console.log('Google Maps API loaded for site form');
+            };
+
             document.addEventListener('livewire:init', function () {
-                initMap();
+                // Wait for Google Maps API to load, then initialize
+                if (typeof google !== 'undefined' && google.maps) {
+                    initMap();
+                } else {
+                    // If not loaded yet, wait for the callback
+                    window.initSiteFormMap = initMap;
+                }
 
                 function initMap() {
                     var initialLat = parseFloat(@json($latitude));
@@ -181,8 +190,7 @@
             });
         </script>
 
-        <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}"></script>
-
+        <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initSiteFormMap"></script>
         <style>
             #map {
                 height: 400px;

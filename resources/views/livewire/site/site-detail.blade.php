@@ -127,11 +127,20 @@
     @endpush
 
     @push('js')
-
-
         <script>
+            // Define global initMap function for Google Maps callback
+            window.initSiteDetailMap = function() {
+                console.log('Google Maps API loaded for site detail');
+            };
+
             document.addEventListener('livewire:init', function () {
-                initMap();
+                // Wait for Google Maps API to load, then initialize
+                if (typeof google !== 'undefined' && google.maps) {
+                    initMap();
+                } else {
+                    // If not loaded yet, wait for the callback
+                    window.initSiteDetailMap = initMap;
+                }
 
                 function initMap() {
                     var initialLat = parseFloat(@json($site->latitude));
@@ -145,13 +154,12 @@
                     };
 
                     const map = new google.maps.Map(document.getElementById("map"), {
-                        zoom: 4,
+                        zoom: 15,
                         center: position,
-                        mapId: "b939fdccde4ceced", // Map ID is required for advanced markers.
                     });
 
-                    // The advanced marker, positioned at Uluru
-                    const marker = new google.maps.marker.AdvancedMarkerElement({
+                    // The marker
+                    const marker = new google.maps.Marker({
                         map,
                         position: position,
                         title: "{{ $site->name }}",
@@ -160,8 +168,6 @@
             });
         </script>
 
-        <script
-            src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initMap&v=weekly&libraries=marker"
-            defer></script>
+        <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initSiteDetailMap"></script>
     @endpush
 </div>
