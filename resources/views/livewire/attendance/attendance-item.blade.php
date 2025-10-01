@@ -48,6 +48,11 @@
             @if ($attendance && $attendance->attendanceMethod)
                 <br><small class="text-muted">{{ $attendance->attendanceMethod->name }}</small>
             @endif
+            <!-- Koordinat -->
+             <br>
+             <a href="https://www.google.com/maps/search/?api=1&query={{ $latitude }},{{ $longitude }}" target="_blank">
+                <span class="badge bg-info">Koordinat <span class="fas fa-map-marker-alt"></span></span>
+             </a>
         </div>
     </td>
     <td>
