@@ -21,11 +21,6 @@
     </td>
     <td>
         <strong>{{ $timestamp }}</strong>
-        <!-- Approve by -->
-        <br>
-        <small class="text-muted">{{ $approved_by_name }}</small>
-        <br>
-        <small class="text-muted">{{ $approved_at_formatted }}</small>
     </td>
     <td>
         @if($shift_name)
@@ -47,5 +42,18 @@
         <span class="text-wrap">
             {!! $noteExcerpt !!}
         </span>
+    </td>
+    <td>
+        <div class="d-flex ">
+            {{-- Buat Button Approve --}}
+            <div class="flex-shrink-0 me-3">
+                <a href="javascript:void(0);" wire:click="approveConfirm()" class="btn btn-sm btn-success"><i class="bx bx-check"></i> {{ __('ems.approve') }}</a>
+            </div>
+
+            {{-- Buat Button Reject --}}
+            <div class="flex-shrink-0 me-3">
+                <a href="javascript:void(0);" wire:click="rejectConfirm()" class="btn btn-sm btn-danger"><i class="bx bx-x"></i> {{ __('ems.reject') }}</a>
+            </div>
+        </div>
     </td>
 </tr>

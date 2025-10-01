@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Attendance;
 
-use App\Livewire\BaseComponent;
 use App\Models\Attendance;
+use App\Livewire\BaseComponent;
 use Livewire\WithPagination;
 
 class AttendanceIndex extends BaseComponent
@@ -20,6 +20,7 @@ class AttendanceIndex extends BaseComponent
         'perPage' => ['except' => 10],
         'start_date' => ['except' => ''],
         'end_date' => ['except' => ''],
+        'employee_id' => ['except' => ''],
     ];
 
     protected $listeners = ['refresh' => '$refresh'];
@@ -43,7 +44,7 @@ class AttendanceIndex extends BaseComponent
     {
         $this->reset(['search', 'start_date', 'end_date']);
     }
-    
+
     public function render()
     {
         $attendances = Attendance::with('employee.user', 'attendanceMethod', 'shift', 'site')
@@ -74,7 +75,6 @@ class AttendanceIndex extends BaseComponent
             }
         }
 
-        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance List', 'attendances' => $attendances]);
+        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance ', 'attendances' => $attendances]);
     }
-
 }

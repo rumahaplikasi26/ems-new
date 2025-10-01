@@ -3,11 +3,16 @@
 namespace App\Livewire\Attendance;
 
 use App\Livewire\BaseComponent;
+use Illuminate\Support\Facades\Storage;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class AttendanceItem extends BaseComponent
 {
+    use LivewireAlert;
+
     #[Reactive]
     public $attendance;
 
@@ -63,6 +68,97 @@ class AttendanceItem extends BaseComponent
             }
         }else{
             $this->distanceFormatted = '<span class="text-secondary">Tidak ada</span>';
+        }
+    }
+
+    public function approveConfirm()
+    {
+        $this->alert('info', 'Are you sure you want to approve this attendance temporary?', [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+
+            'showConfirmButton' => true,
+            'confirmButtonColor' => '#00a8ff',
+            'confirmButtonText' => 'Yes, Approve',
+            'cancelButtonText' => 'Cancel',
+            'onConfirmed' => 'approve',
+            'showCancelButton' => true,
+
+            'allowOutsideClick' => false,
+            'allowEnterKey' => true,
+            'allowEscapeKey' => false,
+            'stopKeydownPropagation' => false,
+        ]);
+    }
+
+    public function rejectConfirm()
+    {
+        $this->alert('warning', 'Are you sure you want to reject attendance temporary?', [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+
+            'showConfirmButton' => true,
+            'confirmButtonColor' => '#DD6B55',
+            'confirmButtonText' => 'Yes, Delete',
+            'cancelButtonText' => 'No',
+            'onConfirmed' => 'reject',
+            'showCancelButton' => true,
+
+            'allowOutsideClick' => false,
+            'allowEnterKey' => true,
+            'allowEscapeKey' => false,
+            'stopKeydownPropagation' => false,
+        ]);
+    }
+
+    #[On('approve')]
+    public function approve()
+    {
+        try{
+            $attendanceTemp = $this->attendance;
+            $attendance = $attendanceTemp->replicate();
+            $attendance->approved_by = $this->authUser->id;
+            $attendance->approved_at = now();
+            $attendance->setTable('attendances');
+            $attendance->save();
+
+            $attendanceTemp->delete();
+            $this->alert('success', 'Attendance approved successfully');
+
+            activity()
+                    ->causedBy($this->authUser) // Pengguna yang melakukan login
+                    ->withProperties(['ip' => request()->ip()]) // Menyimpan alamat IP
+                    ->event('approve')
+                    ->log("{$this->authUser->name} telah menyetujui Attendance Temporary");
+
+            return redirect()->route('attendance-temporary.index');
+        } catch (\Throwable $th) {
+            $this->alert('error', $th->getMessage());
+            return;
+        }
+    }
+
+    #[On('reject')]
+    public function reject()
+    {
+        try{
+            $this->attendance->delete();
+            // Delete image from gcs
+            Storage::disk('gcs')->delete($this->image_path);
+            $this->alert('success', 'Attendance rejected successfully');
+
+            activity()
+                    ->causedBy($this->authUser) // Pengguna yang melakukan login
+                    ->withProperties(['ip' => request()->ip()]) // Menyimpan alamat IP
+                    ->event('reject attendance temporary')
+                    ->log("{$this->authUser->name} telah menolak Attendance Temporary");
+
+            return redirect()->route('attendance.index');
+        } catch (\Throwable $th) {
+            $this->alert('error', $th->getMessage());
+            return;
         }
     }
 

@@ -11,16 +11,17 @@
                     <th scope="col">{{ __('ems.site_name') }}</th>
                     <th scope="col">{{ __('ems.location') }}</th>
                     <th scope="col">{{ __('ems.notes') }}</th>
+                    <th scope="col">{{ __('ems.action') }}</th>
                 </tr>
             </thead>
             <tbody id="attendance-lists">
                 @if ($attendances)
                     @foreach ($attendances as $attendance)
-                        @livewire('attendance-temp.attendance-temp-item', ['attendance' => $attendance], key($attendance['id']))
+                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance['id']))
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="8" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
+                        <td colspan="9" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

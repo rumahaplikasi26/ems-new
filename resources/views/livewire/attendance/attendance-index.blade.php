@@ -45,9 +45,6 @@
                 <div class="col-12 text-end mb-3">
                     <button class="btn btn-warning mt-2" wire:click="resetFilter" wire:loading.attr="disabled">{{ __('ems.reset') }}
                         {{ __('ems.filter') }}</button>
-                    @can('create:attendance')
-                        <a href="{{ route('attendance.create') }}" class="btn btn-primary mt-2">{{ __('ems.attendance_now') }}</a>
-                    @endcan
                 </div>
             </div>
         </div>
@@ -62,7 +59,6 @@
 
         {{ $attendances->links() }}
     </div>
-
 
     @push('styles')
         <link href="{{ asset('libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
