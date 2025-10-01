@@ -183,7 +183,6 @@
 
         <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}"></script>
 
-
         <style>
             #map {
                 height: 400px;

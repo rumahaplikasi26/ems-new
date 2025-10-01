@@ -1,5 +1,6 @@
 <div>
-    <div class="mb-3" wire:ignore data-tg-group="visit-create" data-tg-title="Step Create Visit" data-tg-tour="Tampilan map otomatis mendeteksi lokasi">
+    <div class="mb-3" wire:ignore data-tg-group="visit-create" data-tg-title="Step Create Visit"
+        data-tg-tour="Tampilan map otomatis mendeteksi lokasi">
         <label for="map" class="form-label">{{ __('ems.location') }}</label>
         <p>{{ __('ems.refresh_coordinates') }}</p>
         <i wire:loading class="spinner-border" wire:target="updateCoordinates"></i>
@@ -7,23 +8,22 @@
     </div>
 
     @assets
-        <style>
-            #map {
-                height: 400px;
-            }
-        </style>
+    <style>
+        #map {
+            height: 400px;
+        }
+    </style>
     @endassets
 
     @push('js')
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry" defer>
-        </script>
+
         <script>
-            document.addEventListener('livewire:init', function() {
+            document.addEventListener('livewire:init', function () {
                 refreshCoordinates();
 
                 function refreshCoordinates() {
                     if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(function(position) {
+                        navigator.geolocation.getCurrentPosition(function (position) {
                             var userLat = position.coords.latitude;
                             var userLng = position.coords.longitude;
 
@@ -31,7 +31,7 @@
                                 latitude: userLat,
                                 longitude: userLng
                             });
-                        }, function(error) {
+                        }, function (error) {
                             Swal.fire("{{ __('ems.error_getting_location') }}: " + error.message);
                             console.error("{{ __('ems.error_getting_location') }}: " + error.message);
                         });
@@ -78,7 +78,7 @@
                     controlText.innerHTML = "<i class='mdi mdi-refresh'></i>";
                     controlDiv.appendChild(controlText);
 
-                    controlDiv.addEventListener("click", function() {
+                    controlDiv.addEventListener("click", function () {
                         refreshCoordinates();
                     });
 
@@ -88,13 +88,13 @@
                 function initMap(initialLat = 0, initialLng = 0, site_latitude = 0, site_longitude = 0, site_name =
                     "") {
                     console.log('initMap called with:', { initialLat, initialLng, site_latitude, site_longitude, site_name });
-                    
+
                     // Clear existing map if it exists
                     const mapElement = document.getElementById('map');
                     if (mapElement) {
                         mapElement.innerHTML = '';
                     }
-                    
+
                     var mapOptions = {
                         zoom: 20, // Adjust zoom level as needed
                         center: {
@@ -136,13 +136,13 @@
                     var polyline = null;
                     if (marker && initialLat && initialLng && initialLat !== 0 && initialLng !== 0) {
                         var lineCoordinates = [{
-                                lat: site_latitude,
-                                lng: site_longitude
-                            },
-                            {
-                                lat: initialLat,
-                                lng: initialLng
-                            }
+                            lat: site_latitude,
+                            lng: site_longitude
+                        },
+                        {
+                            lat: initialLat,
+                            lng: initialLng
+                        }
                         ];
 
                         polyline = new google.maps.Polyline({
@@ -201,6 +201,10 @@
                 }
             });
         </script>
+
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry"
+            defer>
+            </script>
     @endpush
-    
+
 </div>
