@@ -2,131 +2,72 @@
 
 namespace App\Livewire\Attendance;
 
-use App\Models\Attendance;
+use App\Livewire\BaseComponent;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
-class AttendanceItem extends Component
+class AttendanceItem extends BaseComponent
 {
+    #[Reactive]
     public $attendance;
-    
-    public function mount(Attendance $attendance)
-    {
-        $this->attendance = $attendance;
-    }
 
-    public function approvedInfo()
-    {
-        // Handle approval information from Eloquent model with safe checks
-        if ($this->attendance && isset($this->attendance->approvedBy) && $this->attendance->approvedBy) {
-            return $this->attendance->approvedBy->name ?? 'Unknown';
-        } else {
-            return '-';
-        }
-    }
+    public $employee;
+    public $attendance_id, $employee_name, $image_url, $email, $timestamp, $distance, $notes, $distanceFormatted, $site_name, $noteExcerpt, $latitude, $longitude, $image_path, $created_at, $approved_by, $approved_at, $approved_by_name, $approved_at_formatted, $shift_id, $shift_name;
 
-    public function approvedAtInfo()
+    public function mount()
     {
-        // Handle approval timestamp from Eloquent model with safe checks
-        if ($this->attendance && isset($this->attendance->approved_at) && $this->attendance->approved_at) {
-            try {
-                return $this->attendance->approved_at->format('d-m-Y H:i:s');
-            } catch (\Exception $e) {
-                return $this->attendance->approved_at;
-            }
-        } else {
-            return '-';
-        }
+        $this->attendance_id = $this->attendance->id;
+        $this->employee = $this->attendance->employee;
+        $this->employee_name = $this->employee->user->name;
+        $this->image_url = $this->attendance->image_url;
+        $this->email = $this->employee->user->email;
+        $this->timestamp = $this->attendance->timestamp;
+        $this->latitude = $this->attendance->latitude;
+        $this->distance = $this->attendance->distance;
+        $this->longitude = $this->attendance->longitude;
+        $this->created_at = $this->attendance->created_at;
+        $this->notes = $this->attendance->notes;
+        $this->image_path = $this->attendance->image_path;
+        $this->approved_by = $this->attendance->approved_by;
+        $this->approved_at = $this->attendance->approved_at;
+        $this->approved_by_name = $this->attendance->approvedBy?->name;
+        $this->shift_id = $this->attendance->shift_id;
+        $this->shift_name = $this->attendance->shift?->name;
+        $this->site_name = $this->attendance->site?->name;
+        $this->approved_at_formatted = $this->attendance->approved_at?->format('d-m-Y H:i:s');
+
+        $this->distanceFormatted();
+        $this->notesExcerpt();
     }
 
     public function notesExcerpt()
     {
-        // Handle attendance notes from Eloquent model with safe checks
-        if ($this->attendance && isset($this->attendance->notes) && !empty($this->attendance->notes)) {
-            if (strlen($this->attendance->notes) > 50) {
-                $excerpt = substr($this->attendance->notes, 0, 50);
-                return '<p class="d-inline-block m-0 fst-italic" id="notes-' . $this->attendance->id . '">' . $excerpt . '</p> <a data-id="' . $this->attendance->id . '" data-excerpt="' . $excerpt . '" data-notes="' . $this->attendance->notes . '" href="javascript: void(0);" class="read-more">Read More</a>';
-            } else {
-                return '<p class="fst-italic">' . $this->attendance->notes . '</p>';
-            }
+        // Jika Notes lebih dari 50 karakter
+        if (strlen($this->notes) > 50) {
+            $excerptIn = substr($this->notes, 0, 50);
+            $this->noteExcerpt = '<p class="d-inline-block m-0 fst-italic" id="notes-in-' . $this->attendance_id . '">' . $excerptIn . '</p> <a data-id="' . $this->attendance_id . '" data-excerpt="' . $excerptIn . '" data-notes="' . $this->notes . '" href="javascript: void(0);" class="read-more-in">Read More</a>';
         } else {
-            return '<p class="fst-italic">-</p>';
+            $this->noteExcerpt = '<p class="fst-italic">' . $this->notes . '</p>';
         }
     }
 
     public function distanceFormatted()
     {
-        // Handle attendance distance from Eloquent model with safe checks
-        if ($this->attendance && isset($this->attendance->distance) && $this->attendance->distance !== null) {
-            if ($this->attendance->distance < 1) {
-                return '<span class="text-success">' . $this->attendance->distance . ' Km</span>';
-            } elseif ($this->attendance->distance >= 1) {
-                return '<span class="text-warning">' . $this->attendance->distance . ' Km</span>';
+        if ($this->distance != null) {
+            if ($this->distance < 1) {
+                $this->distanceFormatted = '<span class="text-success">' . $this->distance . ' Km</span>';
+            } elseif ($this->distance >= 1) {
+                $this->distanceFormatted = '<span class="text-warning">' . $this->distance . ' Km</span>';
             } else {
-                return '<span class="text-danger">' . $this->attendance->distance . ' Km</span>';
+                $this->distanceFormatted = '<span class="text-danger">' . $this->distance . ' Km</span>';
             }
-        } else {
-            return '<span class="text-secondary">Tidak ada</span>';
-        }
-    }
-
-    public function statusDuration()
-    {
-        if ($this->duration < 8.00) {
-            return 'badge-soft-danger';
-        } else {
-            return 'badge-soft-success';
+        }else{
+            $this->distanceFormatted = '<span class="text-secondary">Tidak ada</span>';
         }
     }
 
     public function render()
     {
-        // Safe data extraction with null checks
-        $day = $this->attendance->timestamp ? date('d/m', strtotime($this->attendance->timestamp)) : 'N/A';
-        $employee_name = $this->attendance->employee->user->name ?? 'Unknown';
-        $employee_email = $this->attendance->employee->user->email ?? 'No email';
-        $image_url = $this->attendance->image_url ?? null;
-        $shift_name = $this->attendance->shift->name ?? 'Unknown';
-        
-        // Safe shift date calculation
-        $shift_date = null;
-        if ($this->attendance->timestamp && $this->attendance->shift) {
-            try {
-                $shift_date = \App\Helpers\ShiftHelper::getAttendanceDate($this->attendance->timestamp, $this->attendance->shift);
-            } catch (\Exception $e) {
-                $shift_date = date('Y-m-d', strtotime($this->attendance->timestamp));
-            }
-        }
-        
-        $date = $this->attendance->timestamp ? date('d-m-Y', strtotime($this->attendance->timestamp)) : 'N/A';
-        $site_name = $this->attendance->site->name ?? 'Unknown';
-        $latitude = $this->attendance->latitude ?? 'Unknown';
-        $longitude = $this->attendance->longitude ?? 'Unknown';
-        $timestamp = $this->attendance->timestamp ?? 'Unknown';
-        $time_formatted = $this->attendance->timestamp ? date('H:i:s', strtotime($this->attendance->timestamp)) : 'N/A';
-        $approvedBy = $this->approvedInfo();
-        $approvedAt = $this->approvedAtInfo();
-        $distanceFormatted = $this->distanceFormatted();
-        $noteExcerpt = $this->notesExcerpt();
-
-        return view('livewire.attendance.attendance-item', [
-            'attendance' => $this->attendance,
-            'employee_name' => $employee_name,
-            'employee_email' => $employee_email,
-            'image_url' => $image_url,
-            'day' => $day,
-            'date' => $date,
-            'shift_date' => $shift_date,
-            'time_formatted' => $time_formatted,
-            'site_name' => $site_name,
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'timestamp' => $timestamp,
-            'approvedBy' => $approvedBy,
-            'approvedAt' => $approvedAt,
-            'shift_name' => $shift_name,
-            'distanceFormatted' => $distanceFormatted,
-            'noteExcerpt' => $noteExcerpt,
-        ]);
+        return view('livewire.attendance.attendance-item');
     }
 }

@@ -1,12 +1,5 @@
 <tr>
     <td>
-        <div class="avatar-sm">
-            <span class="avatar-title bg-success text-white rounded">
-                {{ $day }}
-            </span>
-        </div>
-    </td>
-    <td>
         @if ($image_url)
             <a href="javascript: void(0);" class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
                 title="{{ $employee_name }}">
@@ -14,72 +7,45 @@
             </a>
         @else
             <div class="avatar-sm">
-                <span class="avatar-title bg-success text-white rounded">
+                <span class="avatar-title rounded-circle bg-success text-white font-size-16">
                     {{ strtoupper(substr($employee_name, 0, 1)) }}
                 </span>
             </div>
         @endif
+    </td>
+    <td>
         <h5 class="text-truncate font-size-14">
             <a href="javascript: void(0);" class="text-dark">{{ $employee_name }}</a>
         </h5>
-        <p class="text-muted mb-0">{{ $employee_email ?? 'No email' }}</p>
+        <p class="text-muted mb-0">{{ $email }}</p>
     </td>
     <td>
-        <div>
-            <span class="badge bg-info">{{ $date }}</span>
-            @if (isset($shift_date) && $shift_date !== $date)
-                <br><small class="text-muted">Shift Date:
-                    {{ $shift_date }}</small>
-            @endif
-        </div>
+        <strong>{{ $timestamp }}</strong>
+        <!-- Approve by -->
+        <br>
+        <small class="text-muted">{{ $approved_by_name }}</small>
+        <br>
+        <small class="text-muted">{{ $approved_at_formatted }}</small>
     </td>
     <td>
-        <div>
-            <span class="badge bg-info">{{ $shift_name }}</span>
-        </div>
-    </td>
-    <td>
-        <div>
-            <span
-                class="text-success fw-bold">{{ $time_formatted ?? date('H:i:s', strtotime($attendance->timestamp)) }}</span>
-            @if ($attendance && $attendance->site)
-                <br><small class="text-muted">{{ $attendance->site->name }}</small>
-            @endif
-            @if ($attendance && $attendance->attendanceMethod)
-                <br><small class="text-muted">{{ $attendance->attendanceMethod->name }}</small>
-            @endif
-            <!-- Koordinat -->
-             <br>
-             <a href="https://www.google.com/maps/search/?api=1&query={{ $latitude }},{{ $longitude }}" target="_blank">
-                <span class="badge bg-info">Koordinat <span class="fas fa-map-marker-alt"></span></span>
-             </a>
-        </div>
-    </td>
-    <td>
-        <small class="text-muted">{{ $timestamp ? date('d-m-Y H:i:s', strtotime($timestamp)) : 'N/A' }}</small>
-    </td>
-    <td>
-        @if ($approvedBy && $approvedBy !== '-')
-            <small class="text-success fw-bold">{{ $approvedBy }}</small>
+        @if($shift_name)
+            <span class="badge bg-primary">{{ $shift_name }}</span>
         @else
             <span class="text-muted">-</span>
         @endif
     </td>
     <td>
-        @if ($approvedAt && $approvedAt !== '-')
-            <small class="text-muted">{{ $approvedAt }}</small>
-        @else
-            <span class="text-muted">-</span>
-        @endif
+        {!! $distanceFormatted !!}
     </td>
     <td>
-        <div>
-            @if ($distanceFormatted)
-                {!! $distanceFormatted !!}
-            @endif
-            @if ($noteExcerpt)
-                <br>{!! $noteExcerpt !!}
-            @endif
-        </div>
+        <span class="badge bg-primary">{{ $site_name }}</span>
+    </td>
+    <td>
+        <a href="https://www.google.com/maps/search/{{ $latitude }},{{ $longitude }}" target="_blank">{{ $longitude }}, {{ $latitude }}</a>
+    </td>
+    <td>
+        <span class="text-wrap">
+            {!! $noteExcerpt !!}
+        </span>
     </td>
 </tr>

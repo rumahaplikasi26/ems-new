@@ -3,25 +3,24 @@
         <table class="table project-list-table table-nowrap align-middle table-borderless">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 80px">#</th>
-                    <th scope="col">{{ __('ems.employee') }}</th>
-                    <th scope="col">{{ __('ems.date') }}</th>
+                    <th scope="col" style="width: 100px">#</th>
+                    <th scope="col">{{ __('ems.name') }}</th>
+                    <th scope="col">{{ __('ems.timestamp') }}</th>
                     <th scope="col">{{ __('ems.shift') }}</th>
-                    <th scope="col">{{ __('ems.attendance') }}</th>
-                    <th scope="col" style="width: 120px">{{ __('ems.datetime') }}</th>
-                    <th scope="col" style="width: 100px">{{ __('ems.approved_by') }}</th>
-                    <th scope="col" style="width: 120px">{{ __('ems.approved_at') }}</th>
-                    <th scope="col">{{ __('ems.details') }}</th>
+                    <th scope="col">{{ __('ems.distance') }}</th>
+                    <th scope="col">{{ __('ems.site_name') }}</th>
+                    <th scope="col">{{ __('ems.location') }}</th>
+                    <th scope="col">{{ __('ems.notes') }}</th>
                 </tr>
             </thead>
             <tbody id="attendance-lists">
                 @if ($attendances)
                     @foreach ($attendances as $attendance)
-                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance->id))
+                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance['id']))
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="9" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
+                        <td colspan="8" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>
