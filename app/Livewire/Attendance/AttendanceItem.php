@@ -3,10 +3,12 @@
 namespace App\Livewire\Attendance;
 
 use App\Models\Attendance;
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class AttendanceItem extends Component
 {
+    #[Reactive]
     public $attendance;
     
     public function mount(Attendance $attendance)
