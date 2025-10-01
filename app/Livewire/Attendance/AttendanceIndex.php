@@ -4,11 +4,6 @@ namespace App\Livewire\Attendance;
 
 use App\Livewire\BaseComponent;
 use App\Models\Attendance;
-use App\Helpers\ShiftHelper;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Url;
-use Livewire\Component;
 use Livewire\WithPagination;
 
 class AttendanceIndex extends BaseComponent
@@ -48,6 +43,7 @@ class AttendanceIndex extends BaseComponent
     {
         $this->reset(['search', 'start_date', 'end_date']);
     }
+    
     public function render()
     {
         $attendances = Attendance::with('employee.user', 'attendanceMethod', 'shift', 'site')
