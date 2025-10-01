@@ -131,17 +131,8 @@ class AttendancePreview extends Component
                         $checkIn = $sorted->first();
                         $checkOut = $sorted->last();
 
-                        // Use ShiftHelper to format the time range
+                        // Use ShiftHelper to format the time range (already includes overnight indicator)
                         $timeRange = ShiftHelper::formatAttendanceTimeRange($checkIn, $checkOut, $checkIn->shift);
-                        
-                        // Add overnight indicator if needed
-                        if ($checkIn->shift && ShiftHelper::isOvernightShift($checkIn->shift)) {
-                            $checkInDate = Carbon::parse($checkIn->timestamp)->format('Y-m-d');
-                            $checkOutDate = Carbon::parse($checkOut->timestamp)->format('Y-m-d');
-                            if ($checkInDate !== $checkOutDate) {
-                                $timeRange .= ' [Overnight]';
-                            }
-                        }
                     } else {
                         $timeRange = '-';
                     }
