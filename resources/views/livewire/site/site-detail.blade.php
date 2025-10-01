@@ -129,7 +129,7 @@
     @push('js')
         <script
             src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initMap&v=weekly&libraries=marker"
-            async defer></script>
+            defer></script>
 
         <script>
             document.addEventListener('livewire:init', function() {

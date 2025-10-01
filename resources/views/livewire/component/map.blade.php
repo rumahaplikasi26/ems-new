@@ -15,7 +15,7 @@
     @endassets
 
     @push('js')
-        <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry" defer>
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry" defer>
         </script>
         <script>
             document.addEventListener('livewire:init', function() {
