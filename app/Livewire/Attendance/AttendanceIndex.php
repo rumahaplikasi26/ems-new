@@ -45,12 +45,13 @@ class AttendanceIndex extends BaseComponent
     public function resetFilter()
     {
         $this->reset(['search', 'start_date', 'end_date']);
+        $this->resetPage();
     }
 
     public function render()
     {
-        // Fetch attendance data with related models
-        $attendances = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
+        // Build base query with filters
+        $baseQuery = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
             ->when($this->search, function ($query) {
                 $query->whereHas('employee.user', function ($query) {
                     $query->where('name', 'like', '%' . $this->search . '%');
@@ -61,12 +62,11 @@ class AttendanceIndex extends BaseComponent
             })
             ->when($this->end_date, function ($query) {
                 $query->whereDate('timestamp', '<=', $this->end_date);
-            })
-            ->orderBy('timestamp', 'desc');
+            });
 
-        // Apply user permissions
+        // Apply user permissions to the query
         if ($this->authUser->can('view:attendance-all')) {
-            $attendances = $attendances->get();
+            $attendances = $baseQuery;
         } else {
             // Check if user is a supervisor
             if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
@@ -74,15 +74,18 @@ class AttendanceIndex extends BaseComponent
                 $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
                 // Include supervisor's own attendance
                 $supervisedEmployeeIds->push($this->authUser->employee->id);
-                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->get();
+                $attendances = $baseQuery->whereIn('employee_id', $supervisedEmployeeIds);
             } else {
                 // Regular employee - only see their own attendance
-                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->get();
+                $attendances = $baseQuery->where('employee_id', $this->authUser->employee->id);
             }
         }
 
+        // Get all data for processing
+        $allAttendances = $attendances->orderBy('timestamp', 'desc')->get();
+
         // Group attendance by employee and shift-aware date
-        $groupedAttendance = $attendances->groupBy('employee_id')->map(function ($employeeAttendances) {
+        $groupedAttendance = $allAttendances->groupBy('employee_id')->map(function ($employeeAttendances) {
             return $employeeAttendances->groupBy(function ($attendance) {
                 return ShiftHelper::getAttendanceDate($attendance->timestamp, $attendance->shift);
             });
@@ -209,14 +212,16 @@ class AttendanceIndex extends BaseComponent
         }
 
         // Sort by date descending and apply pagination
-        $sortedData = $displayData->sortByDesc('date');
-        $currentPage = request()->get('page', 1);
+        $sortedData = $displayData->sortByDesc('date')->values();
+        
+        // Apply pagination using Livewire's built-in pagination
+        $currentPage = $this->getPage();
         $perPage = $this->perPage;
+        $total = $sortedData->count();
         $offset = ($currentPage - 1) * $perPage;
         $paginatedData = $sortedData->slice($offset, $perPage)->values();
         
-        // Create paginator manually
-        $total = $sortedData->count();
+        // Create paginator manually for Livewire compatibility
         $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
             $paginatedData,
             $total,
@@ -227,6 +232,9 @@ class AttendanceIndex extends BaseComponent
                 'pageName' => 'page',
             ]
         );
+        
+        // Set pagination info for Livewire
+        $this->setPage($currentPage);
 
         // dd($attendances);
 
