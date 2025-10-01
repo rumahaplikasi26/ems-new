@@ -3,10 +3,11 @@
 namespace App\Livewire\Attendance;
 
 use App\Models\Attendance;
-use App\Livewire\BaseComponent;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
+use Livewire\Component;
 
-class AttendanceIndex extends BaseComponent
+class AttendanceIndex extends Component
 {
     use WithPagination;
 
@@ -59,22 +60,23 @@ class AttendanceIndex extends BaseComponent
         })->orderBy('timestamp', 'desc');
 
         // Apply supervisor filter
-        if ($this->authUser->can('view:attendance-all')) {
+        $authUser = Auth::user();
+        if ($authUser->can('view:attendance-all')) {
             $attendances = $attendances->paginate($this->perPage);
         } else {
             // Check if user is a supervisor
-            if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
+            if ($authUser->employee && $authUser->employee->isSupervisor()) {
                 // Get employee IDs under supervision
-                $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
+                $supervisedEmployeeIds = $authUser->employee->getSupervisedEmployeeIds();
                 // Include supervisor's own attendance
-                $supervisedEmployeeIds->push($this->authUser->employee->id);
+                $supervisedEmployeeIds->push($authUser->employee->id);
                 $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
             } else {
                 // Regular employee - only see their own attendance
-                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+                $attendances = $attendances->where('employee_id', $authUser->employee->id)->paginate($this->perPage);
             }
         }
 
-        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance ', 'attendances' => $attendances]);
+        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance', 'attendances' => $attendances]);
     }
 }
