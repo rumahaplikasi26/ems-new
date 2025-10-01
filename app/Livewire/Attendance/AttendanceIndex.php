@@ -24,8 +24,9 @@ class AttendanceIndex extends BaseComponent
         'perPage' => ['except' => 10],
         'start_date' => ['except' => ''],
         'end_date' => ['except' => ''],
-        'employee_id' => ['except' => ''],
     ];
+
+    protected $paginationTheme = 'bootstrap';
 
     public function updatingSearch()
     {
@@ -38,6 +39,11 @@ class AttendanceIndex extends BaseComponent
     }
 
     public function updatingEnd_date()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -211,30 +217,11 @@ class AttendanceIndex extends BaseComponent
             }
         }
 
-        // Sort by date descending and apply pagination
+        // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Apply pagination using Livewire's built-in pagination
-        $currentPage = $this->getPage();
-        $perPage = $this->perPage;
-        $total = $sortedData->count();
-        $offset = ($currentPage - 1) * $perPage;
-        $paginatedData = $sortedData->slice($offset, $perPage)->values();
-        
-        // Create paginator manually for Livewire compatibility
-        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
-            $paginatedData,
-            $total,
-            $perPage,
-            $currentPage,
-            [
-                'path' => request()->url(),
-                'pageName' => 'page',
-            ]
-        );
-        
-        // Set pagination info for Livewire
-        $this->setPage($currentPage);
+        // Use collection's paginate method for better Livewire integration
+        $attendances = $sortedData->paginate($this->perPage, $this->getPage());
 
         // dd($attendances);
 
