@@ -1,49 +1,142 @@
 <tr>
     <td>
-        @if ($image_url)
+        {{-- @if ($employee['avatar_url'])
             <a href="javascript: void(0);" class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
-                title="{{ $employee_name }}">
-                <img src="{{ $image_url }}" alt="{{ $employee_name }}" class="rounded-circle avatar-sm">
+                title="{{ $employee['name'] }}">
+                <img src="{{ $employee['avatar_url'] }}" alt="{{ $employee['name'] }}" class="rounded-circle avatar-sm">
             </a>
-        @else
+        @else --}}
             <div class="avatar-sm">
-                <span class="avatar-title rounded-circle bg-success text-white font-size-16">
-                    {{ strtoupper(substr($employee_name, 0, 1)) }}
+                <span class="avatar-title bg-success text-white rounded">
+                    {{ $day }}
                 </span>
             </div>
-        @endif
+        {{-- @endif --}}
     </td>
     <td>
         <h5 class="text-truncate font-size-14">
-            <a href="javascript: void(0);" class="text-dark">{{ $employee_name }}</a>
+            <a href="javascript: void(0);" class="text-dark">{{ $employee['name'] }}</a>
         </h5>
-        <p class="text-muted mb-0">{{ $email }}</p>
+        <p class="text-muted mb-0">{{ $employee['email'] }}</p>
     </td>
     <td>
-        <strong>{{ $timestamp }}</strong>
+        <div>
+            <span class="badge bg-info">{{ $date }}</span>
+            @if (isset($shift_date) && $shift_date !== $date)
+                <br><small class="text-muted">Shift Date: {{ $shift_date }}</small>
+            @endif
+        </div>
     </td>
     <td>
-        @if($shift_name)
-            <span class="badge bg-primary">{{ $shift_name }}</span>
+        @if ($checkIn != null)
+            <div class="d-flex">
+                <div class="flex-shrink-0 me-3 align-self-center">
+                    <img class="rounded avatar-md" src="{{ $checkIn['image_url'] ?? asset('images/time.png') }}" alt="{{ $checkIn['image_url'] ?? asset('images/time.png') }}">
+                </div>
+                <div class="flex-grow-1">
+                    @if ($checkIn['shift'] && $checkIn['shift']['name'])
+                        <span class="d-block">
+                            <span class="badge bg-primary me-1">{{ $checkIn['shift']['name'] }}</span>
+                            @if (isset($checkIn['shift']['is_overnight']) && $checkIn['shift']['is_overnight'])
+                                <span class="badge bg-warning me-1">Overnight</span>
+                                <small class="text-muted">({{ $checkIn['shift']['start_time'] }} - {{ $checkIn['shift']['end_time'] }}+1)</small>
+                            @else
+                                <small class="text-muted">({{ $checkIn['shift']['start_time'] }} - {{ $checkIn['shift']['end_time'] }})</small>
+                            @endif
+                        </span>
+                    @endif
+                    @if ($checkIn['site'] && $checkIn['site']['name'])
+                        <span class="d-block">
+                            <strong>
+                                {{ __('ems.site') }}: {{ $checkIn['site']['name'] }} -
+                                <a href="https://www.google.com/maps?q={{ $checkIn['site']['latitude'] }},{{ $checkIn['site']['longitude'] }}"
+                                    target="_blank">{{ $checkIn['site']['longitude'] }},{{ $checkIn['site']['latitude'] }}</a>
+                            </strong>
+                        </span>
+                    @endif
+                    <span class="d-block">{{ __('ems.timestamp') }}: <strong>{{ $checkIn['timestamp'] }}</strong></span>
+                    {{-- <span class="d-block">Machine: {{ $checkIn['machine']['name'] }}</span> --}}
+                    <span class="d-block">{{ __('ems.attendance_method_name') }}:
+                        <strong>{{ $checkIn['attendance_method']['name'] }}</strong></span>
+                    <span class="d-block">{{ __('ems.location') }}:
+                        <strong>
+                            <a href="https://www.google.com/maps?q={{ $checkIn['latitude'] }},{{ $checkIn['longitude'] }}"
+                                target="_blank">{{ $checkIn['longitude'] }}, {{ $checkIn['latitude'] }}</a>
+                            - {!! $distanceInFormatted !!}
+                        </strong>
+                    </span>
+                    <span class="text-wrap">
+                        {!! $noteInExcerpt !!}
+                    </span>
+                    @if($checkIn['approved_by_name'])
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $checkIn['approved_by_name'] }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $checkIn['approved_at_formatted'] }}</strong></span>
+                    @endif
+                </div>
+            </div>
         @else
-            <span class="text-muted">-</span>
+            <span class="text-muted">{{ __('ems.no_check_in') }}</span>
         @endif
     </td>
     <td>
-        {!! $distanceFormatted !!}
+        @if ($checkOut != null)
+            <div class="d-flex">
+                <div class="flex-shrink-0 me-3 align-self-center">
+                    <img class="rounded avatar-md" src="{{ $checkOut['image_url'] ?? asset('images/time.png') }}"
+                        alt="{{ $checkOut['image_url'] ?? asset('images/time.png') }}">
+                </div>
+                <div class="flex-grow-1">
+                    @if ($checkOut['shift'] && $checkOut['shift']['name'])
+                        <span class="d-block">
+                            <span class="badge bg-primary me-1">{{ $checkOut['shift']['name'] }}</span>
+                            @if (isset($checkOut['shift']['is_overnight']) && $checkOut['shift']['is_overnight'])
+                                <span class="badge bg-warning me-1">Overnight</span>
+                                <small class="text-muted">({{ $checkOut['shift']['start_time'] }} - {{ $checkOut['shift']['end_time'] }}+1)</small>
+                            @else
+                                <small class="text-muted">({{ $checkOut['shift']['start_time'] }} - {{ $checkOut['shift']['end_time'] }})</small>
+                            @endif
+                        </span>
+                    @endif
+                    @if ($checkOut['site'] && $checkOut['site']['name'])
+                        <span class="d-block">
+                            <strong>
+                                {{ __('ems.site') }}: {{ $checkOut['site']['name'] }} -
+                                <a href="https://www.google.com/maps?q={{ $checkOut['site']['latitude'] }},{{ $checkOut['site']['longitude'] }}"
+                                    target="_blank">{{ $checkOut['site']['longitude'] }},{{ $checkOut['site']['latitude'] }}</a>
+                            </strong>
+                        </span>
+                    @endif
+                    <span class="d-block">{{ __('ems.timestamp') }}: <strong>{{ $checkOut['timestamp'] }}</strong></span>
+                    {{-- <span class="d-block">Machine: {{ $checkOut['machine']['name'] }}</span> --}}
+                    <span class="d-block">{{ __('ems.attendance_method_name') }}:
+                        <strong>{{ $checkOut['attendance_method']['name'] }}</strong></span>
+                    <span class="d-block">{{ __('ems.location') }}:
+                        <strong>
+                            <a href="https://www.google.com/maps?q={{ $checkOut['latitude'] }},{{ $checkOut['longitude'] }}"
+                                target="_blank">{{ $checkOut['longitude'] }}, {{ $checkOut['latitude'] }}</a>
+                            - {!! $distanceOutFormatted !!}
+                        </strong>
+                    </span>
+                    <span class="text-wrap">
+                        {!! $noteOutExcerpt !!}
+                    </span>
+                    @if($checkOut['approved_by_name'])
+                        <span class="d-block">{{ __('ems.approved_by') }}: <strong>{{ $checkOut['approved_by_name'] }}</strong></span>
+                        <span class="d-block">{{ __('ems.approved_at') }}: <strong>{{ $checkOut['approved_at_formatted'] }}</strong></span>
+                    @endif
+                </div>
+            </div>
+        @else
+            <span class="text-muted">{{ __('ems.no_check_out') }}</span>
+        @endif
     </td>
     <td>
-        <span class="badge bg-primary">{{ $site_name }}</span>
-    </td>
-    <td>
-        <a href="https://www.google.com/maps/search/{{ $latitude }},{{ $longitude }}" target="_blank">{{ $longitude }}, {{ $latitude }}</a>
-    </td>
-    <td>
-        <span class="text-wrap">
-            {!! $noteExcerpt !!}
-        </span>
-    </td>
-    <td>
-        <span class="text-muted">-</span>
+        <span class="badge rounded-pill {{ $badge_color }} font-size-12">{{ $duration_string }}</span>
+        @if (isset($status) && $status)
+            <br><small class="text-muted">{{ $status }}</small>
+        @endif
+        @if (isset($time_range) && $time_range)
+            <br><small class="text-info">{{ $time_range }}</small>
+        @endif
     </td>
 </tr>
