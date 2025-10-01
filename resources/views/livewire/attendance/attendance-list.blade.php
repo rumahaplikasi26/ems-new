@@ -5,6 +5,7 @@
                 <tr>
                     <th scope="col" style="width: 100px">#</th>
                     <th scope="col">{{ __('ems.name') }}</th>
+                    <th scope="col">{{ __('ems.date') }}</th>
                     <th scope="col">{{ __('ems.check_in') }}</th>
                     <th scope="col">{{ __('ems.check_out') }}</th>
                     <th scope="col">{{ __('ems.working_duration') }}</th>
@@ -17,7 +18,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="5" class="text-center">{{ __('ems.no_data') }}</td>
+                        <td colspan="6" class="text-center">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

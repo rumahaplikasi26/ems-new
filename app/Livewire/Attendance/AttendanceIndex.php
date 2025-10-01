@@ -4,6 +4,7 @@ namespace App\Livewire\Attendance;
 
 use App\Livewire\BaseComponent;
 use App\Models\Attendance;
+use App\Helpers\ShiftHelper;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -61,15 +62,11 @@ class AttendanceIndex extends BaseComponent
             ->when($this->end_date, function ($query) {
                 $query->whereDate('timestamp', '<=', $this->end_date);
             })
-            ->select('employee_id')
-            ->selectRaw('DATE(timestamp) as date')
-            ->selectRaw('MIN(timestamp) as check_in')
-            ->selectRaw('MAX(timestamp) as check_out')
-            ->groupBy('employee_id', 'date', 'shift_id')
-            ->orderBy('date', 'desc');
+            ->orderBy('timestamp', 'desc');
 
+        // Apply user permissions
         if ($this->authUser->can('view:attendance-all')) {
-            $attendances = $attendances->paginate($this->perPage);
+            $attendances = $attendances->get();
         } else {
             // Check if user is a supervisor
             if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
@@ -77,137 +74,159 @@ class AttendanceIndex extends BaseComponent
                 $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
                 // Include supervisor's own attendance
                 $supervisedEmployeeIds->push($this->authUser->employee->id);
-                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
+                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->get();
             } else {
                 // Regular employee - only see their own attendance
-                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->get();
             }
         }
 
-        // Fetch all check-in and check-out records at once with relations
-        $checkInDetails = Attendance::whereIn('timestamp', $attendances->pluck('check_in'))
-            ->with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->employee_id . '-' . $item->timestamp;
+        // Group attendance by employee and shift-aware date
+        $groupedAttendance = $attendances->groupBy('employee_id')->map(function ($employeeAttendances) {
+            return $employeeAttendances->groupBy(function ($attendance) {
+                return ShiftHelper::getAttendanceDate($attendance->timestamp, $attendance->shift);
             });
-
-        $checkOutDetails = Attendance::whereIn('timestamp', $attendances->pluck('check_out'))
-            ->with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->employee_id . '-' . $item->timestamp;
-            });
-
-        // Transform the paginated results
-        $attendances->getCollection()->transform(function ($attendance) use ($checkInDetails, $checkOutDetails) {
-            $checkInKey = $attendance->employee_id . '-' . $attendance->check_in;
-            $checkOutKey = $attendance->employee_id . '-' . $attendance->check_out;
-
-            $checkInDetail = $checkInDetails[$checkInKey] ?? null;
-            $checkOutDetail = ($attendance->check_in === $attendance->check_out) ? null : ($checkOutDetails[$checkOutKey] ?? null);
-
-            $checkInTimestamp = $checkInDetail ? new \DateTime($checkInDetail->timestamp) : null;
-            $checkOutTimestamp = $checkOutDetail ? new \DateTime($checkOutDetail->timestamp) : null;
-
-            $duration = null;
-            $formattedDuration = null;
-
-            if ($checkInTimestamp && $checkOutTimestamp) {
-                $interval = $checkInTimestamp->diff($checkOutTimestamp);
-                $hours = $interval->h + ($interval->days * 24); // Total hours
-                $minutes = $interval->i; // Minutes
-                $seconds = $interval->s; // Seconds
-
-                $duration = $hours + ($minutes / 60) + ($seconds / 3600); // Total hours in decimal
-
-                // Format duration as "H hours, M minutes, S seconds"
-                $formattedDuration = sprintf('%d hours, %d minutes, %d seconds', $hours, $minutes, $seconds);
-            }
-
-
-            return [
-                'id' => $checkInDetail->uid . '-' . ($checkOutDetail->uid ?? 'null'),
-                'employee' => $checkInDetail ? [
-                    'id' => $checkInDetail->employee->id,
-                    'name' => $checkInDetail->employee->user->name,
-                    'email' => $checkInDetail->employee->user->email,
-                    'avatar_url' => $checkInDetail->employee->user->avatar_url,
-                ] : null,
-                'check_in' => $checkInDetail ? [
-                    'id' => $checkInDetail->id,
-                    'timestamp' => $checkInDetail->timestamp,
-                    'attendance_method' => $checkInDetail->attendanceMethod ? [
-                        'id' => $checkInDetail->attendanceMethod->id,
-                        'name' => $checkInDetail->attendanceMethod->name,
-                    ] : null,
-                    'machine' => $checkInDetail->machine ? [
-                        'id' => $checkInDetail->machine->id,
-                        'name' => $checkInDetail->machine->name,
-                    ] : null,
-                    'site' => $checkInDetail->site ? [
-                        'id' => $checkInDetail->site->id,
-                        'name' => $checkInDetail->site->name,
-                        'longitude' => $checkInDetail->site->longitude,
-                        'latitude' => $checkInDetail->site->latitude,
-                    ] : null,
-                    'shift' => $checkInDetail->shift ? [
-                        'id' => $checkInDetail->shift->id,
-                        'name' => $checkInDetail->shift->name,
-                        'start_time' => $checkInDetail->shift->start_time,
-                        'end_time' => $checkInDetail->shift->end_time,
-                    ] : null,
-                    'uid' => $checkInDetail->uid,
-                    'longitude' => $checkInDetail->longitude,
-                    'latitude' => $checkInDetail->latitude,
-                    'image_url' => $checkInDetail->image_url ?? null,
-                    'distance' => $checkInDetail->distance,
-                    'notes' => $checkInDetail->notes,
-                    'approved_by' => $checkInDetail->approved_by,
-                    'approved_at' => $checkInDetail->approved_at,
-                    'approved_by_name' => $checkInDetail->approvedBy?->name,
-                    'approved_at_formatted' => $checkInDetail->approved_at?->format('d-m-Y H:i:s'),
-                ] : null,
-                'check_out' => $checkOutDetail ? [
-                    'id' => $checkOutDetail->id,
-                    'timestamp' => $checkOutDetail->timestamp,
-                    'attendance_method' => $checkOutDetail->attendanceMethod ? [
-                        'id' => $checkOutDetail->attendanceMethod->id,
-                        'name' => $checkOutDetail->attendanceMethod->name,
-                    ] : null,
-                    'machine' => $checkOutDetail->machine ? [
-                        'id' => $checkOutDetail->machine->id,
-                        'name' => $checkOutDetail->machine->name,
-                    ] : null,
-                    'site' => $checkOutDetail->site ? [
-                        'id' => $checkOutDetail->site->id,
-                        'name' => $checkOutDetail->site->name,
-                        'longitude' => $checkOutDetail->site->longitude,
-                        'latitude' => $checkOutDetail->site->latitude,
-                    ] : null,
-                    'shift' => $checkOutDetail->shift ? [
-                        'id' => $checkOutDetail->shift->id,
-                        'name' => $checkOutDetail->shift->name,
-                        'start_time' => $checkOutDetail->shift->start_time,
-                        'end_time' => $checkOutDetail->shift->end_time,
-                    ] : null,
-                    'uid' => $checkOutDetail->uid,
-                    'longitude' => $checkOutDetail->longitude,
-                    'latitude' => $checkOutDetail->latitude,
-                    'image_url' => $checkOutDetail->image_url ?? null,
-                    'distance' => $checkOutDetail->distance,
-                    'notes' => $checkOutDetail->notes,
-                    'approved_by' => $checkOutDetail->approved_by,
-                    'approved_at' => $checkOutDetail->approved_at,
-                    'approved_by_name' => $checkOutDetail->approvedBy?->name,
-                    'approved_at_formatted' => $checkOutDetail->approved_at?->format('d-m-Y H:i:s'),
-                ] : null,
-                'employee_id' => $attendance->employee_id,
-                'date' => $attendance->date,
-                'duration_string' => $formattedDuration, // Total hours
-                'duration' => $duration, // Total hours in decimal
-            ];
         });
+
+        // Transform grouped data into display format
+        $displayData = collect();
+        foreach ($groupedAttendance as $employeeId => $datesData) {
+            foreach ($datesData as $date => $dayAttendances) {
+                $sorted = $dayAttendances->sortBy('timestamp');
+                $checkIn = $sorted->first();
+                $checkOut = $sorted->last();
+                
+                // Only show if there's actual attendance data
+                if ($checkIn) {
+                    $checkInTimestamp = new \DateTime($checkIn->timestamp);
+                    $checkOutTimestamp = $checkOut && $checkIn->id !== $checkOut->id ? new \DateTime($checkOut->timestamp) : null;
+
+                    $duration = null;
+                    $formattedDuration = null;
+
+                    if ($checkInTimestamp && $checkOutTimestamp) {
+                        $interval = $checkInTimestamp->diff($checkOutTimestamp);
+                        $hours = $interval->h + ($interval->days * 24); // Total hours
+                        $minutes = $interval->i; // Minutes
+                        $seconds = $interval->s; // Seconds
+
+                        $duration = $hours + ($minutes / 60) + ($seconds / 3600); // Total hours in decimal
+
+                        // Format duration as "H hours, M minutes, S seconds"
+                        $formattedDuration = sprintf('%d hours, %d minutes, %d seconds', $hours, $minutes, $seconds);
+                    }
+
+                    $displayData->push([
+                        'id' => $checkIn->uid . '-' . ($checkOut ? $checkOut->uid : 'null'),
+                        'employee' => [
+                            'id' => $checkIn->employee->id,
+                            'name' => $checkIn->employee->user->name,
+                            'email' => $checkIn->employee->user->email,
+                            'avatar_url' => $checkIn->employee->user->avatar_url,
+                        ],
+                        'check_in' => [
+                            'id' => $checkIn->id,
+                            'timestamp' => $checkIn->timestamp,
+                            'attendance_method' => $checkIn->attendanceMethod ? [
+                                'id' => $checkIn->attendanceMethod->id,
+                                'name' => $checkIn->attendanceMethod->name,
+                            ] : null,
+                            'machine' => $checkIn->machine ? [
+                                'id' => $checkIn->machine->id,
+                                'name' => $checkIn->machine->name,
+                            ] : null,
+                            'site' => $checkIn->site ? [
+                                'id' => $checkIn->site->id,
+                                'name' => $checkIn->site->name,
+                                'longitude' => $checkIn->site->longitude,
+                                'latitude' => $checkIn->site->latitude,
+                            ] : null,
+                            'shift' => $checkIn->shift ? [
+                                'id' => $checkIn->shift->id,
+                                'name' => $checkIn->shift->name,
+                                'start_time' => $checkIn->shift->start_time,
+                                'end_time' => $checkIn->shift->end_time,
+                                'display_name' => ShiftHelper::getShiftDisplayName($checkIn->shift),
+                                'is_overnight' => ShiftHelper::isOvernightShift($checkIn->shift),
+                            ] : null,
+                            'uid' => $checkIn->uid,
+                            'longitude' => $checkIn->longitude,
+                            'latitude' => $checkIn->latitude,
+                            'image_url' => $checkIn->image_url ?? null,
+                            'distance' => $checkIn->distance,
+                            'notes' => $checkIn->notes,
+                            'approved_by' => $checkIn->approved_by,
+                            'approved_at' => $checkIn->approved_at,
+                            'approved_by_name' => $checkIn->approvedBy?->name,
+                            'approved_at_formatted' => $checkIn->approved_at?->format('d-m-Y H:i:s'),
+                        ],
+                        'check_out' => $checkOut && $checkIn->id !== $checkOut->id ? [
+                            'id' => $checkOut->id,
+                            'timestamp' => $checkOut->timestamp,
+                            'attendance_method' => $checkOut->attendanceMethod ? [
+                                'id' => $checkOut->attendanceMethod->id,
+                                'name' => $checkOut->attendanceMethod->name,
+                            ] : null,
+                            'machine' => $checkOut->machine ? [
+                                'id' => $checkOut->machine->id,
+                                'name' => $checkOut->machine->name,
+                            ] : null,
+                            'site' => $checkOut->site ? [
+                                'id' => $checkOut->site->id,
+                                'name' => $checkOut->site->name,
+                                'longitude' => $checkOut->site->longitude,
+                                'latitude' => $checkOut->site->latitude,
+                            ] : null,
+                            'shift' => $checkOut->shift ? [
+                                'id' => $checkOut->shift->id,
+                                'name' => $checkOut->shift->name,
+                                'start_time' => $checkOut->shift->start_time,
+                                'end_time' => $checkOut->shift->end_time,
+                                'display_name' => ShiftHelper::getShiftDisplayName($checkOut->shift),
+                                'is_overnight' => ShiftHelper::isOvernightShift($checkOut->shift),
+                            ] : null,
+                            'uid' => $checkOut->uid,
+                            'longitude' => $checkOut->longitude,
+                            'latitude' => $checkOut->latitude,
+                            'image_url' => $checkOut->image_url ?? null,
+                            'distance' => $checkOut->distance,
+                            'notes' => $checkOut->notes,
+                            'approved_by' => $checkOut->approved_by,
+                            'approved_at' => $checkOut->approved_at,
+                            'approved_by_name' => $checkOut->approvedBy?->name,
+                            'approved_at_formatted' => $checkOut->approved_at?->format('d-m-Y H:i:s'),
+                        ] : null,
+                        'employee_id' => $employeeId,
+                        'date' => $date,
+                        'shift_date' => ShiftHelper::getAttendanceDate($checkIn->timestamp, $checkIn->shift),
+                        'duration_string' => $formattedDuration ?? '-',
+                        'duration' => $duration ?? 0,
+                        'status' => ShiftHelper::getAttendanceStatus($checkIn, $checkOut, $checkIn->shift),
+                        'time_range' => ShiftHelper::formatAttendanceTimeRange($checkIn, $checkOut, $checkIn->shift),
+                    ]);
+                }
+            }
+        }
+
+        // Sort by date descending and apply pagination
+        $sortedData = $displayData->sortByDesc('date');
+        $currentPage = request()->get('page', 1);
+        $perPage = $this->perPage;
+        $offset = ($currentPage - 1) * $perPage;
+        $paginatedData = $sortedData->slice($offset, $perPage)->values();
+        
+        // Create paginator manually
+        $total = $sortedData->count();
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedData,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
 
         // dd($attendances);
 

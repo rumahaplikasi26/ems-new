@@ -6,6 +6,7 @@ use App\Models\AbsentRequest;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Helpers\ShiftHelper;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use DatePeriod;
@@ -57,9 +58,7 @@ class AttendancePreview extends Component
                 $attendanceQuery->whereIn('shift_id', $this->selectedShifts);
             }
             
-            $attendances = $attendanceQuery->orderBy('timestamp')
-                ->get()
-                ->groupBy('employee_id');
+            $attendances = $attendanceQuery->orderBy('timestamp')->get();
 
             // Fetch leave requests
             $leaveRequests = LeaveRequest::select('employee_id', 'start_date', 'end_date')
@@ -91,10 +90,9 @@ class AttendancePreview extends Component
             $this->reports = collect();
 
             foreach ($employees as $employee) {
-                $employeeAttendances = $attendances->get($employee->id, collect())
-                    ->groupBy(function($attendance) {
-                        return Carbon::parse($attendance->timestamp)->format('Y-m-d');
-                    });
+                // Get employee attendances and group by shift-aware date
+                $employeeAttendances = $attendances->where('employee_id', $employee->id);
+                $groupedByShiftDate = ShiftHelper::groupAttendanceByShiftDate($employeeAttendances);
 
                 // Buat array untuk menyimpan periode cuti
                 $leaveDates = [];
@@ -119,7 +117,9 @@ class AttendancePreview extends Component
 
                 foreach ($dateRange as $date) {
                     $dateStr = $date->format('Y-m-d');
-                    $dayAttendances = $employeeAttendances->get($dateStr, collect());
+                    
+                    // Check if there's attendance for this shift-aware date
+                    $dayAttendances = $groupedByShiftDate->get($dateStr, collect());
 
                     // Cek apakah ada cuti atau izin pada tanggal tersebut
                     if (isset($leaveDates[$dateStr])) {
@@ -127,16 +127,20 @@ class AttendancePreview extends Component
                     } elseif (isset($absentDates[$dateStr])) {
                         $timeRange = $absentDates[$dateStr];
                     } elseif ($dayAttendances->isNotEmpty()) {
-                        $firstAttendance = $dayAttendances->first();
-                        $lastAttendance = $dayAttendances->last();
+                        $sorted = $dayAttendances->sortBy('timestamp');
+                        $checkIn = $sorted->first();
+                        $checkOut = $sorted->last();
 
-                        $timeRange = Carbon::parse($firstAttendance->timestamp)->format('H:i') .
-                                    '-' .
-                                    Carbon::parse($lastAttendance->timestamp)->format('H:i');
+                        // Use ShiftHelper to format the time range
+                        $timeRange = ShiftHelper::formatAttendanceTimeRange($checkIn, $checkOut, $checkIn->shift);
                         
-                        // Add shift information if available
-                        if ($firstAttendance->shift) {
-                            $timeRange .= ' (' . $firstAttendance->shift->name . ')';
+                        // Add overnight indicator if needed
+                        if ($checkIn->shift && ShiftHelper::isOvernightShift($checkIn->shift)) {
+                            $checkInDate = Carbon::parse($checkIn->timestamp)->format('Y-m-d');
+                            $checkOutDate = Carbon::parse($checkOut->timestamp)->format('Y-m-d');
+                            if ($checkInDate !== $checkOutDate) {
+                                $timeRange .= ' [Overnight]';
+                            }
                         }
                     } else {
                         $timeRange = '-';
