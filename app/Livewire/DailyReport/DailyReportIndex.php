@@ -31,7 +31,8 @@ class DailyReportIndex extends BaseComponent
 
     public function render()
     {
-        $daily_reports = DailyReport::with('employee.user', 'dailyReportRecipients.employee.user')->when($this->search, function ($query) {
+        $daily_reports = DailyReport::with('employee.user', 'dailyReportRecipients.employee.user')
+        ->when($this->search, function ($query) {
             $query->where('description', 'like', '%' . $this->search . '%');
         })->when($this->employee_id, function ($query) {
             $query->whereIn('employee_id', $this->employee_id);

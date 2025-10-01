@@ -65,11 +65,11 @@ class AttendanceIndex extends BaseComponent
             ->when($this->end_date, function ($query) {
                 $endDate = Carbon::parse($this->end_date)->format('Y-m-d');
                 $query->whereDate('timestamp', '<=', $endDate);
-            });
+            })->orderBy('timestamp', 'desc');
 
         // Apply user permissions to the query
         if ($this->authUser->can('view:attendance-all')) {
-            $att = $baseQuery;
+            $attendances = $baseQuery->paginate($this->perPage);
         } else {
             // Check if user is a supervisor
             if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
@@ -77,15 +77,12 @@ class AttendanceIndex extends BaseComponent
                 $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
                 // Include supervisor's own attendance
                 $supervisedEmployeeIds->push($this->authUser->employee->id);
-                $att = $baseQuery->whereIn('employee_id', $supervisedEmployeeIds);
+                $attendances = $baseQuery->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
             } else {
                 // Regular employee - only see their own attendance
-                $att = $baseQuery->where('employee_id', $this->authUser->employee->id);
+                $attendances = $baseQuery->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
             }
         }
-
-        // Use Livewire pagination directly from Eloquent query
-        $attendances = $att->orderBy('timestamp', 'desc')->paginate($this->perPage);
 
         return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance List']);
     }
