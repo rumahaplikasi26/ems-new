@@ -125,8 +125,11 @@ class AttendanceIndex extends BaseComponent
             }
         }
 
-        // Get all data for processing
-        $allAttendances = $attendances->orderBy('timestamp', 'desc')->get();
+        // Paginate at database level first
+        $paginatedAttendances = $attendances->orderBy('timestamp', 'desc')->paginate($this->perPage);
+        
+        // Get the paginated data for processing
+        $allAttendances = $paginatedAttendances->items();
 
         // Group attendance by employee and shift-aware date
         $groupedAttendance = $allAttendances->groupBy('employee_id')->map(function ($employeeAttendances) {
@@ -258,39 +261,27 @@ class AttendanceIndex extends BaseComponent
         // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Simple pagination without cache
-        $currentPage = $this->getPage();
-        $perPage = $this->perPage;
-        $total = $sortedData->count();
-        $offset = ($currentPage - 1) * $perPage;
-        $paginatedData = $sortedData->slice($offset, $perPage)->values();
-        
-        // Create paginator
-        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
-            $paginatedData,
-            $total,
-            $perPage,
-            $currentPage,
-            [
-                'path' => request()->url(),
-                'pageName' => 'page',
-            ]
-        );
+        // Replace the paginator's items with processed data
+        $paginatedAttendances->setCollection($sortedData);
         
         // Set the paginator's appends to preserve query parameters
-        $attendances->appends(request()->except('page'));
+        $paginatedAttendances->appends(request()->except('page'));
+        
+        // Use the paginated data
+        $attendances = $paginatedAttendances;
 
         // Debug pagination for server deployment
         if (config('app.debug')) {
             \Log::info('Pagination Debug', [
-                'current_page' => $currentPage,
-                'per_page' => $perPage,
-                'total' => $total,
+                'current_page' => $attendances->currentPage(),
+                'per_page' => $attendances->perPage(),
+                'total' => $attendances->total(),
                 'total_pages' => $attendances->lastPage(),
                 'has_pages' => $attendances->hasPages(),
                 'has_more_pages' => $attendances->hasMorePages(),
                 'next_page_url' => $attendances->nextPageUrl(),
                 'previous_page_url' => $attendances->previousPageUrl(),
+                'processed_items_count' => $sortedData->count(),
             ]);
         }
 
