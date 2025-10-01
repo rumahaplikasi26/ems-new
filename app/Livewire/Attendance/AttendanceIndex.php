@@ -84,7 +84,7 @@ class AttendanceIndex extends BaseComponent
             }
         }
 
-        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance List']);
+        return view('livewire.attendance.attendance-index', compact('attendances'))->layout('layouts.app', ['title' => 'Attendance List', 'attendances' => $attendances]);
     }
 
 }
