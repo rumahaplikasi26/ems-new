@@ -19,18 +19,16 @@
                         <div class="card-body">
 
                             <label for="form-label">{{ __('ems.date') }}</label>
-                            <div class="input-daterange input-group" id="attendance-inputgroup"
-                                data-provide="datepicker" data-date-format="yyyy-mm-dd"
-                                data-date-container='#attendance-inputgroup' data-date-autoclose="true">
-                                <input type="text" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model.live="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
+                            <div class="input-daterange input-group" id="attendance-inputgroup">
+                                <input type="date" class="form-control @error('start_date') is-invalid @enderror"
+                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                                <input type="text" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model.live="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
+                                <input type="date" class="form-control @error('end_date') is-invalid @enderror"
+                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -70,33 +68,25 @@
     @endpush
 
     @push('js')
-        <script src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-        <script src="{{ asset('libs/select2/js/select2.min.js') }}"></script>
         <script>
             document.addEventListener('livewire:init', function() {
-                initDatePicker();
-                // let selectElement = $('.select2-multiple');
-
-                function initDatePicker() {
-                    $('#attendance-inputgroup').datepicker({
-                        format: 'yyyy-mm-dd',
-                        autoclose: true,
-                        todayHighlight: true,
-                        inputs: $('#attendance-inputgroup').find('input')
-                    }).on('changeDate', function(e) {
-                        // Update the Livewire property when date is selected
-                        let startDate = $('#attendance-inputgroup').find('input[name="start"]').val();
-                        let endDate = $('#attendance-inputgroup').find('input[name="end"]').val();
-
-                        @this.set('start_date', startDate);
-                        @this.set('end_date', endDate);
+                // Add change event listeners for date inputs to ensure Livewire updates
+                const startDateInput = document.querySelector('input[name="start"]');
+                const endDateInput = document.querySelector('input[name="end"]');
+                
+                if (startDateInput) {
+                    startDateInput.addEventListener('change', function() {
+                        @this.set('start_date', this.value);
                     });
                 }
-
+                
+                if (endDateInput) {
+                    endDateInput.addEventListener('change', function() {
+                        @this.set('end_date', this.value);
+                    });
+                }
             });
         </script>
-
-        
     @endpush
 
     

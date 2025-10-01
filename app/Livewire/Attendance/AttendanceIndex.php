@@ -54,8 +54,50 @@ class AttendanceIndex extends BaseComponent
         $this->resetPage();
     }
 
+    public function goToPage($page)
+    {
+        $this->setPage($page);
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+        // Debug for server deployment
+        if (config('app.debug')) {
+            \Log::info('Search updated', ['search' => $this->search]);
+        }
+    }
+
+    public function updatedStart_date()
+    {
+        $this->resetPage();
+        // Debug for server deployment
+        if (config('app.debug')) {
+            \Log::info('Start date updated', ['start_date' => $this->start_date]);
+        }
+    }
+
+    public function updatedEnd_date()
+    {
+        $this->resetPage();
+        // Debug for server deployment
+        if (config('app.debug')) {
+            \Log::info('End date updated', ['end_date' => $this->end_date]);
+        }
+    }
+
     public function render()
     {
+        // Debug filter values for server deployment
+        if (config('app.debug')) {
+            \Log::info('Filter values', [
+                'search' => $this->search,
+                'start_date' => $this->start_date,
+                'end_date' => $this->end_date,
+                'perPage' => $this->perPage,
+            ]);
+        }
+
         // Build base query with filters
         $baseQuery = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
             ->when($this->search, function ($query) {
@@ -220,27 +262,33 @@ class AttendanceIndex extends BaseComponent
         // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Calculate pagination
-        $currentPage = $this->getPage();
+        // Calculate pagination with robust server compatibility
+        $currentPage = request()->get('page', 1);
         $perPage = $this->perPage;
         $total = $sortedData->count();
         $offset = ($currentPage - 1) * $perPage;
         $paginatedData = $sortedData->slice($offset, $perPage)->values();
         
-        // Create paginator with proper Livewire integration
+        // Get base URL for pagination links (more robust for server deployment)
+        $baseUrl = url()->current();
+        
+        // Create paginator with server-compatible configuration
         $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
             $paginatedData,
             $total,
             $perPage,
             $currentPage,
             [
-                'path' => request()->url(),
+                'path' => $baseUrl,
                 'pageName' => 'page',
             ]
         );
         
-        // Set the paginator's appends to preserve query parameters
-        $attendances->appends(request()->query());
+        // Preserve query parameters for filter persistence
+        $queryParams = request()->except(['page']);
+        if (!empty($queryParams)) {
+            $attendances->appends($queryParams);
+        }
 
         // dd($attendances);
 
