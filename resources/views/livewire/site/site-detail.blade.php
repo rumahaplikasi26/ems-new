@@ -127,11 +127,9 @@
     @endpush
 
     @push('js')
-        {{-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIAst2Zattt8a673x8hHQ6J5KV6nISGOk&callback=initMap" async
-            defer></script> --}}
         <script
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIAst2Zattt8a673x8hHQ6J5KV6nISGOk&callback=initMap&v=weekly&libraries=marker"
-            defer></script>
+            src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&callback=initMap&v=weekly&libraries=marker"
+            async defer></script>
 
         <script>
             document.addEventListener('livewire:init', function() {
