@@ -82,24 +82,6 @@ class AttendanceIndex extends BaseComponent
         }
     }
 
-    public function updatedSearch()
-    {
-        $this->resetPage();
-        // Debug for server deployment
-        if (config('app.debug')) {
-            \Log::info('Search updated', ['search' => $this->search]);
-        }
-    }
-
-    public function updatedStart_date()
-    {
-        $this->resetPage();
-        // Debug for server deployment
-        if (config('app.debug')) {
-            \Log::info('Start date updated', ['start_date' => $this->start_date]);
-        }
-    }
-
     public function updatedPerPage()
     {
         $this->resetPage();
@@ -377,7 +359,7 @@ class AttendanceIndex extends BaseComponent
                 'server_info' => [
                     'php_version' => PHP_VERSION,
                     'laravel_version' => app()->version(),
-                    'livewire_version' => \Livewire\Livewire::VERSION ?? 'unknown',
+                    // 'livewire_version' => \Livewire\Livewire::VERSION ?? 'unknown',
                 ],
                 'filters' => [
                     'search' => $this->search,

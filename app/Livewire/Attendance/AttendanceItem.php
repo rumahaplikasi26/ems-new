@@ -23,6 +23,9 @@ class AttendanceItem extends Component
     public $shift_date;
     public $status;
     public $time_range;
+    public $image_url;
+    public $employee_name;
+    public $employee_email;
     /**
      * Mount the component
      *
@@ -53,6 +56,7 @@ class AttendanceItem extends Component
         $this->status = $this->attendance['status'] ?? '';
         $this->time_range = $this->attendance['time_range'] ?? '';
         $this->badge_color = $this->statusDuration();
+        $this->image_url = $this->attendance['image_url'] ?? '';
         $this->distanceFormatted();
         $this->notesExcerpt();
     }
