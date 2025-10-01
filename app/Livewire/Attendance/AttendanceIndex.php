@@ -54,10 +54,6 @@ class AttendanceIndex extends BaseComponent
         $this->resetPage();
     }
 
-    public function goToPage($page)
-    {
-        $this->setPage($page);
-    }
 
     public function updatedSearch()
     {
@@ -262,35 +258,41 @@ class AttendanceIndex extends BaseComponent
         // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Calculate pagination with robust server compatibility
-        $currentPage = request()->get('page', 1);
+        // Simple pagination without cache
+        $currentPage = $this->getPage();
         $perPage = $this->perPage;
         $total = $sortedData->count();
         $offset = ($currentPage - 1) * $perPage;
         $paginatedData = $sortedData->slice($offset, $perPage)->values();
         
-        // Get base URL for pagination links (more robust for server deployment)
-        $baseUrl = url()->current();
-        
-        // Create paginator with server-compatible configuration
+        // Create paginator
         $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
             $paginatedData,
             $total,
             $perPage,
             $currentPage,
             [
-                'path' => $baseUrl,
+                'path' => request()->url(),
                 'pageName' => 'page',
             ]
         );
         
-        // Preserve query parameters for filter persistence
-        $queryParams = request()->except(['page']);
-        if (!empty($queryParams)) {
-            $attendances->appends($queryParams);
-        }
+        // Set the paginator's appends to preserve query parameters
+        $attendances->appends(request()->except('page'));
 
-        // dd($attendances);
+        // Debug pagination for server deployment
+        if (config('app.debug')) {
+            \Log::info('Pagination Debug', [
+                'current_page' => $currentPage,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $attendances->lastPage(),
+                'has_pages' => $attendances->hasPages(),
+                'has_more_pages' => $attendances->hasMorePages(),
+                'next_page_url' => $attendances->nextPageUrl(),
+                'previous_page_url' => $attendances->previousPageUrl(),
+            ]);
+        }
 
         return view('livewire.attendance.attendance-index', [
             'attendances' => $attendances
