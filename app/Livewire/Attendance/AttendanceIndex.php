@@ -50,26 +50,20 @@ class AttendanceIndex extends BaseComponent
     }
     public function render()
     {
-        // Build base query with filters - more robust for server deployment
-        $baseQuery = Attendance::with(['employee.user', 'machine', 'site', 'attendanceMethod', 'shift'])
-            ->when($this->search, function ($query) {
-                $searchTerm = trim($this->search);
-                $query->whereHas('employee.user', function ($query) use ($searchTerm) {
-                    $query->where('name', 'like', '%' . $searchTerm . '%');
-                });
-            })
-            ->when($this->start_date, function ($query) {
-                $startDate = Carbon::parse($this->start_date)->format('Y-m-d');
-                $query->whereDate('timestamp', '>=', $startDate);
-            })
-            ->when($this->end_date, function ($query) {
-                $endDate = Carbon::parse($this->end_date)->format('Y-m-d');
-                $query->whereDate('timestamp', '<=', $endDate);
-            })->orderBy('timestamp', 'desc');
+        $attendances = Attendance::with('employee.user', 'attendanceMethod', 'shift', 'site')
+        ->when($this->search, function ($query) {
+            $query->whereHas('employee.user', function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%');
+            });
+        })->when($this->start_date, function ($query) {
+            $query->whereDate('timestamp', '>=', $this->start_date);
+        })->when($this->end_date, function ($query) {
+            $query->whereDate('timestamp', '<=', $this->end_date);
+        })->orderBy('timestamp', 'desc');
 
-        // Apply user permissions to the query
+        // Apply supervisor filter
         if ($this->authUser->can('view:attendance-all')) {
-            $attendances = $baseQuery->paginate($this->perPage);
+            $attendances = $attendances->paginate($this->perPage);
         } else {
             // Check if user is a supervisor
             if ($this->authUser->employee && $this->authUser->employee->isSupervisor()) {
@@ -77,10 +71,10 @@ class AttendanceIndex extends BaseComponent
                 $supervisedEmployeeIds = $this->authUser->employee->getSupervisedEmployeeIds();
                 // Include supervisor's own attendance
                 $supervisedEmployeeIds->push($this->authUser->employee->id);
-                $attendances = $baseQuery->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
+                $attendances = $attendances->whereIn('employee_id', $supervisedEmployeeIds)->paginate($this->perPage);
             } else {
                 // Regular employee - only see their own attendance
-                $attendances = $baseQuery->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
+                $attendances = $attendances->where('employee_id', $this->authUser->employee->id)->paginate($this->perPage);
             }
         }
 
