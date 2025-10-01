@@ -15,8 +15,7 @@
     @endassets
 
     @push('js')
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry&callback=initMap" async defer>
-        </script>
+        
         <script>
             document.addEventListener('livewire:init', function() {
                 refreshCoordinates();
@@ -200,6 +199,9 @@
                     map.controls[google.maps.ControlPosition.TOP_LEFT].push(centerControlDiv);
                 }
             });
+        </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry&callback=initMap" async defer>
         </script>
     @endpush
     
