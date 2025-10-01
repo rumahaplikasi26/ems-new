@@ -125,11 +125,8 @@ class AttendanceIndex extends BaseComponent
             }
         }
 
-        // Paginate at database level first
-        $paginatedAttendances = $attendances->orderBy('timestamp', 'desc')->paginate($this->perPage);
-        
-        // Get the paginated data for processing
-        $allAttendances = $paginatedAttendances->items();
+        // Get all data first for proper grouping, then paginate
+        $allAttendances = $attendances->orderBy('timestamp', 'desc')->get();
 
         // Group attendance by employee and shift-aware date
         $groupedAttendance = $allAttendances->groupBy('employee_id')->map(function ($employeeAttendances) {
@@ -137,6 +134,21 @@ class AttendanceIndex extends BaseComponent
                 return ShiftHelper::getAttendanceDate($attendance->timestamp, $attendance->shift);
             });
         });
+
+        // Debug grouping for server deployment
+        if (config('app.debug')) {
+            \Log::info('Attendance Grouping Debug', [
+                'total_attendance_records' => $allAttendances->count(),
+                'total_employees' => $groupedAttendance->count(),
+                'grouped_data' => $groupedAttendance->map(function ($dates, $employeeId) {
+                    return [
+                        'employee_id' => $employeeId,
+                        'dates_count' => $dates->count(),
+                        'dates' => $dates->keys()->toArray()
+                    ];
+                })->toArray()
+            ]);
+        }
 
         // Transform grouped data into display format
         $displayData = collect();
@@ -148,8 +160,41 @@ class AttendanceIndex extends BaseComponent
                 
                 // Only show if there's actual attendance data
                 if ($checkIn) {
-                    $checkInTimestamp = new \DateTime($checkIn->timestamp);
-                    $checkOutTimestamp = $checkOut && $checkIn->id !== $checkOut->id ? new \DateTime($checkOut->timestamp) : null;
+                    // In this system, each attendance record is either check-in or check-out
+                    // We need to find the check-out for the same employee on the same day
+                    $employeeId = $checkIn->employee_id;
+                    
+                    // Ensure timestamp is a Carbon instance
+                    $checkInTimestamp = is_string($checkIn->timestamp) ? 
+                        \Carbon\Carbon::parse($checkIn->timestamp) : 
+                        $checkIn->timestamp;
+                    
+                    $date = $checkInTimestamp->format('Y-m-d');
+                    
+                    // Find check-out attendance for the same employee on the same day
+                    $checkOut = Attendance::where('employee_id', $employeeId)
+                        ->whereDate('timestamp', $date)
+                        ->where('id', '!=', $checkIn->id)
+                        ->where('timestamp', '>', $checkIn->timestamp)
+                        ->orderBy('timestamp', 'desc')
+                        ->first();
+                    
+                    // Use the already parsed checkInTimestamp
+                    $checkOutTimestamp = $checkOut ? 
+                        (is_string($checkOut->timestamp) ? 
+                            \Carbon\Carbon::parse($checkOut->timestamp) : 
+                            $checkOut->timestamp) : null;
+
+                    // Debug checkout data for server deployment
+                    if (config('app.debug')) {
+                        \Log::info('Checkout Debug', [
+                            'attendance_id' => $checkIn->id,
+                            'employee_id' => $employeeId,
+                            'date' => $date,
+                            'check_out_exists' => $checkOut ? true : false,
+                            'check_out_timestamp' => $checkOutTimestamp ? $checkOutTimestamp->format('Y-m-d H:i:s') : null,
+                        ]);
+                    }
 
                     $duration = null;
                     $formattedDuration = null;
@@ -208,9 +253,12 @@ class AttendanceIndex extends BaseComponent
                             'approved_by' => $checkIn->approved_by,
                             'approved_at' => $checkIn->approved_at,
                             'approved_by_name' => $checkIn->approvedBy?->name,
-                            'approved_at_formatted' => $checkIn->approved_at?->format('d-m-Y H:i:s'),
+                            'approved_at_formatted' => $checkIn->approved_at ? 
+                                (is_string($checkIn->approved_at) ? 
+                                    \Carbon\Carbon::parse($checkIn->approved_at)->format('d-m-Y H:i:s') :
+                                    $checkIn->approved_at->format('d-m-Y H:i:s')) : null,
                         ],
-                        'check_out' => $checkOut && $checkIn->id !== $checkOut->id ? [
+                        'check_out' => $checkOut ? [
                             'id' => $checkOut->id,
                             'timestamp' => $checkOut->timestamp,
                             'attendance_method' => $checkOut->attendanceMethod ? [
@@ -244,11 +292,14 @@ class AttendanceIndex extends BaseComponent
                             'approved_by' => $checkOut->approved_by,
                             'approved_at' => $checkOut->approved_at,
                             'approved_by_name' => $checkOut->approvedBy?->name,
-                            'approved_at_formatted' => $checkOut->approved_at?->format('d-m-Y H:i:s'),
+                            'approved_at_formatted' => $checkOut->approved_at ? 
+                                (is_string($checkOut->approved_at) ? 
+                                    \Carbon\Carbon::parse($checkOut->approved_at)->format('d-m-Y H:i:s') :
+                                    $checkOut->approved_at->format('d-m-Y H:i:s')) : null,
                         ] : null,
                         'employee_id' => $employeeId,
                         'date' => $date,
-                        'shift_date' => ShiftHelper::getAttendanceDate($checkIn->timestamp, $checkIn->shift),
+                        'shift_date' => ShiftHelper::getAttendanceDate($checkInTimestamp, $checkIn->shift),
                         'duration_string' => $formattedDuration ?? '-',
                         'duration' => $duration ?? 0,
                         'status' => ShiftHelper::getAttendanceStatus($checkIn, $checkOut, $checkIn->shift),
@@ -261,14 +312,27 @@ class AttendanceIndex extends BaseComponent
         // Sort by date descending
         $sortedData = $displayData->sortByDesc('date')->values();
         
-        // Replace the paginator's items with processed data
-        $paginatedAttendances->setCollection($sortedData);
+        // Manual pagination on processed data
+        $currentPage = $this->getPage();
+        $perPage = $this->perPage;
+        $total = $sortedData->count();
+        $offset = ($currentPage - 1) * $perPage;
+        $paginatedData = $sortedData->slice($offset, $perPage)->values();
+        
+        // Create paginator
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedData,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
         
         // Set the paginator's appends to preserve query parameters
-        $paginatedAttendances->appends(request()->except('page'));
-        
-        // Use the paginated data
-        $attendances = $paginatedAttendances;
+        $attendances->appends(request()->except('page'));
 
         // Debug pagination for server deployment
         if (config('app.debug')) {
