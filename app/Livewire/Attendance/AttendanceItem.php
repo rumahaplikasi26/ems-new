@@ -2,114 +2,70 @@
 
 namespace App\Livewire\Attendance;
 
-use Livewire\Attributes\Reactive;
+use App\Models\Attendance;
 use Livewire\Component;
 
 class AttendanceItem extends Component
 {
-    #[Reactive]
     public $attendance;
-    public $day;
-    public $employee;
-    public $checkIn;
-    public $checkOut;
-    public $duration;
-    public $duration_string;
-    public $badge_color;
-    public $distanceInFormatted, $distanceOutFormatted;
-    public $noteInExcerpt, $noteOutExcerpt;
-    public $approvedByIn, $approvedAtIn, $approvedByOut, $approvedAtOut;
-    public $date;
-    public $shift_date;
-    public $status;
-    public $time_range;
-    /**
-     * Mount the component
-     *
-     * This method is called when the component is first initialized.
-     * It sets the following properties:
-     * - $this->employee
-     * - $this->day
-     * - $this->checkIn
-     * - $this->checkOut
-     * - $this->duration_string
-     * - $this->duration
-     * - $this->badge_color
-     * - $this->distanceInFormatted
-     * - $this->distanceOutFormatted
-     * - $this->noteInExcerpt
-     * - $this->noteOutExcerpt
-     */
-    public function mount()
+    
+    public function mount(Attendance $attendance)
     {
-        $this->employee = $this->attendance['employee'];
-        $this->day = date('d/m', strtotime($this->attendance['date']));
-        $this->checkIn = $this->attendance['check_in'];
-        $this->checkOut = $this->attendance['check_out'];
-        $this->duration_string = $this->attendance['duration_string'];
-        $this->duration = $this->attendance['duration'];
-        $this->date = $this->attendance['date'] ?? '';
-        $this->shift_date = $this->attendance['shift_date'] ?? '';
-        $this->status = $this->attendance['status'] ?? '';
-        $this->time_range = $this->attendance['time_range'] ?? '';
-        $this->badge_color = $this->statusDuration();
-        $this->distanceFormatted();
-        $this->notesExcerpt();
+        $this->attendance = $attendance;
+    }
+
+    public function approvedInfo()
+    {
+        // Handle approval information from Eloquent model with safe checks
+        if ($this->attendance && isset($this->attendance->approvedBy) && $this->attendance->approvedBy) {
+            return $this->attendance->approvedBy->name ?? 'Unknown';
+        } else {
+            return '-';
+        }
+    }
+
+    public function approvedAtInfo()
+    {
+        // Handle approval timestamp from Eloquent model with safe checks
+        if ($this->attendance && isset($this->attendance->approved_at) && $this->attendance->approved_at) {
+            try {
+                return $this->attendance->approved_at->format('d-m-Y H:i:s');
+            } catch (\Exception $e) {
+                return $this->attendance->approved_at;
+            }
+        } else {
+            return '-';
+        }
     }
 
     public function notesExcerpt()
     {
-        // Handle check-in notes
-        if ($this->checkIn && isset($this->checkIn['notes'])) {
-            if (strlen($this->checkIn['notes']) > 50) {
-                $excerptIn = substr($this->checkIn['notes'], 0, 50);
-                $this->noteInExcerpt = '<p class="d-inline-block m-0 fst-italic" id="notes-in-' . $this->checkIn['id'] . '">' . $excerptIn . '</p> <a data-id="' . $this->checkIn['id'] . '" data-excerpt="' . $excerptIn . '" data-notes="' . $this->checkIn['notes'] . '" href="javascript: void(0);" class="read-more-in">Read More</a>';
+        // Handle attendance notes from Eloquent model with safe checks
+        if ($this->attendance && isset($this->attendance->notes) && !empty($this->attendance->notes)) {
+            if (strlen($this->attendance->notes) > 50) {
+                $excerpt = substr($this->attendance->notes, 0, 50);
+                return '<p class="d-inline-block m-0 fst-italic" id="notes-' . $this->attendance->id . '">' . $excerpt . '</p> <a data-id="' . $this->attendance->id . '" data-excerpt="' . $excerpt . '" data-notes="' . $this->attendance->notes . '" href="javascript: void(0);" class="read-more">Read More</a>';
             } else {
-                $this->noteInExcerpt = '<p class="fst-italic">' . $this->checkIn['notes'] . '</p>';
+                return '<p class="fst-italic">' . $this->attendance->notes . '</p>';
             }
         } else {
-            $this->noteInExcerpt = '<p class="fst-italic">-</p>';
-        }
-
-        // Handle check-out notes
-        if ($this->checkOut && isset($this->checkOut['notes'])) {
-            if (strlen($this->checkOut['notes']) > 50) {
-                $excerptOut = substr($this->checkOut['notes'], 0, 50);
-                $this->noteOutExcerpt = '<p class="d-inline-block m-0 fst-italic" id="notes-out-' . $this->checkOut['id'] . '">' . $excerptOut . '</p> <a data-id="' . $this->checkOut['id'] . '" data-excerpt="' . $excerptOut . '" data-notes="' . $this->checkOut['notes'] . '" href="javascript: void(0);" class="read-more-out">Read More</a>';
-            } else {
-                $this->noteOutExcerpt = '<p class="fst-italic">' . $this->checkOut['notes'] . '</p>';
-            }
-        } else {
-            $this->noteOutExcerpt = '<p class="fst-italic">-</p>';
+            return '<p class="fst-italic">-</p>';
         }
     }
 
     public function distanceFormatted()
     {
-        // Handle check-in distance
-        if ($this->checkIn && isset($this->checkIn['distance']) && $this->checkIn['distance'] != null) {
-            if ($this->checkIn['distance'] < 1) {
-                $this->distanceInFormatted = '<span class="text-success">' . $this->checkIn['distance'] . ' Km</span>';
-            } elseif ($this->checkIn['distance'] >= 1) {
-                $this->distanceInFormatted = '<span class="text-warning">' . $this->checkIn['distance'] . ' Km</span>';
+        // Handle attendance distance from Eloquent model with safe checks
+        if ($this->attendance && isset($this->attendance->distance) && $this->attendance->distance !== null) {
+            if ($this->attendance->distance < 1) {
+                return '<span class="text-success">' . $this->attendance->distance . ' Km</span>';
+            } elseif ($this->attendance->distance >= 1) {
+                return '<span class="text-warning">' . $this->attendance->distance . ' Km</span>';
             } else {
-                $this->distanceInFormatted = '<span class="text-danger">' . $this->checkIn['distance'] . ' Km</span>';
+                return '<span class="text-danger">' . $this->attendance->distance . ' Km</span>';
             }
         } else {
-            $this->distanceInFormatted = '<span class="text-secondary">Tidak ada</span>';
-        }
-
-        // Handle check-out distance
-        if ($this->checkOut && isset($this->checkOut['distance']) && $this->checkOut['distance'] != null) {
-            if ($this->checkOut['distance'] < 1) {
-                $this->distanceOutFormatted = '<span class="text-success">' . $this->checkOut['distance'] . ' Km</span>';
-            } elseif ($this->checkOut['distance'] >= 1) {
-                $this->distanceOutFormatted = '<span class="text-warning">' . $this->checkOut['distance'] . ' Km</span>';
-            } else {
-                $this->distanceOutFormatted = '<span class="text-danger">' . $this->checkOut['distance'] . ' Km</span>';
-            }
-        } else {
-            $this->distanceOutFormatted = '<span class="text-secondary">Tidak ada</span>';
+            return '<span class="text-secondary">Tidak ada</span>';
         }
     }
 
@@ -124,6 +80,52 @@ class AttendanceItem extends Component
 
     public function render()
     {
-        return view('livewire.attendance.attendance-item');
+        // Safe data extraction with null checks
+        $day = $this->attendance->timestamp ? date('d/m', strtotime($this->attendance->timestamp)) : 'N/A';
+        $employee_name = $this->attendance->employee->user->name ?? 'Unknown';
+        $employee_email = $this->attendance->employee->user->email ?? 'No email';
+        $image_url = $this->attendance->image_url ?? null;
+        $shift_name = $this->attendance->shift->name ?? 'Unknown';
+        
+        // Safe shift date calculation
+        $shift_date = null;
+        if ($this->attendance->timestamp && $this->attendance->shift) {
+            try {
+                $shift_date = \App\Helpers\ShiftHelper::getAttendanceDate($this->attendance->timestamp, $this->attendance->shift);
+            } catch (\Exception $e) {
+                $shift_date = date('Y-m-d', strtotime($this->attendance->timestamp));
+            }
+        }
+        
+        $date = $this->attendance->timestamp ? date('d-m-Y', strtotime($this->attendance->timestamp)) : 'N/A';
+        $site_name = $this->attendance->site->name ?? 'Unknown';
+        $latitude = $this->attendance->latitude ?? 'Unknown';
+        $longitude = $this->attendance->longitude ?? 'Unknown';
+        $timestamp = $this->attendance->timestamp ?? 'Unknown';
+        $time_formatted = $this->attendance->timestamp ? date('H:i:s', strtotime($this->attendance->timestamp)) : 'N/A';
+        $approvedBy = $this->approvedInfo();
+        $approvedAt = $this->approvedAtInfo();
+        $distanceFormatted = $this->distanceFormatted();
+        $noteExcerpt = $this->notesExcerpt();
+
+        return view('livewire.attendance.attendance-item', [
+            'attendance' => $this->attendance,
+            'employee_name' => $employee_name,
+            'employee_email' => $employee_email,
+            'image_url' => $image_url,
+            'day' => $day,
+            'date' => $date,
+            'shift_date' => $shift_date,
+            'time_formatted' => $time_formatted,
+            'site_name' => $site_name,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'timestamp' => $timestamp,
+            'approvedBy' => $approvedBy,
+            'approvedAt' => $approvedAt,
+            'shift_name' => $shift_name,
+            'distanceFormatted' => $distanceFormatted,
+            'noteExcerpt' => $noteExcerpt,
+        ]);
     }
 }

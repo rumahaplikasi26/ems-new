@@ -1,0 +1,224 @@
+<div>
+    @livewire('component.page.breadcrumb', ['breadcrumbs' => [['name' => __('ems.application'), 'url' => '/'], ['name' => __('ems.attendance'), 'url' => route('attendance.index')], ['name' => __('ems.create_attendance')]]], key('breadcrumb'))
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">{{ __('ems.attendance') }}</h4>
+                    <form wire:submit.prevent="submit" class="needs-validation form-horizontal">
+
+                        <div class="mb-3">
+                            <label for="attendance_method_id" class="form-label">{{ __('ems.attendance_method') }}</label>
+
+                            <div class="btn-group d-grid gap-2 d-md-flex" role="group"
+                                aria-label="Basic radio toggle button group">
+                                @foreach ($attendance_methods as $method)
+                                    <input type="radio" class="btn-check" name="attendance_method_id"
+                                        id="{{ $method->name }}{{ $method->id }}" value="{{ $method->id }}"
+                                        autocomplete="off" wire:model.live="attendance_method_id">
+                                    <label
+                                        class="btn btn-outline-primary  @error('attendance_method_id') btn-outline-danger @enderror"
+                                        for="{{ $method->name }}{{ $method->id }}">
+                                        {{ $method->name }}
+                                        @error('attendance_method_id')
+                                            (<strong>{{ $message }}</strong>)
+                                        @enderror
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="shift_id" class="form-label">{{ __('ems.shift') }} <span class="text-danger">*</span></label>
+                            <select class="form-select @error('shift_id') is-invalid @enderror" 
+                                    id="shift_id" 
+                                    wire:model="shift_id">
+                                <option value="">{{ __('ems.select_shift') }}</option>
+                                @foreach ($shifts as $shift)
+                                    <option value="{{ $shift->id }}">
+                                        {{ $shift->name }} ({{ $shift->start_time }} - {{ $shift->end_time }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('shift_id')
+                                <div class="invalid-feedback">
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                        </div>
+
+                        @if ($attendance_method_id == 2)
+                            <div class="mb-3" wire:ignore>
+                                <label for="site_id" class="form-label">{{ __('ems.site') }} <span class="text-danger">*</span></label>
+                                
+                                <select class="form-select select-site @error('site_id') is-invalid @enderror" 
+                                        id="site_id" 
+                                        wire:model="site_id"
+                                        data-placeholder="{{ __('ems.select_site') }}">
+                                    <option value="">{{ __('ems.select_site') }}</option>
+                                    @foreach ($sites as $site)
+                                        <option value="{{ $site->id }}">{{ $site->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('site_id')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <section class="mb-3">
+                                @livewire('component.camera', key('selfie-camera-tag'))
+                            </section>
+                        @elseif($attendance_method_id == 3)
+                            <div class="mb-3">
+                                <label for="step" class="form-label">{{ __('ems.complete_step') }}</label>
+
+                                <div class="btn-group d-grid gap-2 d-md-flex" role="group"
+                                    aria-label="Basic radio toggle button group">
+
+                                    <input type="radio" class="btn-check" name="activeCamera" id="activateQRScanner"
+                                        value="qr" autocomplete="off" wire:click="activateQRScanner"
+                                        @if ($activeCamera === 'qr') checked @endif>
+                                    <label class="btn btn-outline-primary" for="activateQRScanner">
+                                        {{ __('ems.step_1') }}
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="activeCamera"
+                                        id="activateSelfieCamera" value="selfie" autocomplete="off"
+                                        wire:click="activateSelfieCamera"
+                                        @if ($activeCamera === 'selfie') checked @endif>
+                                    <label class="btn btn-outline-primary" for="activateSelfieCamera">
+                                        {{ __('ems.step_2') }}
+                                    </label>
+
+                                </div>
+                            </div>
+
+                            @if ($activeCamera === 'qr')
+                                <section class="mb-3">
+                                    @if ($content)
+                                        <div class="text-center">
+                                            <div class="mb-4">
+                                                <i class="mdi mdi-check-circle-outline text-success display-4"></i>
+                                            </div>
+                                            <div>
+                                                <h3>{{ $site_name }}</h3>
+                                                <h4>{{ $site_longitude }}, {{ $site_latitude }}</h4>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @livewire('component.qr-camera', key('qr-scanner'))
+                                </section>
+                            @endif
+
+                            @if ($activeCamera === 'selfie')
+                                <section class="mb-3">
+                                    @livewire('component.camera', key('selfie-camera-qr'))
+                                </section>
+                            @endif
+                        @endif
+
+                        <div class="mb-3">
+                            <label for="notes">{{ __('ems.notes') }}</label>
+                            <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" wire:model="notes">
+                            </textarea>
+
+                            @error('notes')
+                                <div class="invalid-feedback">
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                        </div>
+
+                        @livewire(
+                            'component.map',
+                            [
+                                'site_name' => $site_name,
+                                'site_latitude' => $site_latitude,
+                                'site_longitude' => $site_longitude,
+                            ],
+                            key('map')
+                        )
+
+                        <div class="mb-3 d-flex justify-content-end gap-2">
+                            <button id="submit" type="submit" class="btn btn-primary w-md col-md"
+                                wire:submit.prevent="submit" wire:loading.attr="disabled" wire:target="submit">
+                                <i wire:loading.class="spinner-border spinner-border-sm" wire:target="submit"></i>
+                                {{ __('ems.save') }}
+                            </button>
+
+                            <button id="cancel" type="button" class="btn btn-light w-md col-md"
+                                wire:click="$dispatch('close-modal')" wire:loading.attr="disabled"
+                                wire:target="submit">{{ __('ems.cancel') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@push('styles')
+    <link href="{{ asset('libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+@endpush
+
+@push('js')
+    <script src="{{ asset('libs/select2/js/select2.min.js') }}"></script>
+    <script>
+        document.addEventListener('livewire:init', function() {
+            // Initialize Select2 for site dropdown
+            function initSelect2() {
+                // Check if select element exists
+                if ($('.select-site').length === 0) {
+                    return;
+                }
+                
+                // Destroy existing Select2 if it exists
+                if ($('.select-site').hasClass('select2-hidden-accessible')) {
+                    $('.select-site').select2('destroy');
+                }
+                
+                // Initialize Select2
+                $('.select-site').select2({
+                    width: '100%',
+                    placeholder: '{{ __('ems.select_site') }}',
+                    allowClear: true
+                });
+            }
+
+            // Handle site selection change
+            $(document).on('change', '.select-site', function() {
+                @this.set('site_id', this.value);
+            });
+
+            // Initialize Select2 when attendance method changes to Tag (2)
+            Livewire.on('attendance-method-changed', () => {
+                // Destroy existing Select2 if it exists
+                if ($('.select-site').hasClass('select2-hidden-accessible')) {
+                    $('.select-site').select2('destroy');
+                }
+                $('.select-site').val(null);
+            });
+
+            // Initialize Select2 when explicitly requested
+            Livewire.on('init-select2', () => {
+                setTimeout(() => {
+                    initSelect2();
+                }, 300);
+            });
+
+            // Listen for Livewire updates and initialize Select2 when site dropdown appears
+            Livewire.hook('morph.updated', ({ el, component }) => {
+                if (el.querySelector('.select-site')) {
+                    setTimeout(() => {
+                        initSelect2();
+                    }, 100);
+                }
+            });
+        });
+    </script>
+@endpush

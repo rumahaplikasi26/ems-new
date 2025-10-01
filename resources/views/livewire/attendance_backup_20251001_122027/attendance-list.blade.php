@@ -3,25 +3,22 @@
         <table class="table project-list-table table-nowrap align-middle table-borderless">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 80px">#</th>
-                    <th scope="col">{{ __('ems.employee') }}</th>
+                    <th scope="col" style="width: 100px">#</th>
+                    <th scope="col">{{ __('ems.name') }}</th>
                     <th scope="col">{{ __('ems.date') }}</th>
-                    <th scope="col">{{ __('ems.shift') }}</th>
-                    <th scope="col">{{ __('ems.attendance') }}</th>
-                    <th scope="col" style="width: 120px">{{ __('ems.datetime') }}</th>
-                    <th scope="col" style="width: 100px">{{ __('ems.approved_by') }}</th>
-                    <th scope="col" style="width: 120px">{{ __('ems.approved_at') }}</th>
-                    <th scope="col">{{ __('ems.details') }}</th>
+                    <th scope="col">{{ __('ems.check_in') }}</th>
+                    <th scope="col">{{ __('ems.check_out') }}</th>
+                    <th scope="col">{{ __('ems.working_duration') }}</th>
                 </tr>
             </thead>
             <tbody id="attendance-lists">
                 @if ($attendances)
                     @foreach ($attendances as $attendance)
-                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance->id))
+                        @livewire('attendance.attendance-item', ['attendance' => $attendance], key($attendance['id']))
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="9" class="text-center fw-bold">{{ __('ems.no_data') }}</td>
+                        <td colspan="6" class="text-center">{{ __('ems.no_data') }}</td>
                     </tr>
                 @endif
             </tbody>

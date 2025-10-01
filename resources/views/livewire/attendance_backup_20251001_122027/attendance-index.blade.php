@@ -21,14 +21,14 @@
                             <label for="form-label">{{ __('ems.date') }}</label>
                             <div class="input-daterange input-group" id="attendance-inputgroup">
                                 <input type="date" class="form-control @error('start_date') is-invalid @enderror"
-                                    wire:model.live="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
+                                    wire:model="start_date" placeholder="{{ __('ems.start_date') }}" name="start" />
                                 @error('start_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                                 <input type="date" class="form-control @error('end_date') is-invalid @enderror"
-                                    wire:model.live="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
+                                    wire:model="end_date" placeholder="{{ __('ems.end_date') }}" name="end" />
                                 @error('end_date')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
