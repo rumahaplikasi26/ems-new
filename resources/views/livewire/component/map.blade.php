@@ -15,8 +15,12 @@
     @endassets
 
     @push('js')
-        
         <script>
+            // Define global initMap function for Google Maps callback
+            window.initMap = function() {
+                console.log('Google Maps API loaded successfully');
+            };
+
             document.addEventListener('livewire:init', function() {
                 refreshCoordinates();
 
@@ -200,8 +204,7 @@
                 }
             });
         </script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry&callback=initMap" async defer>
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ config('setting.maps_api_key') }}&libraries=geometry&callback=initMap" defer>
         </script>
     @endpush
     
