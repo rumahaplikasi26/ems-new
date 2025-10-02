@@ -59,6 +59,16 @@ class AttendancePreview extends Component
             }
             
             $attendances = $attendanceQuery->orderBy('timestamp')->get();
+            
+            // Debug logging
+            \Log::info('AttendancePreview Debug:', [
+                'selectedEmployees' => $this->selectedEmployees,
+                'startDate' => $this->startDate,
+                'endDate' => $this->endDate,
+                'selectedShifts' => $this->selectedShifts,
+                'attendanceCount' => $attendances->count(),
+                'attendances' => $attendances->toArray()
+            ]);
 
             // Fetch leave requests
             $leaveRequests = LeaveRequest::select('employee_id', 'start_date', 'end_date')
@@ -93,6 +103,13 @@ class AttendancePreview extends Component
                 // Get employee attendances and group by shift-aware date
                 $employeeAttendances = $attendances->where('employee_id', $employee->id);
                 $groupedByShiftDate = ShiftHelper::groupAttendanceByShiftDate($employeeAttendances);
+                
+                // Debug logging for each employee
+                \Log::info("Employee {$employee->id} ({$employee->user->name}) Debug:", [
+                    'employeeAttendancesCount' => $employeeAttendances->count(),
+                    'groupedByShiftDate' => $groupedByShiftDate->toArray(),
+                    'employeeAttendances' => $employeeAttendances->toArray()
+                ]);
 
                 // Buat array untuk menyimpan periode cuti
                 $leaveDates = [];
@@ -146,6 +163,12 @@ class AttendancePreview extends Component
                     'attendance_data' => $employeeReport
                 ]);
             }
+            
+            // Debug logging for final reports
+            \Log::info('Final Reports Debug:', [
+                'reportsCount' => $this->reports->count(),
+                'reports' => $this->reports->toArray()
+            ]);
 
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
