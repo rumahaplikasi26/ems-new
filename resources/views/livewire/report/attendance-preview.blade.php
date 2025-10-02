@@ -17,7 +17,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="card-title mb-0">Attendance Reports</h4>
         </div>
-        @if ($reports)
+        @if ($reports && $reports->count() > 0)
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-sm">
                     <thead class="table-light text-center fw-bold text-uppercase align-middle">
@@ -44,6 +44,16 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        @else
+            <div class="alert alert-warning mt-4">
+                <h5>No Data Available</h5>
+                <p>Debug Info:</p>
+                <ul>
+                    <li>Reports count: {{ $reports ? $reports->count() : 'null' }}</li>
+                    <li>Count days: {{ $countDays ?? 'null' }}</li>
+                    <li>Date range: {{ isset($startDate) && isset($endDate) ? $startDate . ' to ' . $endDate : 'not set' }}</li>
+                </ul>
             </div>
         @endif
     </div>

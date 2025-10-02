@@ -53,22 +53,16 @@ class AttendancePreview extends Component
                 ->whereIn('employee_id', $this->selectedEmployees)
                 ->whereBetween('timestamp', [$this->startDate, $this->endDate]);
             
-            // Filter by shifts if selected
+            // Filter by shifts if selected (include null shift_id if no specific shifts selected)
             if (!empty($this->selectedShifts)) {
-                $attendanceQuery->whereIn('shift_id', $this->selectedShifts);
+                $attendanceQuery->where(function($query) {
+                    $query->whereIn('shift_id', $this->selectedShifts)
+                          ->orWhereNull('shift_id');
+                });
             }
             
             $attendances = $attendanceQuery->orderBy('timestamp')->get();
             
-            // Debug logging
-            \Log::info('AttendancePreview Debug:', [
-                'selectedEmployees' => $this->selectedEmployees,
-                'startDate' => $this->startDate,
-                'endDate' => $this->endDate,
-                'selectedShifts' => $this->selectedShifts,
-                'attendanceCount' => $attendances->count(),
-                'attendances' => $attendances->toArray()
-            ]);
 
             // Fetch leave requests
             $leaveRequests = LeaveRequest::select('employee_id', 'start_date', 'end_date')
@@ -104,12 +98,6 @@ class AttendancePreview extends Component
                 $employeeAttendances = $attendances->where('employee_id', $employee->id);
                 $groupedByShiftDate = ShiftHelper::groupAttendanceByShiftDate($employeeAttendances);
                 
-                // Debug logging for each employee
-                \Log::info("Employee {$employee->id} ({$employee->user->name}) Debug:", [
-                    'employeeAttendancesCount' => $employeeAttendances->count(),
-                    'groupedByShiftDate' => $groupedByShiftDate->toArray(),
-                    'employeeAttendances' => $employeeAttendances->toArray()
-                ]);
 
                 // Buat array untuk menyimpan periode cuti
                 $leaveDates = [];
@@ -148,8 +136,29 @@ class AttendancePreview extends Component
                         $checkIn = $sorted->first();
                         $checkOut = $sorted->last();
 
-                        // Use ShiftHelper to format the time range (already includes overnight indicator)
-                        $timeRange = ShiftHelper::formatAttendanceTimeRange($checkIn, $checkOut, $checkIn->shift);
+                        // Check if we have both check-in and check-out
+                        if ($checkIn && $checkOut) {
+                            // Check if attendance has shift_id
+                            if ($checkIn->shift_id) {
+                                // Use ShiftHelper to format the time range (already includes overnight indicator)
+                                $timeRange = ShiftHelper::formatAttendanceTimeRange($checkIn, $checkOut, $checkIn->shift);
+                            } else {
+                                // No shift_id - show as "data awal-data akhir"
+                                $checkInTime = \Carbon\Carbon::parse($checkIn->timestamp)->format('H:i');
+                                $checkOutTime = \Carbon\Carbon::parse($checkOut->timestamp)->format('H:i');
+                                $timeRange = "{$checkInTime}-{$checkOutTime}";
+                            }
+                        } else {
+                            // Only one attendance record (check-in or check-out only)
+                            $singleAttendance = $checkIn;
+                            $time = \Carbon\Carbon::parse($singleAttendance->timestamp)->format('H:i');
+                            $timeRange = $time;
+                            
+                            // Add shift info if available
+                            if ($singleAttendance->shift_id && $singleAttendance->shift) {
+                                $timeRange .= ' (' . $singleAttendance->shift->name . ')';
+                            }
+                        }
                     } else {
                         $timeRange = '-';
                     }
@@ -164,11 +173,6 @@ class AttendancePreview extends Component
                 ]);
             }
             
-            // Debug logging for final reports
-            \Log::info('Final Reports Debug:', [
-                'reportsCount' => $this->reports->count(),
-                'reports' => $this->reports->toArray()
-            ]);
 
         } catch (\Exception $e) {
             $this->alert('error', $e->getMessage());
@@ -242,12 +246,17 @@ class AttendancePreview extends Component
 
     public function render()
     {
-        return view('livewire.report.attendance-preview', [
-            'dateRange' => $this->startDate && $this->endDate ? new DatePeriod(
+        $dateRange = collect();
+        if ($this->startDate && $this->endDate) {
+            $period = CarbonPeriod::create(
                 Carbon::parse($this->startDate),
-                CarbonInterval::day(),
                 Carbon::parse($this->endDate)
-            ) : collect()
+            );
+            $dateRange = collect($period->toArray());
+        }
+        
+        return view('livewire.report.attendance-preview', [
+            'dateRange' => $dateRange
         ]);
     }
 }
