@@ -149,10 +149,20 @@ class AttendancePreview extends Component
                                 $timeRange = "{$checkInTime}-{$checkOutTime}";
                             }
                         } else {
-                            // Only one attendance record (check-in or check-out only)
+                            // Only one attendance record - determine if it's check-in or check-out
                             $singleAttendance = $checkIn;
                             $time = \Carbon\Carbon::parse($singleAttendance->timestamp)->format('H:i');
-                            $timeRange = $time;
+                            
+                            // Determine if this is likely a check-in or check-out based on shift timing
+                            $isLikelyCheckIn = $this->isLikelyCheckIn($singleAttendance);
+                            
+                            if ($isLikelyCheckIn) {
+                                // Single check-in without check-out - show as "check-in - ?"
+                                $timeRange = $time . '-?';
+                            } else {
+                                // Single check-out or ambiguous - show as time only
+                                $timeRange = $time;
+                            }
                             
                             // Add shift info if available
                             if ($singleAttendance->shift_id && $singleAttendance->shift) {
@@ -227,6 +237,44 @@ class AttendancePreview extends Component
         } catch (\Exception $e) {
             $this->alert('error', 'Export failed: ' . $e->getMessage());
         }
+    }
+
+    private function isLikelyCheckIn($attendance)
+    {
+        if (!$attendance->shift) {
+            return true; // Default to check-in if no shift info
+        }
+        
+        $time = \Carbon\Carbon::parse($attendance->timestamp);
+        $shiftStart = \Carbon\Carbon::parse($attendance->shift->start_time);
+        $shiftEnd = \Carbon\Carbon::parse($attendance->shift->end_time);
+        
+        // For regular shifts (non-overnight)
+        if ($shiftEnd->greaterThan($shiftStart)) {
+            // If time is closer to shift start, likely check-in
+            $hoursFromStart = abs($time->hour - $shiftStart->hour);
+            $hoursFromEnd = abs($time->hour - $shiftEnd->hour);
+            
+            return $hoursFromStart <= $hoursFromEnd;
+        }
+        
+        // For overnight shifts
+        $isOvernight = \App\Helpers\ShiftHelper::isOvernightShift($attendance->shift);
+        if ($isOvernight) {
+            // For overnight shifts, check if time is in the "check-in" period
+            // Typically check-in is around shift start time (evening/night)
+            // and check-out is around shift end time (early morning)
+            
+            if ($time->hour >= $shiftStart->hour || $time->hour < 12) {
+                // Time is in evening/night or early morning - likely check-in
+                return true;
+            } else {
+                // Time is in late morning/afternoon - likely check-out
+                return false;
+            }
+        }
+        
+        return true; // Default to check-in
     }
 
     private function getAbsentTypeCode($typeAbsent)

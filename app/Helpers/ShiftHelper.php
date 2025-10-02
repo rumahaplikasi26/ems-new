@@ -35,6 +35,19 @@ class ShiftHelper
             if ($time->hour < $shiftEnd->hour) {
                 return $time->subDay()->format('Y-m-d');
             }
+            
+            // For overnight shifts, if time doesn't fit either condition,
+            // determine which day it belongs to based on proximity to shift times
+            $hoursFromShiftStart = $time->hour - $shiftStart->hour;
+            $hoursFromShiftEnd = $time->hour - $shiftEnd->hour;
+            
+            // If closer to shift start, it's the same day
+            if (abs($hoursFromShiftStart) <= abs($hoursFromShiftEnd)) {
+                return $time->format('Y-m-d');
+            } else {
+                // If closer to shift end, it's the previous day
+                return $time->subDay()->format('Y-m-d');
+            }
         }
         
         // Regular shift - use the actual date
