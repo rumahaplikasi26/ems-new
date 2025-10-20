@@ -132,7 +132,7 @@ class AbsentRequestForm extends BaseComponent
 
             // Kirim email ke recipients
             foreach ($recipients as $recipient) {
-                $employee = $recipient->employee;
+                // $employee = $recipient->employee;
                 createNotification(
                     $employee->user_id,
                     $this->authUser->name . ' make Absent Request',

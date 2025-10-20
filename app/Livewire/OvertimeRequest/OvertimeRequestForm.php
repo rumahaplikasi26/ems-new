@@ -94,8 +94,25 @@ class OvertimeRequestForm extends BaseComponent
                     ]);
                 }
 
+                $employee = $overtime_request->employee;
                 // Send notification emails
-                $this->sendNotificationEmails($overtime_request);
+                foreach ($this->recipients as $recipient) {
+                    $recipient = Employee::with('user')->find($recipient);
+                    if ($recipient && $recipient->user->email) {
+                        createNotification(
+                            $recipient->user_id,
+                            $this->authUser->name . ' make Overtime Request',
+                            $this->authUser->name . 'make-overtime-request',
+                            'Overtime Request',
+                            $this->authUser->name . ' telah membuat pengajuan lembur dari tanggal ' . $this->start_date . ' sampai ' . $this->end_date . ' dengan catatan ' . $this->reason,
+                            route('overtime-request.detail', $overtime_request->id)
+                        );
+
+                        SendEmailJob::dispatch($recipient->user, 'recipient-overtime-request', ['overtime_request' => $overtime_request], $employee->user);
+                    }
+                }
+
+                SendEmailJob::dispatch($employee->user, 'sender-overtime-request', ['overtime_request' => $overtime_request]);
 
                 $this->alert('success', 'Overtime request created successfully.');
                 return redirect()->route('overtime-request.index');
@@ -120,26 +137,6 @@ class OvertimeRequestForm extends BaseComponent
             }
         } catch (\Exception $e) {
             $this->alert('error', 'An error occurred: ' . $e->getMessage());
-        }
-    }
-
-    private function sendNotificationEmails($overtime_request)
-    {
-        foreach ($this->recipients as $recipientId) {
-            $recipient = Employee::with('user')->find($recipientId);
-            if ($recipient && $recipient->user->email) {
-                $emailData = [
-                    'recipient_name' => $recipient->user->name,
-                    'requester_name' => $this->employee->user->name,
-                    'start_date' => Carbon::parse($this->start_date)->format('d F Y, H:i'),
-                    'end_date' => Carbon::parse($this->end_date)->format('d F Y, H:i'),
-                    'priority' => ucfirst($this->priority),
-                    'reason' => $this->reason,
-                    'request_url' => route('overtime-request.detail', $overtime_request->id)
-                ];
-
-                SendEmailJob::dispatch($recipient->user, 'sender-overtime-request', ['overtime_request' => $overtime_request]);
-            }
         }
     }
 
