@@ -8,11 +8,11 @@ use App\Models\RequestValidate;
 use Livewire\Component; 
 use Livewire\Attributes\On;
 use App\Jobs\SendEmailJob;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class AbsentRequestDetail extends BaseComponent
 {
-
+    use LivewireAlert;
     public $absent_request, $notes, $start_date, $end_date, $employee_id, $recipients, $recipientsWithStatus, $isApproved, $recipientStatus, $isApprovedRecipient;
 
     public function mount($id)
