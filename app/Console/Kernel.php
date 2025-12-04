@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:calculate-working-hourse')->dailyAt('00:00');
+        $schedule->command('app:add-leave-remaining')->monthlyOn(1, '00:01');
         // $schedule->command('app:calculate-working-hourse')->everyMinute();  // For testing
     }
 
