@@ -114,7 +114,7 @@
                         'value' => $totalSickAsbentRequestYesterday,
                         'badge' => __('ems.yesterday'),
                     ],
-                    'total-day-absent-request-yesterday'
+                    'total-sick-request-yesterday'
                 )
             </div>
             <div class="col-md-2">
@@ -132,21 +132,23 @@
     @endunlessrole
 
     @hasrole('Employee')
-        <div class="row">
-            <div class="col-md-12" data-tour="working-hours-analytic">
-                @livewire('component.widget.working-hours-analytic', ['user' => $authUser])
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md" data-tour="working-day-analytic">
-                @livewire('component.widget.working-day-analytic')
+        @if ($authUser?->employee)
+            <div class="row">
+                <div class="col-md-12" data-tour="working-hours-analytic">
+                    @livewire('component.widget.working-hours-analytic', ['user' => $authUser])
+                </div>
             </div>
 
-            <div class="col-md" data-tour="activity-card">
-                @livewire('component.widget.activity-card')
+            <div class="row">
+                <div class="col-md" data-tour="working-day-analytic">
+                    @livewire('component.widget.working-day-analytic')
+                </div>
+
+                <div class="col-md" data-tour="activity-card">
+                    @livewire('component.widget.activity-card')
+                </div>
             </div>
-        </div>
+        @endif
     @endhasrole
 
     @can('view:attendance-all')

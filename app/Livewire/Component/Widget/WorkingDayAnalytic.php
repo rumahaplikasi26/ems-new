@@ -55,9 +55,15 @@ class WorkingDayAnalytic extends BaseComponent
             ->get()->sum('total_leaves');
         $this->total_leave_days = $leaves;
 
-        $this->percentage_present = round(($this->total_present_days / $this->total_working_days) * 100, 2);
-        $this->percentage_absent = round(($this->total_absent_days / $this->total_working_days) * 100, 2);
-        $this->percentage_leave = round(($this->total_leave_days / $this->total_working_days) * 100, 2);
+        if ($this->total_working_days > 0) {
+            $this->percentage_present = round(($this->total_present_days / $this->total_working_days) * 100, 2);
+            $this->percentage_absent = round(($this->total_absent_days / $this->total_working_days) * 100, 2);
+            $this->percentage_leave = round(($this->total_leave_days / $this->total_working_days) * 100, 2);
+        } else {
+            $this->percentage_present = 0;
+            $this->percentage_absent = 0;
+            $this->percentage_leave = 0;
+        }
     }
 
     public function render()

@@ -6,6 +6,7 @@ use App\Livewire\Activity\ActivityIndex;
 use App\Livewire\Announcement\AnnouncementDetail;
 use App\Livewire\Announcement\AnnouncementForm;
 use App\Livewire\Announcement\AnnouncementIndex;
+use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Report\AbsentRequest;
 use App\Livewire\Report\Attendance;
@@ -98,6 +99,7 @@ Route::post('/test-attendance', [IClockController::class, 'testAttendance']);
 Route::get('/test-component', TestComponent::class)->name('test-component');
 
 Route::get('/login', Login::class)->name('login')->middleware('guest');
+Route::get('/forgot-password', ForgotPassword::class)->name('forgot-password')->middleware('guest');
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('upload-image', [ImageUploadController::class, 'upload']);

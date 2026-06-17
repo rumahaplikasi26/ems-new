@@ -14,7 +14,7 @@ class DashboardProfile extends BaseComponent
         $this->name = $this->authUser->name;
         $this->email = $this->authUser->email;
         $this->avatar_url = $this->authUser->avatar_url;
-        $this->position = $this->authUser->employee->position->name ?? '';
+        $this->position = $this->authUser->employee?->position?->name ?? '';
         $this->totalEmployee = Employee::count();
     }
 

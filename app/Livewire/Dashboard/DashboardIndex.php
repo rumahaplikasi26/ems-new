@@ -31,7 +31,17 @@ class DashboardIndex extends BaseComponent
         $this->yesterday = now()->subDay()->toDateString();
 
         $this->getYesterdayData();
-        $this->getData();
+
+        if ($this->authUser->employee) {
+            $this->getData();
+        } else {
+            $this->totalDailyReport = 0;
+            $this->totalDayLeaveRequest = 0;
+            $this->totalVisit = 0;
+            $this->totalDayPresent = 0;
+            $this->totalAmountFinancialRequest = '0';
+            $this->totalDayAbsentRequest = 0;
+        }
     }
 
     public function getYesterdayData()
